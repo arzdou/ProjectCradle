@@ -1,0 +1,21 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/res/Mech.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+frame_name = "Everest"
+size = "1"
+armor = 0
+save_target = 10
+sensors = 10
+max_hp = 10
+repair_cap = 5
+evasion = 8
+speed = 5
+e_defense = 8
+tech_attack = 5
+system_points = 6
+heat_cap = 6
+mounts = [ 0, 1, 2 ]
+mech_systems = [  ]

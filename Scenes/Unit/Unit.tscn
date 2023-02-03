@@ -1,0 +1,72 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Scripts/Unit/Unit.gd" type="Script" id=1]
+[ext_resource path="res://Media/Player.png" type="Texture" id=2]
+[ext_resource path="res://Media/unit_shadow.svg" type="Texture" id=3]
+[ext_resource path="res://Scripts/res/Grid.gd" type="Script" id=4]
+[ext_resource path="res://Scripts/Unit/UnitStats.gd" type="Script" id=5]
+
+[sub_resource type="Resource" id=1]
+script = ExtResource( 4 )
+grid_type = "square"
+size = Vector2( 20, 20 )
+cell_size = Vector2( 80, 80 )
+
+[sub_resource type="Animation" id=3]
+tracks/0/type = "value"
+tracks/0/path = NodePath("PathFollow2D/Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "selected"
+length = 1.4
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("PathFollow2D/Sprite:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.7, 1.4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1.5, 1.5, 1.5, 1 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[node name="Unit" type="Path2D"]
+curve = null
+script = ExtResource( 1 )
+grid = SubResource( 1 )
+move_range = 6
+
+[node name="PathFollow2D" type="PathFollow2D" parent="."]
+rotate = false
+loop = false
+
+[node name="Shadow" type="Sprite" parent="PathFollow2D"]
+modulate = Color( 0.129412, 0.109804, 0.109804, 0.388235 )
+position = Vector2( 1, 43 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="PathFollow2D"]
+modulate = Color( 1.15861, 1.15861, 1.15861, 1 )
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 2 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/idle = SubResource( 3 )
+anims/selected = SubResource( 2 )
+
+[node name="UnitStats" type="Node" parent="."]
+script = ExtResource( 5 )

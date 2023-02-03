@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/res/PilotStats.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+pilot_name = "BRIGADOR"
+license_level = 0
+hull = 0
+agility = 0
+systems = 0
+engineering = 0
+gear = [  ]
+traits = [  ]
