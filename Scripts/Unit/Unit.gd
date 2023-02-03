@@ -12,6 +12,8 @@ export(Resource) var grid = preload("res://Resources/Grid.tres")
 export(Resource) var _pilot_stats = preload("res://Resources/Pilots/BasePilot.tres")
 export(Resource) var _mech = preload("res://Resources/Frames/Everest.tres")
 
+# Type of the unit
+export(String, 'ally', 'enemy') var ally_or_enemy = 'ally'
 
 # Texture representing the unit.
 export var skin: Texture setget set_skin
@@ -37,6 +39,7 @@ var _is_walking := false setget _set_is_walking
 onready var _sprite: Sprite = $PathFollow2D/Sprite
 onready var _anim_player: AnimationPlayer = $AnimationPlayer
 onready var _path_follow: PathFollow2D = $PathFollow2D
+onready var _unit_hud = $PathFollow2D/UnitHUD
 onready var _stats = $UnitStats
 
 signal walk_finished
@@ -46,6 +49,7 @@ func _ready():
 	# _process will only run if the unit needs to move
 	set_process(false)
 	_stats.initialize(_pilot_stats, _mech)
+	_unit_hud.initialize(_stats.max_hp, _stats.heat_cap)
 	move_range = _stats.speed
 	# The following lines initialize the `cell` property and snap the unit to the cell's center on the map.
 	self.cell = grid.world_to_map(position)
@@ -114,7 +118,12 @@ func set_is_selected(val: bool) -> void:
 	else:
 		_anim_player.play("idle") # idle animations reset the 'selected' animation
 
-
 func _set_is_walking(val: bool) -> void:
 	_is_walking = val
 	set_process(_is_walking)
+
+func show_hud() -> void:
+	_unit_hud.show()
+	
+func hide_hud() -> void:
+	_unit_hud.hide()

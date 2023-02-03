@@ -87,6 +87,9 @@ func _select_unit(cell: Vector2) -> void:
 	if not _units.has(cell):
 		return
 	
+	if _units[cell].ally_or_enemy == 'enemy':
+		return
+	
 	_active_unit = _units[cell]
 	_active_unit.is_selected = true
 	_walkable_cells = get_walkable_cells(_active_unit)
@@ -106,6 +109,11 @@ func _clear_active_unit() -> void:
 
 
 func _move_active_unit(new_cell: Vector2) -> void:
+	
+	if new_cell == _active_unit.cell:
+		_deselect_unit()
+		_clear_active_unit()
+	
 	if is_occupied(new_cell) or not new_cell in _walkable_cells:
 		return
 	
@@ -122,6 +130,13 @@ func _move_active_unit(new_cell: Vector2) -> void:
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if _active_unit and _active_unit.is_selected:
 		_unit_path.draw(_active_unit.cell, new_cell)
+	
+	if not _active_unit:
+		for cell in _units:
+			_units[cell].hide_hud()
+	
+	if _units.has(new_cell):
+		_units[new_cell].show_hud()
 
 
 func _on_Cursor_accept_pressed(cell: Vector2) -> void:
