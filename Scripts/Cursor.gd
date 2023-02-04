@@ -12,6 +12,7 @@ export var grid: Resource = preload("res://Resources/Grid.tres")
 # Time before the cursor can move again in seconds.
 export var ui_cooldown := 0.1
 
+var is_active := true setget set_is_active
 # Coordinates of the current cell the cursor is hovering.
 var cell := Vector2.ZERO setget set_cell
 
@@ -19,13 +20,12 @@ onready var _timer: Timer = $Timer
 
 
 func _ready():
+	hide()
 	_timer.wait_time = ui_cooldown
 	position = grid.map_to_world(cell)
-	
-
+	set_is_active(is_active)
 
 func _unhandled_input(event):
-	
 	# Move the cursor to the mouse position
 	if event is InputEventMouseMotion:
 		self.cell = grid.world_to_map(event.position)
@@ -60,7 +60,17 @@ func _unhandled_input(event):
 func _draw() -> void:
 	# Rect2 is built from the position of the rectangle's top-left corner and its size. To draw the
 	# square around the cell, the start position needs to be `-grid.cell_size / 2`.
-	draw_rect(Rect2(-grid.cell_size / 2, grid.cell_size), Color.aliceblue, false, 2.0)
+	if is_active:
+		draw_rect(Rect2(-grid.cell_size / 2, grid.cell_size), Color.aliceblue, false, 2.0)
+
+
+func set_is_active(value: bool) -> void:
+	is_active = value
+	set_process_unhandled_input(is_active)
+	if is_active:
+		show()
+	else:
+		hide()
 
 
 func set_cell(value: Vector2) -> void:

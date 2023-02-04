@@ -2,6 +2,9 @@
 extends Node
 class_name UnitStats
 
+signal structure_reduced(new_structure)
+signal stress_raised(new_stress)
+
 var license_level: int
 var grit: int setget ,_get_grit
 
@@ -47,11 +50,12 @@ var system_points: int setget ,_get_system_points
 
 # ENGINEERING
 var heat_cap: int setget ,_get_heat_cap
+var heat: int setget _set_heat
 
 var structure := 4
-var stress := 4
+var stress := 0
 
-var mounts: Array
+var mech_weapons: Array
 var mech_systems: Array
 var core_system: Resource
 
@@ -90,8 +94,9 @@ func initialize(pilot_stats: PilotStats, mech: Mech) -> void:
 	tech_attack = mech.tech_attack
 	system_points = mech.system_points
 	heat_cap = mech.heat_cap
+	heat = heat_cap
 	
-	mounts = mech.mounts
+	mech_weapons = mech.weapons
 	mech_systems = mech.mech_systems
 	core_system = mech.core_system
 	
@@ -123,6 +128,15 @@ func _set_pilot_hp(new_hp: int) -> void:
 	
 func _set_hp(new_hp: int) -> void:
 	hp = max(0, new_hp)
+	if hp == 0:
+		structure -= 1
+		emit_signal("structure_reduced", structure)
+
+func _set_heat(new_heat: int) -> void:
+	heat = max(0, new_heat)
+	if heat == 0:
+		stress -= 1
+		emit_signal("stress_raised", stress)
 
 func _get_grit() -> int:
 	return int(ceil(float(license_level) / 2))

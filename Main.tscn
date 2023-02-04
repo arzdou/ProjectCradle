@@ -15,10 +15,16 @@ tile_data = PoolIntArray( -65538, 0, 0, -65537, 0, 0, -131072, 0, 0, -131071, 0,
 [node name="GameBoard" type="YSort" parent="."]
 script = ExtResource( 4 )
 
-[node name="Unit" parent="GameBoard" instance=ExtResource( 1 )]
-position = Vector2( 38, 7 )
+[node name="Ally" parent="GameBoard" instance=ExtResource( 1 )]
+position = Vector2( 103, 170 )
+ally_or_enemy = "ally"
+
+[node name="Enemy" parent="GameBoard" instance=ExtResource( 1 )]
+position = Vector2( 638, 175 )
+ally_or_enemy = "enemy"
 
 [node name="Cursor" parent="GameBoard" instance=ExtResource( 3 )]
+visible = false
 position = Vector2( 101, 187 )
 
 [node name="UnitOverlay" parent="GameBoard" instance=ExtResource( 5 )]

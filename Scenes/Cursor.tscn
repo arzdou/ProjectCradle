@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Scripts/Cursor.gd" type="Script" id=1]
 [ext_resource path="res://Media/menu_selection_arrow.png" type="Texture" id=2]
-[ext_resource path="res://Scripts/res/Grid.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/ResourceGenerators/Grid.gd" type="Script" id=3]
 
 [sub_resource type="Resource" id=1]
 script = ExtResource( 3 )

@@ -9,6 +9,31 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "VBoxContainer",
+"class": "ActionContainer",
+"language": "GDScript",
+"path": "res://Scripts/Unit/ActionContainer.gd"
+}, {
+"base": "GridContainer",
+"class": "ActionMenu",
+"language": "GDScript",
+"path": "res://Scripts/Unit/ActionMenu.gd"
+}, {
+"base": "Node",
+"class": "ActionProcessor",
+"language": "GDScript",
+"path": "res://Scripts/ResourceGenerators/ActionProcessor.gd"
+}, {
+"base": "Button",
+"class": "BaseUIButton",
+"language": "GDScript",
+"path": "res://Scripts/UI/BaseUIButton.gd"
+}, {
+"base": "Resource",
+"class": "CONSTANTS",
+"language": "GDScript",
+"path": "res://Scripts/Constants.gd"
+}, {
 "base": "Node2D",
 "class": "Cursor",
 "language": "GDScript",
@@ -27,12 +52,12 @@ _global_script_classes=[ {
 "base": "Resource",
 "class": "Grid",
 "language": "GDScript",
-"path": "res://Scripts/res/Grid.gd"
+"path": "res://Scripts/ResourceGenerators/Grid.gd"
 }, {
 "base": "Resource",
 "class": "Mech",
 "language": "GDScript",
-"path": "res://Scripts/res/Mech.gd"
+"path": "res://Scripts/ResourceGenerators/Mech.gd"
 }, {
 "base": "Resource",
 "class": "PathFinder",
@@ -42,7 +67,7 @@ _global_script_classes=[ {
 "base": "Resource",
 "class": "PilotStats",
 "language": "GDScript",
-"path": "res://Scripts/res/PilotStats.gd"
+"path": "res://Scripts/ResourceGenerators/PilotStats.gd"
 }, {
 "base": "Path2D",
 "class": "Unit",
@@ -68,8 +93,18 @@ _global_script_classes=[ {
 "class": "UnitStats",
 "language": "GDScript",
 "path": "res://Scripts/Unit/UnitStats.gd"
+}, {
+"base": "Resource",
+"class": "Weapon",
+"language": "GDScript",
+"path": "res://Scripts/Weapon.gd"
 } ]
 _global_script_class_icons={
+"ActionContainer": "",
+"ActionMenu": "",
+"ActionProcessor": "",
+"BaseUIButton": "",
+"CONSTANTS": "",
 "Cursor": "",
 "GameBoard": "",
 "GitAPI": "",
@@ -81,7 +116,8 @@ _global_script_class_icons={
 "UnitHUD": "",
 "UnitOverlay": "",
 "UnitPath": "",
-"UnitStats": ""
+"UnitStats": "",
+"Weapon": ""
 }
 
 [application]

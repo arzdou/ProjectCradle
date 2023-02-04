@@ -10,10 +10,10 @@ var _walkable_cells := []
 
 onready var _unit_overlay: UnitOverlay = $UnitOverlay
 onready var _unit_path: UnitPath = $UnitPath 
+onready var _cursor = $Cursor
 
 func _ready() -> void:
 	_reinitialize()
-	_unit_overlay.draw(get_walkable_cells($Unit))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -124,7 +124,20 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	
 	_active_unit.walk_along(_unit_path._current_path)
 	yield(_active_unit, "walk_finished")
+	_select_unit_action(_active_unit)
 	_clear_active_unit()
+
+
+func _select_unit_action(unit: Unit) -> void:
+	# Deactivate cursor and show action menu until an action has been taken
+	unit.is_selecting_action = true
+	_cursor.is_active = false
+	var weapon = yield(unit, "action_selected")
+	unit.is_selecting_action = false
+	_cursor.is_active = true
+
+func apply_damage(recieving_unit: Unit, damage: int) -> void:
+	recieving_unit.take_damage(damage)
 
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
@@ -133,14 +146,17 @@ func _on_Cursor_moved(new_cell: Vector2) -> void:
 	
 	if not _active_unit:
 		for cell in _units:
+			pass
 			_units[cell].hide_hud()
+			_units[cell].hide_action_menu()
 	
 	if _units.has(new_cell):
 		_units[new_cell].show_hud()
-
+		_units[new_cell].hide_action_menu()
 
 func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 	if not _active_unit:
 		_select_unit(cell)
 	elif _active_unit.is_selected:
 		_move_active_unit(cell)
+

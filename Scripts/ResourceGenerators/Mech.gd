@@ -3,6 +3,8 @@
 extends Resource
 class_name Mech
 
+export var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
+
 export(String) var frame_name := 'MECH'
 export(String, '1/2', '1', '2', '3') var size := '1'
 export(int) var armor := 0
@@ -25,7 +27,7 @@ export(int) var system_points := 6
 # ENGINEERING
 export(int) var heat_cap := 6
 
-enum MOUNT_TYPES {MAIN, HEAVY, AUX, MAIN_AUX, FLEX, SUPERHEAVY, INTEGRATED} #Maybe this should be in a constant resource appart
-export(Array, MOUNT_TYPES) var mounts
+export(Array, CONSTANTS.MOUNT_SIZES) var mounts
+export(Array, Resource) var weapons
 export(Array, Resource) var mech_systems
 export(Resource) var core_system = null

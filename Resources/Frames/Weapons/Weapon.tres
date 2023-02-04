@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/Weapon.gd" type="Script" id=2]
+
+[resource]
+script = ExtResource( 2 )
+weapon_name = "Weapon"
+size = 0
+type = 0
+tags = [  ]
+weapon_range = {
+0: 10
+}
+weapon_damage = {
+0: "3"
+}

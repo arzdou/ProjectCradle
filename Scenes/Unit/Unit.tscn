@@ -1,11 +1,12 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Scripts/Unit/Unit.gd" type="Script" id=1]
 [ext_resource path="res://Media/Player.png" type="Texture" id=2]
 [ext_resource path="res://Media/unit_shadow.svg" type="Texture" id=3]
-[ext_resource path="res://Scripts/res/Grid.gd" type="Script" id=4]
+[ext_resource path="res://Scripts/ResourceGenerators/Grid.gd" type="Script" id=4]
 [ext_resource path="res://Scripts/Unit/UnitStats.gd" type="Script" id=5]
 [ext_resource path="res://Scenes/Unit/UnitHUD.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scripts/Unit/ActionContainer.gd" type="Script" id=7]
 
 [sub_resource type="Resource" id=1]
 script = ExtResource( 4 )
@@ -48,6 +49,8 @@ tracks/0/keys = {
 curve = null
 script = ExtResource( 1 )
 grid = SubResource( 1 )
+pilot_name = "BRIGADOR"
+mech_name = "Everest"
 ally_or_enemy = "Ally"
 move_range = 6
 
@@ -70,9 +73,19 @@ modulate = Color( 1.15861, 1.15861, 1.15861, 1 )
 scale = Vector2( 0.75, 0.75 )
 texture = ExtResource( 2 )
 
+[node name="ActionContainer" type="VBoxContainer" parent="PathFollow2D"]
+margin_left = 65.0
+margin_top = -54.0
+margin_right = 105.0
+margin_bottom = -14.0
+rect_scale = Vector2( 0.5, 0.5 )
+script = ExtResource( 7 )
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/idle = SubResource( 3 )
 anims/selected = SubResource( 2 )
 
 [node name="UnitStats" type="Node" parent="."]
 script = ExtResource( 5 )
+
+[connection signal="action_selected" from="PathFollow2D/ActionContainer" to="." method="_on_ActionContainer_action_selected"]

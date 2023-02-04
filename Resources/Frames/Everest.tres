@@ -1,9 +1,12 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" load_steps=4 format=2]
 
-[ext_resource path="res://Scripts/res/Mech.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/ResourceGenerators/Mech.gd" type="Script" id=1]
+[ext_resource path="res://Resources/CONSTANTS.tres" type="Resource" id=2]
+[ext_resource path="res://Resources/Frames/Weapons/Weapon.tres" type="Resource" id=3]
 
 [resource]
 script = ExtResource( 1 )
+CONSTANTS = ExtResource( 2 )
 frame_name = "Everest"
 size = "1"
 armor = 0
@@ -17,5 +20,6 @@ e_defense = 8
 tech_attack = 5
 system_points = 6
 heat_cap = 6
-mounts = [ 0, 1, 2 ]
+mounts = [ 0 ]
+weapons = [ ExtResource( 3 ) ]
 mech_systems = [  ]

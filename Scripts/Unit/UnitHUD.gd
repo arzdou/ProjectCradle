@@ -24,7 +24,6 @@ func initialize(max_hp: int, heat_cap: int) -> void:
 	structure = 4
 	stress = 4
 
-
 func set_hp(new_hp: int) -> void:
 	_hp_bar.value = new_hp
 
@@ -36,3 +35,5 @@ func set_structure(new_structure: int) -> void:
 
 func set_stress(new_stress: int) -> void:
 	_stress_bar.value = new_stress
+
+
