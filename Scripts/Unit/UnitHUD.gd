@@ -7,10 +7,10 @@ onready var _heat_bar = $HeatBar
 onready var _structure_bar = $StructureBar
 onready var _stress_bar = $StressBar
 
-export var hp: int setget set_hp
-export var heat: int setget set_heat
-export var structure: int setget set_structure
-export var stress: int setget set_stress
+export var hp: int setget set_hp, get_hp
+export var heat: int setget set_heat, get_heat
+export var structure: int setget set_structure, get_structure
+export var stress: int setget set_stress, get_stress
 
 
 func initialize(max_hp: int, heat_cap: int) -> void:
@@ -36,4 +36,14 @@ func set_structure(new_structure: int) -> void:
 func set_stress(new_stress: int) -> void:
 	_stress_bar.value = new_stress
 
+func get_hp() -> int:
+	return _hp_bar.value
 
+func get_heat() -> int:
+	return _heat_bar.value
+
+func get_structure() -> int:
+	return _structure_bar.value
+
+func get_stress() -> int:
+	return _stress_bar.value

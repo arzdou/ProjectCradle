@@ -7,7 +7,7 @@ class_name Unit
 extends Path2D
 
 
-signal action_selected(unit, weapon)
+signal action_selected(action)
 
 
 # Preload the `Grid.tres` resource you created in the previous part.
@@ -97,6 +97,21 @@ func walk_along(path: PoolVector2Array) -> void:
 
 func take_damage(damage: int) -> void:
 	_stats.hp -= damage
+	_unit_hud.hp = _stats.hp
+
+
+func take_heat(heat: int) -> void:
+	_stats.heat -= heat
+	_unit_hud.heat = _stats.heat
+
+func take_structure(struct: int) -> void:
+	_stats.structure -= struct
+	_unit_hud.structure = _stats.structure
+
+
+func take_stress(stress: int) -> void:
+	_stats.stress -= stress
+	_unit_hud.stress = _stats.stress
 
 
 func set_skin(value: Texture) -> void:
@@ -149,6 +164,17 @@ func hide_action_menu() -> void:
 	_action_container.hide()
 
 
-func _on_ActionContainer_action_selected(weapon):
+func _on_ActionContainer_action_selected(action):
 	# Here should be all the action processing
-	emit_signal("action_selected", self, weapon)
+	emit_signal("action_selected", action)
+
+
+func _on_UnitStats_structure_reduced(new_structure):
+	_unit_hud.structure = new_structure
+
+
+func _on_UnitStats_stress_raised(new_stress):
+	_unit_hud.stress = new_stress
+
+
+

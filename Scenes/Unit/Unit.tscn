@@ -89,3 +89,5 @@ anims/selected = SubResource( 2 )
 script = ExtResource( 5 )
 
 [connection signal="action_selected" from="PathFollow2D/ActionContainer" to="." method="_on_ActionContainer_action_selected"]
+[connection signal="stress_raised" from="UnitStats" to="." method="_on_UnitStats_stress_raised"]
+[connection signal="structure_reduced" from="UnitStats" to="." method="_on_UnitStats_structure_reduced"]

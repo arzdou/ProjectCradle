@@ -2,12 +2,11 @@ extends Resource
 class_name Weapon
 
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
+var action_type = CONSTANTS.ACTION_TYPES.WEAPON
 
 export(String) var weapon_name = 'Weapon' 
 export(CONSTANTS.MOUNT_SIZES) var size = CONSTANTS.MOUNT_SIZES.MAIN
 export(CONSTANTS.WEAPON_TYPES) var type = CONSTANTS.WEAPON_TYPES.RIFLE
-
-export(Array, Resource) var tags
 
 
 # Since Godot does not allow type hints for dictionaries and I am not sure how to do it otherwise, I will have to check validity everytime I load the resource...
@@ -17,6 +16,7 @@ export(Dictionary) var weapon_range = {CONSTANTS.WEAPON_RANGE_TYPES.RANGE: 10, }
 # String can be '1d6' or '3'
 export(Dictionary) var weapon_damage = {CONSTANTS.DAMAGE_TYPES.KINETIC: '1d6', CONSTANTS.DAMAGE_TYPES.KINETIC: '3', }
 
+export(Array, Resource) var tags
 
 func _check_weapon_range() -> bool:
 	print('hi')

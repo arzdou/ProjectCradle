@@ -127,15 +127,17 @@ func _set_pilot_hp(new_hp: int) -> void:
 	pilot_hp = max(0, new_hp)
 	
 func _set_hp(new_hp: int) -> void:
-	hp = max(0, new_hp)
-	if hp == 0:
+	hp = new_hp
+	while hp <= 0:
 		structure -= 1
+		hp = max_hp - abs(hp)
 		emit_signal("structure_reduced", structure)
 
 func _set_heat(new_heat: int) -> void:
-	heat = max(0, new_heat)
-	if heat == 0:
+	heat = new_heat
+	while heat <= 0:
 		stress -= 1
+		heat = heat_cap - abs(heat)
 		emit_signal("stress_raised", stress)
 
 func _get_grit() -> int:
