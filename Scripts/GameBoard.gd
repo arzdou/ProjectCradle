@@ -6,26 +6,33 @@ var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
 var _directions = _grid.directions()
 var _units := {}
+
+var RAY_CAST_SPEED := 10 # Speed of the ray casting in pixels
+enum STATE {FREE, MOVEMENT, SELECTING, ACTING}
+var _board_state: int = STATE.FREE
+
 var _active_unit: Unit
-var _acting_unit: Unit
+var _performing_action
 var _walkable_cells := []
+var _marked_cells := []
 
 onready var _unit_overlay: UnitOverlay = $UnitOverlay
 onready var _unit_path: UnitPath = $UnitPath 
 onready var _cursor = $Cursor
+onready var _action_processor = $ActionProcessor
 
 func _ready() -> void:
 	_reinitialize()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _active_unit and event.is_action_pressed("ui_cancel"):
-		_deselect_unit()
-		_clear_active_unit()
+	if _board_state==STATE.MOVEMENT and event.is_action_pressed("ui_cancel"):
+		change_state(STATE.FREE)
 
 
 func _reinitialize() -> void:
 	_units.clear()
+	change_state(STATE.FREE)
 	
 	for child in get_children():
 		
@@ -35,6 +42,8 @@ func _reinitialize() -> void:
 			continue
 		
 		_units[unit.cell] = unit
+		
+		unit.connect("action_selected", self, "_on_Unit_action_selected")
 
 
 func is_occupied(cell: Vector2) -> bool:
@@ -42,49 +51,13 @@ func is_occupied(cell: Vector2) -> bool:
 
 
 func get_walkable_cells(unit: Unit) -> Array:
-	return _flood_fill(unit.cell, unit.move_range)
+	var blocked_spaces = _units.keys()
+	return _grid.flood_fill(unit.cell, unit.move_range, blocked_spaces)
+
 
 func get_visible_cells(unit: Unit, vision_range: int) -> Array:
-	return _flood_fill(unit.cell, vision_range, false) # This shuld be updated
-
-
-func _flood_fill(cell: Vector2, move_range: int, units_block: bool = true) -> Array:
-	var out := []
-	
-	# We use a stack of cells to process, when there are no more we exit
-	var stack := [cell]
-	
-	while not stack.empty():
-		var current: Vector2 = stack.pop_back()
-		# The conditions are:
-		# 1. We haven't already visited and filled this cell
-		# 2. We didn't go past the grid's limits.
-		# 3. We are within the `max_distance`, a number of cells.
-		
-		if out.has(current):
-			continue
-		
-		var distance_between_cells := (current - cell).abs()
-		if distance_between_cells.x + distance_between_cells.y > move_range:
-			continue
-		
-		if not _grid.is_within_bounds(current):
-			continue
-		
-		out.push_back(current)
-		
-		# Only add new elements to the stack if:
-		# 1. They are not repeated
-		# 2. They are not occupied
-		for direction in _directions:
-			var next_cell: Vector2 = current + direction
-			if is_occupied(next_cell) and units_block:
-				continue 
-			if next_cell in out:
-				continue
-			stack.push_back(next_cell)
-			
-	return out
+	var blocked_spaces = _units.keys()
+	return _grid.flood_fill(unit.cell, vision_range, blocked_spaces, false) # This shuld be updated
 
 
 func _select_unit(cell: Vector2) -> void:
@@ -97,27 +70,14 @@ func _select_unit(cell: Vector2) -> void:
 	
 	_active_unit = _units[cell]
 	_active_unit.is_selected = true
-	_walkable_cells = get_walkable_cells(_active_unit)
-	_unit_overlay.draw(_walkable_cells)
-	_unit_path.initialize(_walkable_cells)
-
-
-func _deselect_unit() -> void:
-	_active_unit.is_selected = false
-	_unit_path.stop()
-	_unit_overlay.clear()
-
-
-func _clear_active_unit() -> void:
-	_active_unit = null
-	_walkable_cells.clear()
+	change_state(STATE.MOVEMENT)
 
 
 func _move_active_unit(new_cell: Vector2) -> void:
 	
 	if new_cell == _active_unit.cell:
-		_deselect_unit()
-		_clear_active_unit()
+		change_state(STATE.FREE)
+		return
 	
 	if is_occupied(new_cell) or not new_cell in _walkable_cells:
 		return
@@ -125,61 +85,87 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_units.erase(_active_unit.cell)
 	_units[new_cell] = _active_unit
 	
-	_deselect_unit()
-	
 	_active_unit.walk_along(_unit_path._current_path)
 	yield(_active_unit, "walk_finished")
-	_acting_unit = _active_unit
-	_process_acting_unit()
-	_clear_active_unit()
-
-
-func _process_acting_unit() -> void:
-	# Deactivate cursor and show action menu until an action has been taken
-	_acting_unit.is_selecting_action = true # Toggles the menu and animations
-	_cursor.is_active = false
-	var action = yield(_acting_unit, "action_selected")
 	
-	_cursor.is_active = true # activate cursor to be able to process input
-	if action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
-		# For now only range types
-		var shooting_range: int = action.weapon_range[CONSTANTS.WEAPON_RANGE_TYPES.RANGE]
-		var visible_cells = get_visible_cells(_acting_unit, shooting_range)
-		
-		# Until a correct target has not been found you cannot exit
-		while true:
-			_unit_overlay.draw(visible_cells)
-			var cell = yield(_cursor, 'accept_pressed')
-			if _units.has(cell):
-				apply_damage(_units[cell], 5)
-				break
+	change_state(STATE.SELECTING)
+
+
+# Maybe I could implement a state machine since I have already separated the code...
+func change_state(new_state: int) -> void:
+	match new_state:
+		STATE.FREE:
+			_cursor.is_active = true
+			_unit_overlay.clear()
+			_unit_path.stop()
 			
-	# Finish the unit action
-	_unit_overlay.clear()
-	_acting_unit.is_selecting_action = false
-	_acting_unit = null
-
-
-func apply_damage(recieving_unit: Unit, damage: int) -> void:
-	recieving_unit.take_damage(damage)
+			if _active_unit:
+				_active_unit.is_selecting_action = false
+				_active_unit.is_selected = false
+				_active_unit = null
+			
+		STATE.MOVEMENT:
+			_cursor.is_active = true
+			_walkable_cells = get_walkable_cells(_active_unit)
+			_unit_overlay.draw(_walkable_cells)
+			_unit_path.initialize(_walkable_cells)
+			
+			_active_unit.is_selected = true
+			_active_unit.is_selecting_action = false # Toggles the menu and animations
+			
+		STATE.SELECTING:
+			_cursor.is_active = false
+			_unit_overlay.clear()
+			_unit_path.stop()
+			
+			_active_unit.is_selected = false
+			_active_unit.is_selecting_action = true 
+			
+		STATE.ACTING:
+			_cursor.is_active = true
+			_unit_overlay.clear()
+			_unit_path.stop()
+			
+			_active_unit.is_selected = false
+			_active_unit.is_selecting_action = false 
+			
+		_:
+			print('The state you are entering does not exist, the program will probably crash soon')
+	
+	$Label.text = 'State: '+str(new_state)
+	_board_state = new_state
 
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
-	if _active_unit and _active_unit.is_selected:
+	if _board_state == STATE.MOVEMENT:
 		_unit_path.draw(_active_unit.cell, new_cell)
+	elif _board_state == STATE.ACTING:
+		var relative_angle: float = _active_unit.cell.angle_to_point(_cursor.cell)
+		_unit_overlay.update_overlay(relative_angle)
 	
-	if not _active_unit:
-		for cell in _units:
-			_units[cell].hide_hud()
-			_units[cell].hide_action_menu()
+	for cell in _units:
+		if _units[cell] == _active_unit:
+			continue
+		_units[cell].hide_hud()
+		_units[cell].hide_action_menu()
 	
 	if _units.has(new_cell):
 		_units[new_cell].show_hud()
 		_units[new_cell].hide_action_menu()
 
 func _on_Cursor_accept_pressed(cell: Vector2) -> void:
-	if not _active_unit:
+	if _board_state == STATE.FREE:
 		_select_unit(cell)
-	elif _active_unit.is_selected:
+	elif _board_state == STATE.MOVEMENT:
 		_move_active_unit(cell)
+	elif _board_state == STATE.ACTING:
+		
+		var was_action_performed: bool = _action_processor.process_action_targeted(cell)
+			# Finish the unit action
+		if was_action_performed:
+			change_state(STATE.FREE)
 
+func _on_Unit_action_selected(action) -> void:
+	change_state(STATE.ACTING)
+	_action_processor.initialize(_units, action, _active_unit)
+	_unit_overlay.initialize(_units, action, _active_unit)

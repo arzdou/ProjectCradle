@@ -8,6 +8,7 @@ export(String, 'square', 'hexagonal') var grid_type = 'square'
 export var size := Vector2(20, 20)
 export var cell_size := Vector2(80, 80)
 
+const RAY_CAST_SPEED := 10 # Speed of the ray casting in pixels
 const DIRECTION_SQ = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 const DIRECTION_HEX = [
 	Vector2.LEFT, Vector2.RIGHT,
@@ -50,6 +51,70 @@ func clamp_position(grid_position: Vector2) -> Vector2:
 	var out := grid_position
 	out.x = clamp(out.x, 0, size.x - 1.0)
 	out.y = clamp(out.y, 0, size.y - 1.0)
+	return out
+
+
+func flood_fill(
+	cell: Vector2, 
+	move_range: int, 
+	blocked_cells: Array, 
+	units_block: bool = false
+) -> Array:
+	# Flood fill algorithm to calculate vision and movement
+	var out := []
+	
+	# We use a stack of cells to process, when there are no more we exit
+	var stack := [cell]
+	
+	while not stack.empty():
+		var current: Vector2 = stack.pop_back()
+		# The conditions are:
+		# 1. We haven't already visited and filled this cell
+		# 2. We didn't go past the grid's limits.
+		# 3. We are within the `max_distance`, a number of cells.
+		
+		if out.has(current):
+			continue
+		
+		var distance_between_cells := (current - cell).abs()
+		if distance_between_cells.x + distance_between_cells.y > move_range:
+			continue
+		
+		if not is_within_bounds(current):
+			continue
+		
+		out.push_back(current)
+		
+		# Only add new elements to the stack if:
+		# 1. They are not repeated
+		# 2. They are not occupied
+		for direction in directions():
+			var next_cell: Vector2 = current + direction
+			if blocked_cells.has(next_cell) and units_block:
+				continue 
+			if next_cell in out:
+				continue
+			stack.push_back(next_cell)
+			
+	return out
+
+
+func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
+	# Ray Casting algorithm from an initial cell and angle
+	var out := []
+	var ray_cast: Vector2 = map_to_world(cell)
+	while true:
+		ray_cast += Vector2(-cos(angle), -sin(angle)) * RAY_CAST_SPEED
+
+		var ray_cast_cell = world_to_map(ray_cast)
+		var distance = abs(ray_cast_cell.x - cell.x) +  abs(ray_cast_cell.y - cell.y)
+		
+
+		# The algorithm stops when the distance in cells is larger than the range
+		if distance >= view_range:
+			break
+		elif not out.has(ray_cast_cell):
+				out.push_back(ray_cast_cell)
 	return out
 
 

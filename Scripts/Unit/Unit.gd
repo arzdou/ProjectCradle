@@ -11,6 +11,7 @@ signal action_selected(action)
 
 
 # Preload the `Grid.tres` resource you created in the previous part.
+var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 export(Resource) var grid = preload("res://Resources/Grid.tres")
 export(Resource) var _pilot_stats = preload("res://Resources/Pilots/BasePilot.tres")
 export(Resource) var _mech = preload("res://Resources/Frames/Everest.tres")
@@ -95,7 +96,10 @@ func walk_along(path: PoolVector2Array) -> void:
 	self._is_walking = true
 
 
-func take_damage(damage: int) -> void:
+func take_damage(damage: int, damage_type: int) -> void:
+	if damage_type == CONSTANTS.DAMAGE_TYPES.HEAT:
+		take_heat(damage)
+		return
 	_stats.hp -= damage
 	_unit_hud.hp = _stats.hp
 

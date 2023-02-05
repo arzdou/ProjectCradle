@@ -8,9 +8,11 @@ weapon_name = "Weapon"
 size = 0
 type = 0
 weapon_range = {
-0: 10
+2: 4
 }
-weapon_damage = {
-0: "3"
-}
+weapon_damage = [ {
+0: "1d6"
+}, {
+0: 3
+} ]
 tags = [  ]

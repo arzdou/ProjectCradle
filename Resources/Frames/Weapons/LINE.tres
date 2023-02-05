@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/ResourceGenerators/Weapon.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+weapon_name = "LINE"
+size = 0
+type = 0
+weapon_range = {
+1: 10
+}
+weapon_damage = [ {
+0: "1d6"
+}, {
+0: 3
+} ]
+tags = [  ]

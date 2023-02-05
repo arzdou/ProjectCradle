@@ -11,10 +11,10 @@ export(CONSTANTS.WEAPON_TYPES) var type = CONSTANTS.WEAPON_TYPES.RIFLE
 
 # Since Godot does not allow type hints for dictionaries and I am not sure how to do it otherwise, I will have to check validity everytime I load the resource...
 # Weapon range should be given as {CONSTANTS.WEAPON_RANGE_TYPES: int, }
-export(Dictionary) var weapon_range = {CONSTANTS.WEAPON_RANGE_TYPES.RANGE: 10, }
-# Weapon damage should be given as {CONSTANTS.DAMAGE_TYPES: String, }
-# String can be '1d6' or '3'
-export(Dictionary) var weapon_damage = {CONSTANTS.DAMAGE_TYPES.KINETIC: '1d6', CONSTANTS.DAMAGE_TYPES.KINETIC: '3', }
+export(Dictionary) var weapon_range 
+# Weapon damage should be given as {CONSTANTS.DAMAGE_TYPES: String or int, }
+# String must be 'ndM' where n is the number of M dices to roll. int is fixed damage
+export(Array, Dictionary) var weapon_damage = [{CONSTANTS.DAMAGE_TYPES.KINETIC: '1d6'}, {CONSTANTS.DAMAGE_TYPES.KINETIC: 3}, ]
 
 export(Array, Resource) var tags
 
