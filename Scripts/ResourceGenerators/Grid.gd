@@ -57,8 +57,7 @@ func clamp_position(grid_position: Vector2) -> Vector2:
 func flood_fill(
 	cell: Vector2, 
 	move_range: int, 
-	blocked_cells: Array, 
-	units_block: bool = false
+	blocked_cells: Array = []
 ) -> Array:
 	# Flood fill algorithm to calculate vision and movement
 	var out := []
@@ -90,7 +89,7 @@ func flood_fill(
 		# 2. They are not occupied
 		for direction in directions():
 			var next_cell: Vector2 = current + direction
-			if blocked_cells.has(next_cell) and units_block:
+			if blocked_cells.has(next_cell):
 				continue 
 			if next_cell in out:
 				continue
@@ -111,10 +110,23 @@ func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 		
 
 		# The algorithm stops when the distance in cells is larger than the range
-		if distance >= view_range:
+		if distance - 1 >= view_range:
 			break
 		elif not out.has(ray_cast_cell):
 				out.push_back(ray_cast_cell)
+	return out
+
+
+func cone_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
+	# Ray Casting algorithm from an initial cell and angle
+	# Needs a rework
+	var out := []
+	var ANGLE_STEPS = 10
+	for i in range(ANGLE_STEPS):
+		var cone_angle: float = angle - PI/4 + PI/2 * i / ANGLE_STEPS
+		for new_cell in ray_cast_from_cell(cell, cone_angle, view_range):
+			if not out.has(new_cell):
+				out.push_back(new_cell)
 	return out
 
 

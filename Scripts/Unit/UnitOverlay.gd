@@ -28,7 +28,7 @@ func draw(cells: Array) -> void:
 		set_cellv(cell, 0)
 
 
-func update_overlay(mouse_angle: float) -> void:
+func update_overlay(cursor_cell: Vector2, mouse_angle: float) -> void:
 	
 	if _action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
 		# For now only range types
@@ -37,18 +37,17 @@ func update_overlay(mouse_angle: float) -> void:
 		
 		match range_type: 
 			CONSTANTS.WEAPON_RANGE_TYPES.RANGE:
-				var blocked_cells = _units.keys()
-				_marked_cells = _grid.flood_fill(_active_unit.cell, shooting_range, blocked_cells)
+				_marked_cells = _grid.flood_fill(_active_unit.cell, shooting_range)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
 				_marked_cells = _grid.ray_cast_from_cell(_active_unit.cell, mouse_angle, shooting_range)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
-				pass
+				_marked_cells = _grid.cone_from_cell(_active_unit.cell, mouse_angle, shooting_range)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
-				pass
+				_marked_cells = _grid.flood_fill(cursor_cell, shooting_range)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
-				pass
+				_marked_cells = _grid.flood_fill(_active_unit.cell, shooting_range)
 	draw(_marked_cells)

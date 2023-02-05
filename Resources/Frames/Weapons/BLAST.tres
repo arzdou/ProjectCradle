@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource( 1 )
-weapon_name = "CONE"
+weapon_name = "BLAST"
 size = 0
 type = 0
 weapon_range = {
-2: 4
+3: 2
 }
 weapon_damage = [ {
 0: "1d6"

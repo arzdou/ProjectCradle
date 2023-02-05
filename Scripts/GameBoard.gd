@@ -76,7 +76,7 @@ func _select_unit(cell: Vector2) -> void:
 func _move_active_unit(new_cell: Vector2) -> void:
 	
 	if new_cell == _active_unit.cell:
-		change_state(STATE.FREE)
+		change_state(STATE.SELECTING)
 		return
 	
 	if is_occupied(new_cell) or not new_cell in _walkable_cells:
@@ -141,7 +141,7 @@ func _on_Cursor_moved(new_cell: Vector2) -> void:
 		_unit_path.draw(_active_unit.cell, new_cell)
 	elif _board_state == STATE.ACTING:
 		var relative_angle: float = _active_unit.cell.angle_to_point(_cursor.cell)
-		_unit_overlay.update_overlay(relative_angle)
+		_unit_overlay.update_overlay(_cursor.cell, relative_angle)
 	
 	for cell in _units:
 		if _units[cell] == _active_unit:
