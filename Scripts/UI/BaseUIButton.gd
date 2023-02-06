@@ -11,6 +11,7 @@ func _ready():
 	rect_min_size.y = 40
 	align = ALIGN_LEFT
 	text = PAD + 'BUTTON'
+	set_name(name)
 	show()
 
 

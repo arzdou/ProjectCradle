@@ -47,7 +47,7 @@ onready var _anim_player: AnimationPlayer = $AnimationPlayer
 onready var _path_follow: PathFollow2D = $PathFollow2D
 onready var _unit_hud = $PathFollow2D/UnitHUD
 onready var _stats = $UnitStats
-onready var _action_container = $PathFollow2D/ActionContainer
+onready var _side_menu = $PathFollow2D/SideMenu
 
 signal walk_finished
 
@@ -57,7 +57,7 @@ func _ready():
 	set_process(false)
 	_stats.initialize(_pilot_stats, _mech)
 	_unit_hud.initialize(_stats.max_hp, _stats.heat_cap)
-	_action_container.initialize(_stats.mech_weapons)
+	_side_menu.initialize(_get_menu_layout())
 	move_range = _stats.speed
 	# The following lines initialize the `cell` property and snap the unit to the cell's center on the map.
 	self.cell = grid.world_to_map(position)
@@ -94,6 +94,17 @@ func walk_along(path: PoolVector2Array) -> void:
 	# Inmediately set the position to the last point
 	self.cell = path[-1]
 	self._is_walking = true
+
+
+func _get_menu_layout() -> Dictionary:
+	var layout := {
+		'FULL ACTIONS': {},
+		'QUICK ACTIONS': {}
+	}
+	
+	layout['FULL ACTIONS'] = _mech.weapons
+	layout['QUICK ACTIONS'] = _mech.weapons
+	return layout 
 
 
 func take_damage(damage: int, damage_type: int) -> void:
@@ -138,6 +149,9 @@ func set_cell(val: Vector2) -> void:
 	cell = grid.clamp_position(val) # We don't want to have out-of-grid cells
 
 func set_is_selected(val: bool) -> void:
+	if is_selected == val:
+		return
+		
 	is_selected = val
 	if is_selected:
 		_anim_player.play("selected")
@@ -145,11 +159,16 @@ func set_is_selected(val: bool) -> void:
 		_anim_player.play("idle") # idle animations reset the 'selected' animation
 
 func set_is_selecting_action(val: bool) -> void:
+	if is_selecting_action == val:
+		return
+		
 	is_selecting_action = val
 	if is_selecting_action:
-		show_action_menu()
+		z_index = 1
+		_side_menu.show_menu()
 	else:
-		hide_action_menu()
+		z_index = 0
+		_side_menu.hide_menu()
 
 func _set_is_walking(val: bool) -> void:
 	_is_walking = val
@@ -161,15 +180,9 @@ func show_hud() -> void:
 func hide_hud() -> void:
 	_unit_hud.hide()
 
-func show_action_menu() -> void:
-	_action_container.show()
-	
-func hide_action_menu() -> void:
-	_action_container.hide()
 
-
-func _on_ActionContainer_action_selected(action):
-	# Here should be all the action processing
+func _on_SideMenu_action_selected(action):
+	# Here should be all the action preprocessing
 	emit_signal("action_selected", action)
 
 
@@ -179,6 +192,4 @@ func _on_UnitStats_structure_reduced(new_structure):
 
 func _on_UnitStats_stress_raised(new_stress):
 	_unit_hud.stress = new_stress
-
-
 

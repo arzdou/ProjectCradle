@@ -33,7 +33,7 @@ position = Vector2( 101, 187 )
 [node name="UnitPath" parent="GameBoard" instance=ExtResource( 6 )]
 cell_size = Vector2( 80, 80 )
 
-[node name="Label" type="Label" parent="GameBoard"]
+[node name="DEBUG_LABEL" type="Label" parent="GameBoard"]
 margin_left = 19.0
 margin_top = 12.0
 margin_right = 59.0

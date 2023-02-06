@@ -20,3 +20,4 @@ Button/styles/focus = SubResource( 2 )
 Button/styles/hover = ExtResource( 5 )
 Button/styles/normal = ExtResource( 2 )
 Button/styles/pressed = ExtResource( 3 )
+VBoxContainer/constants/separation = 15

@@ -14,11 +14,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Scripts/Unit/ActionContainer.gd"
 }, {
-"base": "GridContainer",
-"class": "ActionMenu",
-"language": "GDScript",
-"path": "res://Scripts/Unit/ActionMenu.gd"
-}, {
 "base": "Node",
 "class": "ActionProcessor",
 "language": "GDScript",
@@ -69,6 +64,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Scripts/ResourceGenerators/PilotStats.gd"
 }, {
+"base": "ViewportContainer",
+"class": "SideMenu",
+"language": "GDScript",
+"path": "res://Scripts/Unit/SideMenu.gd"
+}, {
 "base": "Path2D",
 "class": "Unit",
 "language": "GDScript",
@@ -101,7 +101,6 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "ActionContainer": "",
-"ActionMenu": "",
 "ActionProcessor": "",
 "BaseUIButton": "",
 "CONSTANTS": "",
@@ -112,6 +111,7 @@ _global_script_class_icons={
 "Mech": "",
 "PathFinder": "",
 "PilotStats": "",
+"SideMenu": "",
 "Unit": "",
 "UnitHUD": "",
 "UnitOverlay": "",

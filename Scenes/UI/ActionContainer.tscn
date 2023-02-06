@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/Unit/ActionContainer.gd" type="Script" id=1]
+[ext_resource path="res://Resources/Themes/UnitUI_theme.tres" type="Theme" id=2]
+
+[node name="ActionContainer" type="VBoxContainer"]
+margin_top = 1.0
+margin_right = 40.0
+margin_bottom = 41.0
+theme = ExtResource( 2 )
+script = ExtResource( 1 )
+
+[node name="Tween" type="Tween" parent="."]

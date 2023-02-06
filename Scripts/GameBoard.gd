@@ -9,7 +9,7 @@ var _units := {}
 
 var RAY_CAST_SPEED := 10 # Speed of the ray casting in pixels
 enum STATE {FREE, MOVEMENT, SELECTING, ACTING}
-var _board_state: int = STATE.FREE
+var _board_state: int = STATE.FREE setget change_state
 
 var _active_unit: Unit
 var _performing_action
@@ -26,7 +26,7 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _board_state==STATE.MOVEMENT and event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel"): # It handles well all states
 		change_state(STATE.FREE)
 
 
@@ -132,7 +132,7 @@ func change_state(new_state: int) -> void:
 		_:
 			print('The state you are entering does not exist, the program will probably crash soon')
 	
-	$Label.text = 'State: '+str(new_state)
+	$DEBUG_LABEL.text = 'State: '+str(new_state)
 	_board_state = new_state
 
 
@@ -147,11 +147,9 @@ func _on_Cursor_moved(new_cell: Vector2) -> void:
 		if _units[cell] == _active_unit:
 			continue
 		_units[cell].hide_hud()
-		_units[cell].hide_action_menu()
 	
 	if _units.has(new_cell):
 		_units[new_cell].show_hud()
-		_units[new_cell].hide_action_menu()
 
 func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 	if _board_state == STATE.FREE:
@@ -169,3 +167,4 @@ func _on_Unit_action_selected(action) -> void:
 	change_state(STATE.ACTING)
 	_action_processor.initialize(_units, action, _active_unit)
 	_unit_overlay.initialize(_units, action, _active_unit)
+	_on_Cursor_moved(_cursor.cell)

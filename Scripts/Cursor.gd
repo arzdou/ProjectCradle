@@ -69,6 +69,7 @@ func set_is_active(value: bool) -> void:
 	set_process_unhandled_input(is_active)
 	if is_active:
 		show()
+		set_cell(grid.world_to_map(get_viewport().get_mouse_position()))
 	else:
 		hide()
 
