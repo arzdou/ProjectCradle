@@ -8,7 +8,7 @@
 [ext_resource path="res://Media/HUD/circleBar_small_back.svg" type="Texture" id=6]
 [ext_resource path="res://Media/HUD/circleBar_small_front.svg" type="Texture" id=7]
 
-[node name="UnitHUD" type="Node2D"]
+[node name="UnitHUD" type="Control"]
 script = ExtResource( 3 )
 
 [node name="HPBar" type="TextureProgress" parent="."]

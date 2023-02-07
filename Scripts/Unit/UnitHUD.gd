@@ -1,5 +1,5 @@
 # Node that will manage the small HUD that moves with the unit
-extends Node2D
+extends Control
 class_name UnitHUD
 
 onready var _hp_bar = $HPBar

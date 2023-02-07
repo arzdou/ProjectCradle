@@ -18,11 +18,10 @@ script = ExtResource( 4 )
 
 [node name="Ally" parent="GameBoard" instance=ExtResource( 1 )]
 position = Vector2( 103, 170 )
-ally_or_enemy = "ally"
 
 [node name="Enemy" parent="GameBoard" instance=ExtResource( 1 )]
 position = Vector2( 638, 175 )
-ally_or_enemy = "enemy"
+allegiance = "enemy"
 
 [node name="Cursor" parent="GameBoard" instance=ExtResource( 3 )]
 visible = false

@@ -21,14 +21,14 @@ export(String) var pilot_name = _pilot_stats.pilot_name
 export(String) var mech_name = _mech.frame_name
 
 # Type of the unit
-export(String, 'ally', 'enemy') var ally_or_enemy = 'ally'
+export(String, 'ally', 'enemy') var allegiance = 'ally'
 
 # Texture representing the unit.
 export var skin: Texture setget set_skin
 export var skin_offset := Vector2.ZERO setget set_skin_offset
 
 # Distance to which the unit can walk in cells.
-export var move_range: int
+export var move_range: int setget ,_get_move_range
 # The unit's move speed in pixels, when it's moving along a path.
 export var move_speed := 600.0
 
@@ -36,7 +36,7 @@ export var move_speed := 600.0
 var cell := Vector2.ZERO setget set_cell
 var is_selected := false setget set_is_selected
 var is_selecting_action := false setget set_is_selecting_action
-
+var used_move_range := 0
 # Through its setter function, the `_is_walking` property toggles processing for this unit.
 # See `_set_is_walking()` at the bottom of this code snippet.
 var _is_walking := false setget _set_is_walking
@@ -47,7 +47,7 @@ onready var _anim_player: AnimationPlayer = $AnimationPlayer
 onready var _path_follow: PathFollow2D = $PathFollow2D
 onready var _unit_hud = $PathFollow2D/UnitHUD
 onready var _stats = $UnitStats
-onready var _side_menu = $PathFollow2D/SideMenu
+onready var _side_menu = $SideMenu
 
 signal walk_finished
 
@@ -73,7 +73,7 @@ func _process(delta):
 	_path_follow.offset += move_speed * delta
 	
 	if _path_follow.unit_offset >= 1.0:
-		self._is_walking = false # This also sets _process as false due to the setter bellow
+		_set_is_walking(false) # This also sets _process as false due to the setter bellow
 		
 		position = grid.map_to_world(self.cell)
 		_path_follow.offset = 0.0
@@ -92,8 +92,9 @@ func walk_along(path: PoolVector2Array) -> void:
 		curve.add_point(grid.map_to_world(point) - position)
 	
 	# Inmediately set the position to the last point
-	self.cell = path[-1]
-	self._is_walking = true
+	used_move_range = min(used_move_range + path.size() - 1, move_range)
+	set_cell(path[-1])
+	_set_is_walking(true)
 
 
 func _get_menu_layout() -> Dictionary:
@@ -105,6 +106,10 @@ func _get_menu_layout() -> Dictionary:
 	layout['FULL ACTIONS'] = _mech.weapons
 	layout['QUICK ACTIONS'] = _mech.weapons
 	return layout 
+
+
+func finish_turn() -> void:
+	used_move_range = 0
 
 
 func take_damage(damage: int, damage_type: int) -> void:
@@ -173,6 +178,9 @@ func set_is_selecting_action(val: bool) -> void:
 func _set_is_walking(val: bool) -> void:
 	_is_walking = val
 	set_process(_is_walking)
+
+func _get_move_range() -> int:
+	return move_range - used_move_range
 
 func show_hud() -> void:
 	_unit_hud.show()

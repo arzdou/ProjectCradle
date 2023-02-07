@@ -7,6 +7,10 @@ var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 var _directions = _grid.directions()
 var _units := {}
 
+# Array to store the different identifiers for the sides the unit belong in the map
+var allegiances := ['ally', 'enemy']
+var allegiance_turn_index = 0
+
 var RAY_CAST_SPEED := 10 # Speed of the ray casting in pixels
 enum STATE {FREE, MOVEMENT, SELECTING, ACTING}
 var _board_state: int = STATE.FREE setget change_state
@@ -43,6 +47,9 @@ func _reinitialize() -> void:
 		
 		_units[unit.cell] = unit
 		
+		if not unit.allegiance in allegiances:
+			allegiances.push_back(unit.allegiance)
+		
 		unit.connect("action_selected", self, "_on_Unit_action_selected")
 
 
@@ -65,11 +72,16 @@ func _select_unit(cell: Vector2) -> void:
 	if not _units.has(cell):
 		return
 	
-	if _units[cell].ally_or_enemy == 'enemy':
+	if not _units[cell].allegiance == allegiances[allegiance_turn_index]:
 		return
 	
 	_active_unit = _units[cell]
-	_active_unit.is_selected = true
+	
+	print(_active_unit.move_range)
+	if _active_unit.move_range == 0:
+		change_state(STATE.SELECTING)
+		return
+	
 	change_state(STATE.MOVEMENT)
 
 
@@ -132,9 +144,14 @@ func change_state(new_state: int) -> void:
 		_:
 			print('The state you are entering does not exist, the program will probably crash soon')
 	
-	$DEBUG_LABEL.text = 'State: '+str(new_state)
+	$DEBUG_LABEL.text = allegiances[allegiance_turn_index]
 	_board_state = new_state
 
+
+func finish_unit_turn() -> void:
+	_active_unit.finish_turn()
+	change_state(STATE.FREE)
+	allegiance_turn_index = (allegiance_turn_index+1) % allegiances.size()
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if _board_state == STATE.MOVEMENT:
@@ -161,7 +178,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 		var was_action_performed: bool = _action_processor.process_action_targeted(cell)
 			# Finish the unit action
 		if was_action_performed:
-			change_state(STATE.FREE)
+			finish_unit_turn()
 
 func _on_Unit_action_selected(action) -> void:
 	change_state(STATE.ACTING)

@@ -52,7 +52,6 @@ script = ExtResource( 1 )
 grid = SubResource( 1 )
 pilot_name = "BRIGADOR"
 mech_name = "Everest"
-ally_or_enemy = "Ally"
 move_range = 6
 
 [node name="PathFollow2D" type="PathFollow2D" parent="."]
@@ -60,8 +59,10 @@ rotate = false
 loop = false
 
 [node name="UnitHUD" parent="PathFollow2D" instance=ExtResource( 6 )]
-position = Vector2( -11, -70 )
-scale = Vector2( 0.4, 0.4 )
+margin_left = -8.0
+margin_top = -115.0
+margin_right = -8.0
+margin_bottom = -115.0
 
 [node name="Shadow" type="Sprite" parent="PathFollow2D"]
 modulate = Color( 0.129412, 0.109804, 0.109804, 0.388235 )
@@ -74,16 +75,6 @@ modulate = Color( 1.15861, 1.15861, 1.15861, 1 )
 scale = Vector2( 0.75, 0.75 )
 texture = ExtResource( 2 )
 
-[node name="SideMenu" type="ViewportContainer" parent="PathFollow2D"]
-margin_left = 55.0
-margin_top = -44.0
-margin_right = 262.0
-margin_bottom = 78.0
-stretch = true
-script = ExtResource( 7 )
-
-[node name="MainContainer" parent="PathFollow2D/SideMenu" instance=ExtResource( 8 )]
-
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/idle = SubResource( 3 )
 anims/selected = SubResource( 2 )
@@ -91,6 +82,16 @@ anims/selected = SubResource( 2 )
 [node name="UnitStats" type="Node" parent="."]
 script = ExtResource( 5 )
 
-[connection signal="action_selected" from="PathFollow2D/SideMenu" to="." method="_on_SideMenu_action_selected"]
+[node name="SideMenu" type="ViewportContainer" parent="."]
+margin_left = 48.0
+margin_top = -58.0
+margin_right = 262.0
+margin_bottom = 78.0
+stretch = true
+script = ExtResource( 7 )
+
+[node name="MainContainer" parent="SideMenu" instance=ExtResource( 8 )]
+
 [connection signal="stress_raised" from="UnitStats" to="." method="_on_UnitStats_stress_raised"]
 [connection signal="structure_reduced" from="UnitStats" to="." method="_on_UnitStats_structure_reduced"]
+[connection signal="action_selected" from="SideMenu" to="." method="_on_SideMenu_action_selected"]
