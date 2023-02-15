@@ -9,6 +9,7 @@
 [ext_resource path="res://Media/HUD/circleBar_small_front.svg" type="Texture" id=7]
 
 [node name="UnitHUD" type="Control"]
+mouse_filter = 1
 script = ExtResource( 3 )
 
 [node name="HPBar" type="TextureProgress" parent="."]

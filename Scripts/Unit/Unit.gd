@@ -13,15 +13,15 @@ signal action_selected(action)
 # Preload the `Grid.tres` resource you created in the previous part.
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 export(Resource) var grid = preload("res://Resources/Grid.tres")
-export(Resource) var _pilot_stats = preload("res://Resources/Pilots/BasePilot.tres")
-export(Resource) var _mech = preload("res://Resources/Frames/Everest.tres")
 
+var _pilot: Resource
+var _mech: Resource
 
-export(String) var pilot_name = _pilot_stats.pilot_name
-export(String) var mech_name = _mech.frame_name
+var pilot_name: String = 'PILOT'
+var mech_name: String = 'MECH'
 
 # Type of the unit
-export(String, 'ally', 'enemy') var allegiance = 'ally'
+export(String, 'ally', 'enemy') var team
 
 # Texture representing the unit.
 export var skin: Texture setget set_skin
@@ -55,18 +55,39 @@ signal walk_finished
 func _ready():
 	# _process will only run if the unit needs to move
 	set_process(false)
-	_stats.initialize(_pilot_stats, _mech)
-	_unit_hud.initialize(_stats.max_hp, _stats.heat_cap)
-	_side_menu.initialize(_get_menu_layout())
-	move_range = _stats.speed
-	# The following lines initialize the `cell` property and snap the unit to the cell's center on the map.
-	self.cell = grid.world_to_map(position)
-	position = grid.map_to_world(self.cell)
-	
 	if not Engine.editor_hint:
 		# We create the curve resource here because creating it in the editor prevents us from
 		# moving the unit.
 		curve = Curve2D.new()
+
+
+func initialize(unit_data: Dictionary):
+	# Parameters
+	# ----------
+	# unit_data: Dictionary
+	# {
+	#	pilot: String. Path to the resource of the pilot
+	#	mech: String. Path to the resource of the mech
+	#	position: Vector2. Postion in the map in cells
+	#	team: String. Team the unit is part of
+	# }
+	
+	_pilot = load(unit_data['pilot'])
+	_mech = load(unit_data['mech'])
+	set_cell(unit_data['cell'])
+	team = unit_data['team']
+	
+	pilot_name = _pilot.pilot_name
+	mech_name = _mech.frame_name
+	_stats.initialize(_pilot, _mech)
+	_unit_hud.initialize(_stats.max_hp, _stats.heat_cap)
+	_side_menu.initialize(_get_menu_layout())
+	move_range = _stats.speed
+	
+	#In the future this should also set the skin
+	
+	# The following lines initialize the `cell` property and snap the unit to the cell's center on the map.
+	position = grid.map_to_world(cell)
 
 
 func _process(delta):

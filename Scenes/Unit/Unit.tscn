@@ -50,8 +50,6 @@ tracks/0/keys = {
 curve = null
 script = ExtResource( 1 )
 grid = SubResource( 1 )
-pilot_name = "BRIGADOR"
-mech_name = "Everest"
 move_range = 6
 
 [node name="PathFollow2D" type="PathFollow2D" parent="."]

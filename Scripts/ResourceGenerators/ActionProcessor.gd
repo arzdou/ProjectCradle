@@ -7,27 +7,21 @@ var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 var _units
 var _performing_action 
 var _performing_unit: Unit
+var marked_cells := []
+
+onready var _unit_manager = $"../UnitManager"
 
 
-func initialize(units, action, unit):
-	_units = units
+func initialize(action):
+	_units = _unit_manager._unit_list
 	_performing_action = action
-	_performing_unit = unit
+	_performing_unit = _unit_manager.active_unit
 
 
 func stop():
 	_units = null
 	_performing_action = null
 	_performing_unit = null
-
-
-func get_walkable_cells(starting_cell: Vector2, walk_range) -> Array:
-	var blocked_spaces = _units.keys()
-	return _grid.flood_fill(starting_cell, walk_range, blocked_spaces)
-
-
-func get_visible_cells(starting_cell: Vector2, vision_range: int) -> Array:
-	return _grid.flood_fill(starting_cell, vision_range, []) # This shuld be updated
 
 
 func roll_damage(damage_dict: Dictionary) -> int:
@@ -54,15 +48,18 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array) -> bool:
 	# There are two conditions to apply damage:
 	# 1. The cell has a unit
 	# 2. You cannot be the target
+	var recieving_unit: Unit = null
 	
-	if not _units.has(target_cell):
+	for unit in _units:
+		if target_cell == unit.cell:
+			recieving_unit = unit
+	
+	if not recieving_unit:
 		return false
-	
-	var recieving_unit = _units[target_cell]
 	
 	if recieving_unit == _performing_unit:
 		return false
-	
+
 	for damage in damage_array:
 		var damage_type: int = damage.keys()[0]
 		recieving_unit.take_damage(roll_damage(damage), damage_type)
@@ -71,18 +68,18 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array) -> bool:
 	return true
 
 
-func try_to_apply_damage_in_area(area: Array, damage_array: Array, force_end: bool = false) -> bool:
+func try_to_apply_damage_in_area(area: Array, damage_array: Array) -> bool:
 	# Same as before but now we do it in an area, defined as an array of cells
 	var damage_applied := false
 	for target_cell in area:
 		# If *any* damage was done consider this action complete
 		damage_applied = damage_applied or try_to_apply_damage(target_cell, damage_array)
 		
-	return damage_applied or force_end
+	return damage_applied
 
 
 
-func process_action_targeted(target_cell: Vector2) -> bool:
+func process_action_targeted(target_cell: Vector2, execute: bool = false) -> bool:
 	# This function processes all events after an action has been selected. It will probably be very
 	# large and convoluted but its behaviour is not very complicated.
 	
@@ -95,34 +92,40 @@ func process_action_targeted(target_cell: Vector2) -> bool:
 	
 	# TODO: Probably it would be intelligent to isolate this behaviour in its own node since it will get pretty fucking chonky
 	# Also create new funcions for every type of action would help with readability
+	var mouse_angle: float = _performing_unit.cell.angle_to_point(target_cell)
 	
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
 		# For now only range types
 		var range_type = _performing_action.weapon_range.keys()[0] #For now only first type
 		var shooting_range: int = _performing_action.weapon_range[range_type]
 		var damage_array: Array = _performing_action.weapon_damage
-		var mouse_angle: float = _performing_unit.cell.angle_to_point(target_cell)
 		
 		match range_type: 
 			CONSTANTS.WEAPON_RANGE_TYPES.RANGE:
-				return try_to_apply_damage(target_cell, damage_array)
+				marked_cells = _grid.flood_fill(_performing_unit.cell, shooting_range)
+				if execute and marked_cells.has(target_cell):
+					return try_to_apply_damage(target_cell, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
-				var marked_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, shooting_range)
-				return try_to_apply_damage_in_area(marked_cells, damage_array)
+				marked_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, shooting_range)
+				if execute:
+					return try_to_apply_damage_in_area(marked_cells, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
-				var marked_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, shooting_range)
-				return try_to_apply_damage_in_area(marked_cells, damage_array)
+				marked_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, shooting_range)
+				if execute:
+					return try_to_apply_damage_in_area(marked_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
-				var marked_cells = _grid.flood_fill(target_cell, shooting_range)
-				return try_to_apply_damage_in_area(marked_cells, damage_array)
+				marked_cells = _grid.flood_fill(target_cell, shooting_range)
+				if execute:
+					return try_to_apply_damage_in_area(marked_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
-				var marked_cells = _grid.flood_fill(_performing_unit.cell, shooting_range)
-				return try_to_apply_damage_in_area(marked_cells, damage_array, true)
+				marked_cells = _grid.flood_fill(_performing_unit.cell, shooting_range)
+				if execute:
+					return try_to_apply_damage_in_area(marked_cells, damage_array)
 	
-	return true
+	return false
 
 
