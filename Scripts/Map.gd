@@ -68,5 +68,5 @@ func draw_path(start: Vector2, end: Vector2) -> void:
 func get_current_path() -> PoolVector2Array:
 	return _unit_path.current_path
 
-
-
+func _on_MouseCamera_camera_moved():
+	_cursor.update()

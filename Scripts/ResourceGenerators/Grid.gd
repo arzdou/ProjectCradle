@@ -1,5 +1,4 @@
 # Represents a grid with its size, cells and helper functions to transform from indices to coordinates
-
 class_name Grid
 extends Resource
 
@@ -15,7 +14,6 @@ const DIRECTION_HEX = [
 	Vector2.RIGHT+Vector2.UP, Vector2.RIGHT+Vector2.DOWN,
 	Vector2.LEFT+Vector2.UP, Vector2.LEFT+Vector2.DOWN
 ]
-
 
 # Useful for center of cell calculations
 var _half_cell_size := cell_size / 2
@@ -54,11 +52,7 @@ func clamp_position(grid_position: Vector2) -> Vector2:
 	return out
 
 
-func flood_fill(
-	cell: Vector2, 
-	move_range: int, 
-	blocked_cells: Array = []
-) -> Array:
+func flood_fill(cell: Vector2, move_range: int, blocked_cells: Array = []) -> Array:
 	# Flood fill algorithm to calculate vision and movement
 	var out := []
 	

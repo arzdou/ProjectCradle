@@ -25,10 +25,11 @@ func _ready():
 	position = grid.map_to_world(cell)
 	set_is_active(is_active)
 
+
 func _unhandled_input(event):
 	# Move the cursor to the mouse position
 	if event is InputEventMouseMotion:
-		self.cell = grid.world_to_map(event.position)
+		self.cell = grid.world_to_map(get_global_mouse_position())
 		
 	elif event.is_action_pressed("click") or event.is_action_pressed("ui_accept"):
 		emit_signal("accept_pressed", cell)
