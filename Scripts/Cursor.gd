@@ -17,6 +17,7 @@ var is_active := true setget set_is_active
 var cell := Vector2.ZERO setget set_cell
 
 onready var _timer: Timer = $Timer
+onready var _tween = $Tween
 
 
 func _ready():
@@ -76,13 +77,22 @@ func set_is_active(value: bool) -> void:
 
 
 func set_cell(value: Vector2) -> void:
+	
 	var new_cell = grid.clamp_position(value)
 	
 	# Change cell if different from the current one
 	if cell.is_equal_approx(new_cell):
 		return
-	cell = new_cell
 	
-	position = grid.map_to_world(cell)
+	cell = new_cell
+	_tween.interpolate_property(self, 'position', position, grid.map_to_world(cell), _timer.wait_time*0.5)
+	_tween.start()
+	
 	emit_signal("moved", cell)
 	_timer.start()
+
+
+func _on_MouseCamera_camera_moved(mode, cell_movement):
+	mode
+	if mode=='mouse':
+		self.cell += cell_movement

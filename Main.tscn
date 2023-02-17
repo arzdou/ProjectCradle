@@ -31,7 +31,6 @@ script = ExtResource( 1 )
 cell_size = Vector2( 80, 80 )
 
 [node name="Cursor" parent="GameBoard/GameMap" instance=ExtResource( 3 )]
-visible = false
 position = Vector2( 101, 187 )
 
 [node name="HUD" type="CanvasLayer" parent="GameBoard"]
@@ -58,6 +57,9 @@ editor_draw_drag_margin = true
 wait_time = 0.1
 one_shot = true
 
+[node name="Tween" type="Tween" parent="GameBoard/MouseCamera"]
+
 [connection signal="accept_pressed" from="GameBoard/GameMap/Cursor" to="GameBoard" method="_on_Cursor_accept_pressed"]
 [connection signal="moved" from="GameBoard/GameMap/Cursor" to="GameBoard" method="_on_Cursor_moved"]
-[connection signal="camera_moved" from="GameBoard/MouseCamera" to="GameBoard/GameMap" method="_on_MouseCamera_camera_moved"]
+[connection signal="moved" from="GameBoard/GameMap/Cursor" to="GameBoard/MouseCamera" method="_on_Cursor_moved"]
+[connection signal="camera_moved" from="GameBoard/MouseCamera" to="GameBoard/GameMap/Cursor" method="_on_MouseCamera_camera_moved"]
