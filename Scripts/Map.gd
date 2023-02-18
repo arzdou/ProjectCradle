@@ -14,10 +14,13 @@ var cursor_cell := Vector2.ZERO setget _set_cursor_cell, _get_cursor_cell
 onready var _unit_overlay: UnitOverlay = $UnitOverlay
 onready var _unit_path: UnitPath = $UnitPath
 onready var _cursor: Cursor = $Cursor
+onready var _sprite = $Sprite
 
 
-func _ready() -> void:
-	pass
+func initialize(map):
+	_sprite.texture = map.image
+	var map_size = _sprite.scale * Vector2(_sprite.texture.get_width(), _sprite.texture.get_height())
+	_sprite.position = map_size/2
 
 
 func initialize_path(cells: Array) -> void:
@@ -47,7 +50,7 @@ func _set_overlay_tiles(value) -> void:
 		overlay_tiles = value
 	elif typeof(value) == TYPE_ARRAY:
 		overlay_tiles = {0: value}
-		
+	
 	_unit_overlay.draw(overlay_tiles) # The draw function already handles clearing
 	_unit_path.initialize(overlay_tiles[0]) # This might be super sketchy
 

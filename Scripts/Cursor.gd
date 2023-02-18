@@ -1,4 +1,4 @@
-# Represents a player controlled cursor. Navigates the grid, selects units, etc.
+# Represents a player controlled cursor. Navigates the _grid, selects units, etc.
 # Supports both keyboard and mouse (or touch) input.
 tool
 class_name Cursor
@@ -7,8 +7,8 @@ extends Node2D
 signal accept_pressed(cell)
 signal moved(new_cell)
 
-# Grid resource, giving the node access to the grid size, and more.
-export var grid: Resource = preload("res://Resources/Grid.tres")
+# grid resource, giving the node access to the _grid size, and more.
+export var _grid: Resource = preload("res://Resources/Grid.tres")
 # Time before the cursor can move again in seconds.
 export var ui_cooldown := 0.1
 
@@ -22,15 +22,17 @@ onready var _tween = $Tween
 
 func _ready():
 	hide()
+	if not _timer:
+		yield($Timer, "ready")
 	_timer.wait_time = ui_cooldown
-	position = grid.map_to_world(cell)
+	position = _grid.map_to_world(cell)
 	set_is_active(is_active)
 
 
 func _unhandled_input(event):
 	# Move the cursor to the mouse position
 	if event is InputEventMouseMotion:
-		self.cell = grid.world_to_map(get_global_mouse_position())
+		self.cell = _grid.world_to_map(get_global_mouse_position())
 		
 	elif event.is_action_pressed("click") or event.is_action_pressed("ui_accept"):
 		emit_signal("accept_pressed", cell)
@@ -57,42 +59,43 @@ func _unhandled_input(event):
 	
 	
 
-# We use the draw callback to a rectangular outline the size of a grid cell, with a width of two
+# We use the draw callback to a rectangular outline the size of a _grid cell, with a width of two
 # pixels.
 func _draw() -> void:
 	# Rect2 is built from the position of the rectangle's top-left corner and its size. To draw the
-	# square around the cell, the start position needs to be `-grid.cell_size / 2`.
+	# square around the cell, the start position needs to be `-_grid.cell_size / 2`.
 	if is_active:
-		draw_rect(Rect2(-grid.cell_size / 2, grid.cell_size), Color.aliceblue, false, 2.0)
+		draw_rect(Rect2(-_grid.cell_size / 2, _grid.cell_size), Color.aliceblue, false, 2.0)
 
 
 func set_is_active(value: bool) -> void:
 	is_active = value
 	set_process_unhandled_input(is_active)
 	if is_active:
+		set_cell(_grid.world_to_map(get_global_mouse_position()), false)
 		show()
-		set_cell(grid.world_to_map(get_viewport().get_mouse_position()))
 	else:
 		hide()
 
 
-func set_cell(value: Vector2) -> void:
-	
-	var new_cell = grid.clamp_position(value)
+func set_cell(value: Vector2, do_tween: bool = true) -> void:
+	var new_cell = _grid.clamp_position(value)
 	
 	# Change cell if different from the current one
 	if cell.is_equal_approx(new_cell):
 		return
 	
 	cell = new_cell
-	_tween.interpolate_property(self, 'position', position, grid.map_to_world(cell), _timer.wait_time*0.5)
-	_tween.start()
-	
+	if do_tween:
+		_tween.interpolate_property(self, 'position', position, _grid.map_to_world(cell), _timer.wait_time*0.5)
+		_tween.start()
+	else:
+		position = _grid.map_to_world(cell)
+
 	emit_signal("moved", cell)
 	_timer.start()
 
 
 func _on_MouseCamera_camera_moved(mode, cell_movement):
-	mode
 	if mode=='mouse':
 		self.cell += cell_movement

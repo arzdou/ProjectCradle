@@ -1,0 +1,9 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://Media/maps/Sinister Woodland - Swamp - Day - Open - 44x32.jpg" type="Texture" id=1]
+[ext_resource path="res://Scripts/ResourceGenerators/Map.gd" type="Script" id=2]
+
+[resource]
+script = ExtResource( 2 )
+image = ExtResource( 1 )
+size = Vector2( 50, 36 )

@@ -1,0 +1,194 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Scripts/LevelEditor.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/BoardCamera.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Cursor.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Media/maps/grid_tile.png" type="Texture" id=5]
+[ext_resource path="res://Scripts/SideBar.gd" type="Script" id=6]
+[ext_resource path="res://Media/maps/select_tile.png" type="Texture" id=7]
+
+[sub_resource type="TileSet" id=1]
+0/name = "grid_tile.png 0"
+0/texture = ExtResource( 5 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( 0, 0, 64, 64 )
+0/tile_mode = 0
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shape_offset = Vector2( 0, 0 )
+0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+0/shape_one_way = false
+0/shape_one_way_margin = 0.0
+0/shapes = [  ]
+0/z_index = 0
+
+[sub_resource type="TileSet" id=2]
+0/name = "blocked"
+0/texture = ExtResource( 7 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 0, 0, 0, 0.392157 )
+0/region = Rect2( 0, 0, 64, 64 )
+0/tile_mode = 0
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shape_offset = Vector2( 0, 0 )
+0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+0/shape_one_way = false
+0/shape_one_way_margin = 0.0
+0/shapes = [  ]
+0/z_index = 0
+1/name = "cover"
+1/texture = ExtResource( 7 )
+1/tex_offset = Vector2( 0, 0 )
+1/modulate = Color( 0.436387, 0.1564, 0.92, 0.392157 )
+1/region = Rect2( 0, 0, 64, 64 )
+1/tile_mode = 0
+1/occluder_offset = Vector2( 0, 0 )
+1/navigation_offset = Vector2( 0, 0 )
+1/shape_offset = Vector2( 0, 0 )
+1/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+1/shape_one_way = false
+1/shape_one_way_margin = 0.0
+1/shapes = [  ]
+1/z_index = 0
+2/name = "dangerous"
+2/texture = ExtResource( 7 )
+2/tex_offset = Vector2( 0, 0 )
+2/modulate = Color( 1, 0.3, 0.3, 0.392157 )
+2/region = Rect2( 0, 0, 64, 64 )
+2/tile_mode = 0
+2/occluder_offset = Vector2( 0, 0 )
+2/navigation_offset = Vector2( 0, 0 )
+2/shape_offset = Vector2( 0, 0 )
+2/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+2/shape_one_way = false
+2/shape_one_way_margin = 0.0
+2/shapes = [  ]
+2/z_index = 0
+
+[node name="LevelEditor" type="TileMap"]
+tile_set = SubResource( 1 )
+format = 1
+script = ExtResource( 1 )
+
+[node name="Overlay" type="TileMap" parent="."]
+tile_set = SubResource( 2 )
+format = 1
+
+[node name="Cursor" parent="." instance=ExtResource( 3 )]
+
+[node name="MouseCamera" parent="." instance=ExtResource( 2 )]
+
+[node name="Sprite" type="Sprite" parent="."]
+show_behind_parent = true
+position = Vector2( 1, 2 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="SideBar" type="ColorRect" parent="CanvasLayer"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -256.0
+color = Color( 0.45098, 0.45098, 0.45098, 0.266667 )
+script = ExtResource( 6 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/SideBar"]
+margin_left = 34.0
+margin_top = 33.0
+margin_right = 220.0
+margin_bottom = 562.0
+
+[node name="Button" type="Button" parent="CanvasLayer/SideBar/VBoxContainer"]
+margin_right = 186.0
+margin_bottom = 20.0
+text = "Load Image"
+
+[node name="FileDialog" type="FileDialog" parent="CanvasLayer/SideBar/VBoxContainer/Button"]
+margin_left = 291.0
+margin_top = 56.0
+margin_right = 835.0
+margin_bottom = 348.0
+window_title = "Open a File"
+dialog_text = "Load Image"
+mode = 0
+access = 2
+
+[node name="Panel" type="Panel" parent="CanvasLayer/SideBar/VBoxContainer"]
+modulate = Color( 0, 0, 0, 0 )
+margin_top = 24.0
+margin_right = 186.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 0, 20 )
+
+[node name="Label" type="Label" parent="CanvasLayer/SideBar/VBoxContainer"]
+margin_top = 48.0
+margin_right = 186.0
+margin_bottom = 62.0
+text = "Map Size: x1"
+align = 1
+
+[node name="HScrollBar" type="HScrollBar" parent="CanvasLayer/SideBar/VBoxContainer"]
+margin_top = 66.0
+margin_right = 186.0
+margin_bottom = 78.0
+min_value = 0.2
+max_value = 3.0
+value = 1.0
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/SideBar/VBoxContainer"]
+modulate = Color( 0, 0, 0, 0 )
+margin_top = 82.0
+margin_right = 186.0
+margin_bottom = 102.0
+rect_min_size = Vector2( 0, 20 )
+
+[node name="MenuButton" type="MenuButton" parent="CanvasLayer/SideBar/VBoxContainer"]
+margin_top = 106.0
+margin_right = 186.0
+margin_bottom = 126.0
+text = "Tile Type"
+items = [ "Blocked", null, 0, false, false, 0, 0, null, "", false, "Cover", null, 0, false, false, 1, 0, null, "", false, "Dangerous", null, 0, false, false, 2, 0, null, "", false, "None", null, 0, false, false, -1, 0, null, "", false ]
+
+[node name="Panel3" type="Panel" parent="CanvasLayer/SideBar/VBoxContainer"]
+modulate = Color( 0, 0, 0, 0 )
+margin_top = 130.0
+margin_right = 186.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 0, 20 )
+
+[node name="SaveButton" type="Button" parent="CanvasLayer/SideBar/VBoxContainer"]
+margin_top = 154.0
+margin_right = 186.0
+margin_bottom = 174.0
+text = "Save Map"
+
+[node name="FileDialog" type="FileDialog" parent="CanvasLayer/SideBar/VBoxContainer/SaveButton"]
+margin_left = 330.0
+margin_top = 92.0
+margin_right = 860.0
+margin_bottom = 447.0
+filters = PoolStringArray( "*.tres ; Resource file" )
+
+[node name="HideButton" type="Button" parent="CanvasLayer/SideBar"]
+margin_left = 5.0
+margin_top = 323.0
+margin_right = 45.0
+margin_bottom = 343.0
+rect_rotation = -90.0
+text = "hide"
+
+[node name="Tween" type="Tween" parent="CanvasLayer/SideBar"]
+
+[connection signal="accept_pressed" from="Cursor" to="." method="_on_Cursor_accept_pressed"]
+[connection signal="moved" from="Cursor" to="MouseCamera" method="_on_Cursor_moved"]
+[connection signal="camera_moved" from="MouseCamera" to="Cursor" method="_on_MouseCamera_camera_moved"]
+[connection signal="id_pressed" from="CanvasLayer/SideBar" to="." method="_on_SideBar_id_pressed"]
+[connection signal="pressed" from="CanvasLayer/SideBar/VBoxContainer/Button" to="CanvasLayer/SideBar" method="_on_LoadButton_pressed"]
+[connection signal="file_selected" from="CanvasLayer/SideBar/VBoxContainer/Button/FileDialog" to="." method="_on_FileDialog_file_selected"]
+[connection signal="value_changed" from="CanvasLayer/SideBar/VBoxContainer/HScrollBar" to="." method="_on_HScrollBar_value_changed"]
+[connection signal="pressed" from="CanvasLayer/SideBar/VBoxContainer/SaveButton" to="CanvasLayer/SideBar" method="_on_SaveButton_pressed"]
+[connection signal="file_selected" from="CanvasLayer/SideBar/VBoxContainer/SaveButton/FileDialog" to="." method="_on_SaveDialog_file_selected"]
+[connection signal="pressed" from="CanvasLayer/SideBar/HideButton" to="MouseCamera" method="_on_HideButton_pressed"]
+[connection signal="pressed" from="CanvasLayer/SideBar/HideButton" to="CanvasLayer/SideBar" method="_on_HideButton_pressed"]

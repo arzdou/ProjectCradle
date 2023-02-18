@@ -6,4 +6,4 @@
 script = ExtResource( 1 )
 grid_type = "square"
 size = Vector2( 20, 20 )
-cell_size = Vector2( 80, 80 )
+cell_size = Vector2( 64, 64 )

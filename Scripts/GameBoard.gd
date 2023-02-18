@@ -3,8 +3,8 @@ extends YSort
 
 export var _grid: Resource = preload("res://Resources/Grid.tres")
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
+export(Resource) var map_res = preload("res://Resources/Maps/test.tres")
 
-var _directions = _grid.directions()
 var _unit_data := [
 	{
 		'pilot': "res://Resources/Pilots/BasePilot.tres",
@@ -20,6 +20,8 @@ var _unit_data := [
 	}
 ]
 
+
+
 # Array to store the different identifiers for the sides the unit belong in the map
 var teams := ['ally', 'enemy']
 var team_turn_index = 0
@@ -30,9 +32,13 @@ var _board_state: int = STATE.FREE setget change_state
 onready var _map = $GameMap
 onready var _action_processor = $ActionProcessor
 onready var _unit_manager = $UnitManager
+onready var _board_camera = $BoardCamera
 
 
 func _ready() -> void:
+	_map.initialize(map_res)
+	_grid.size = map_res.size
+	_board_camera.update_camera_limits()
 	_reinitialize()
 
 
@@ -54,11 +60,6 @@ func is_occupied(cell: Vector2) -> bool:
 func get_walkable_cells() -> Array:
 	var blocked_spaces = _unit_manager.get_occupied_cells()
 	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.move_range, blocked_spaces)
-
-
-func get_visible_cells(unit: Unit, vision_range: int) -> Array:
-	var blocked_spaces = _unit_manager.get_occupied_cells()
-	return _grid.flood_fill(unit.cell, vision_range, blocked_spaces, false) # This shuld be updated
 
 
 func _select_unit(cell: Vector2) -> void:

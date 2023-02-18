@@ -17,7 +17,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "ActionProcessor",
 "language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/ActionProcessor.gd"
+"path": "res://Scripts/ActionProcessor.gd"
 }, {
 "base": "Button",
 "class": "BaseUIButton",
@@ -54,6 +54,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Scripts/ResourceGenerators/Grid.gd"
 }, {
+"base": "TileMap",
+"class": "LevelEditor",
+"language": "GDScript",
+"path": "res://Scripts/LevelEditor.gd"
+}, {
+"base": "Resource",
+"class": "Map",
+"language": "GDScript",
+"path": "res://Scripts/ResourceGenerators/Map.gd"
+}, {
 "base": "Resource",
 "class": "Mech",
 "language": "GDScript",
@@ -73,6 +83,11 @@ _global_script_classes=[ {
 "class": "PilotStats",
 "language": "GDScript",
 "path": "res://Scripts/ResourceGenerators/PilotStats.gd"
+}, {
+"base": "ColorRect",
+"class": "SideBar",
+"language": "GDScript",
+"path": "res://Scripts/SideBar.gd"
 }, {
 "base": "ViewportContainer",
 "class": "SideMenu",
@@ -124,10 +139,13 @@ _global_script_class_icons={
 "GameMap": "",
 "GitAPI": "",
 "Grid": "",
+"LevelEditor": "",
+"Map": "",
 "Mech": "",
 "MouseCamera": "",
 "PathFinder": "",
 "PilotStats": "",
+"SideBar": "",
 "SideMenu": "",
 "Unit": "",
 "UnitHUD": "",
@@ -166,6 +184,16 @@ common/drop_mouse_on_gui_input_disabled=true
 click={
 "deadzone": 0.5,
 "events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+mouse_up={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":4,"pressed":false,"doubleclick":false,"script":null)
+ ]
+}
+mouse_down={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":5,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
 

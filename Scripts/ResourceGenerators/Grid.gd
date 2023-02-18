@@ -4,8 +4,8 @@ extends Resource
 
 export(String, 'square', 'hexagonal') var grid_type = 'square'
 
-export var size := Vector2(20, 20)
-export var cell_size := Vector2(80, 80)
+export var size := Vector2(50, 32)
+export var cell_size := Vector2(64, 64)
 
 const RAY_CAST_SPEED := 10 # Speed of the ray casting in pixels
 const DIRECTION_SQ = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
@@ -14,9 +14,6 @@ const DIRECTION_HEX = [
 	Vector2.RIGHT+Vector2.UP, Vector2.RIGHT+Vector2.DOWN,
 	Vector2.LEFT+Vector2.UP, Vector2.LEFT+Vector2.DOWN
 ]
-
-# Useful for center of cell calculations
-var _half_cell_size := cell_size / 2
 
 
 func directions() -> Array:
@@ -30,7 +27,7 @@ func directions() -> Array:
 
 # Helper function to transform coordinates to cell index
 func map_to_world(map_position: Vector2) -> Vector2:
-	return map_position * cell_size + _half_cell_size
+	return map_position * cell_size + cell_size / 2
 
 
 # Reverse helper function
@@ -86,6 +83,8 @@ func flood_fill(cell: Vector2, move_range: int, blocked_cells: Array = []) -> Ar
 			if blocked_cells.has(next_cell):
 				continue 
 			if next_cell in out:
+				continue
+			if next_cell.x < 0 or next_cell.y < 0:
 				continue
 			stack.push_back(next_cell)
 			

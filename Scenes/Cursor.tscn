@@ -1,19 +1,11 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Scripts/Cursor.gd" type="Script" id=1]
 [ext_resource path="res://Media/menu_selection_arrow.png" type="Texture" id=2]
-[ext_resource path="res://Scripts/ResourceGenerators/Grid.gd" type="Script" id=3]
-
-[sub_resource type="Resource" id=1]
-script = ExtResource( 3 )
-grid_type = "square"
-size = Vector2( 20, 20 )
-cell_size = Vector2( 80, 80 )
 
 [node name="Cursor" type="Node2D"]
 visible = false
 script = ExtResource( 1 )
-grid = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 34, -35 )

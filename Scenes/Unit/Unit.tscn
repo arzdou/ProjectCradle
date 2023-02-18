@@ -12,8 +12,8 @@
 [sub_resource type="Resource" id=1]
 script = ExtResource( 4 )
 grid_type = "square"
-size = Vector2( 20, 20 )
-cell_size = Vector2( 80, 80 )
+size = Vector2( 50, 32 )
+cell_size = Vector2( 64, 64 )
 
 [sub_resource type="Animation" id=3]
 tracks/0/type = "value"
@@ -61,6 +61,7 @@ margin_left = -8.0
 margin_top = -115.0
 margin_right = -8.0
 margin_bottom = -115.0
+mouse_filter = 2
 
 [node name="Shadow" type="Sprite" parent="PathFollow2D"]
 modulate = Color( 0.129412, 0.109804, 0.109804, 0.388235 )
