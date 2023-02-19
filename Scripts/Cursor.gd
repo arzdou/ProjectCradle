@@ -1,39 +1,59 @@
 # Represents a player controlled cursor. Navigates the _grid, selects units, etc.
 # Supports both keyboard and mouse (or touch) input.
-tool
 class_name Cursor
 extends Node2D
 
 signal accept_pressed(cell)
 signal moved(new_cell)
 
-# grid resource, giving the node access to the _grid size, and more.
-export var _grid: Resource = preload("res://Resources/Grid.tres")
-# Time before the cursor can move again in seconds.
-export var ui_cooldown := 0.1
+enum CURSOR_MODE {KEY, MOUSE}
+const MOVEMENT_TOLERANCE := 1.0
+const MOUSE_OFFSET := Vector2(-20,20)
 
+export var ui_cooldown := 0.1 # Time before the cursor can move again in seconds.
+export(CURSOR_MODE) var mode
+
+var _has_mouse_recently_moved := true
 var is_active := true setget set_is_active
-# Coordinates of the current cell the cursor is hovering.
-var cell := Vector2.ZERO setget set_cell
+var cell := Vector2.ZERO setget set_cell # Coordinates of the current cell the cursor is hovering.
 
-onready var _timer: Timer = $Timer
-onready var _tween = $Tween
+export var _grid: Resource = preload("res://Resources/Grid.tres")
+
+onready var timer: Timer = $Timer
+onready var _tween: Tween = $Tween
+onready var _arrow: Sprite = $Arrow
+onready var _highlight:Sprite = $Highlight
 
 
 func _ready():
 	hide()
-	if not _timer:
+	if not timer:
 		yield($Timer, "ready")
-	_timer.wait_time = ui_cooldown
-	position = _grid.map_to_world(cell)
+	timer.wait_time = ui_cooldown
 	set_is_active(is_active)
+
+
+func _process(delta):
+	if not is_active:
+		return
+		
+	if not _has_mouse_recently_moved:
+		return
+
+	var current_mouse_position: Vector2 = get_global_mouse_position()
+
+	mode = CURSOR_MODE.MOUSE
+	_arrow.position = current_mouse_position - MOUSE_OFFSET
+	self.cell = _grid.world_to_map(current_mouse_position)
+	_has_mouse_recently_moved = false
 
 func _unhandled_input(event):
 	# Move the cursor to the mouse position
+	
 	if event is InputEventMouseMotion:
-		self.cell = _grid.world_to_map(get_global_mouse_position())
-		
-	elif event.is_action_pressed("click") or event.is_action_pressed("ui_accept"):
+		_has_mouse_recently_moved = true
+
+	if event.is_action_pressed("click") or event.is_action_pressed("ui_accept"):
 		emit_signal("accept_pressed", cell)
 		get_tree().set_input_as_handled()
 		
@@ -41,35 +61,34 @@ func _unhandled_input(event):
 	# If the player is pressing the key in this frame, we allow the cursor to move. If they keep the
 	# keypress down, we only want to move after the cooldown timer stops.
 	if event.is_echo():
-		should_move = should_move and _timer.is_stopped()
+		should_move = should_move and timer.is_stopped()
 
 	# And if the cursor shouldn't move, we prevent it from doing so.
 	if not should_move:
 		return
 		
 	if event.is_action("ui_right"):
+		mode = CURSOR_MODE.KEY
 		self.cell += Vector2.RIGHT
 	elif event.is_action("ui_up"):
+		mode = CURSOR_MODE.KEY
 		self.cell += Vector2.UP
 	elif event.is_action("ui_left"):
+		mode = CURSOR_MODE.KEY
 		self.cell += Vector2.LEFT
 	elif event.is_action("ui_down"):
+		mode = CURSOR_MODE.KEY
 		self.cell += Vector2.DOWN
-	
-	
-
-# We use the draw callback to a rectangular outline the size of a _grid cell, with a width of two
-# pixels.
-func _draw() -> void:
-	# Rect2 is built from the position of the rectangle's top-left corner and its size. To draw the
-	# square around the cell, the start position needs to be `-_grid.cell_size / 2`.
-	if is_active:
-		draw_rect(Rect2(-_grid.cell_size / 2, _grid.cell_size), Color.aliceblue, false, 2.0)
 
 
 func set_is_active(value: bool) -> void:
+	# If the cursor is inactive it will disapear and not handle any action
+	if is_active == value:
+		pass#return
+
 	is_active = value
 	set_process_unhandled_input(is_active)
+	set_process(is_active)
 	if is_active:
 		set_cell(_grid.world_to_map(get_global_mouse_position()), false)
 		show()
@@ -85,16 +104,34 @@ func set_cell(value: Vector2, do_tween: bool = true) -> void:
 		return
 	
 	cell = new_cell
+	var new_highlight_pos = _grid.map_to_world(cell)
+	var new_cursor_pos = _grid.map_to_world(cell) + Vector2(_grid.cell_size.x, -_grid.cell_size.y)/2 - MOUSE_OFFSET
 	if do_tween:
-		_tween.interpolate_property(self, 'position', position, _grid.map_to_world(cell), _timer.wait_time*0.5)
+		_tween.interpolate_property(
+			_highlight, 'position', _highlight.position, new_highlight_pos, timer.wait_time*0.5
+		)
+		if mode == CURSOR_MODE.KEY:
+			_tween.interpolate_property(
+				_arrow, 'position', _arrow.position, new_cursor_pos, timer.wait_time*0.5
+			)
 		_tween.start()
 	else:
-		position = _grid.map_to_world(cell)
+		_highlight.position = new_highlight_pos
+		if mode == CURSOR_MODE.KEY:
+			_arrow.position = new_cursor_pos
+	
+	match mode:
+		CURSOR_MODE.MOUSE:
+			emit_signal("moved", "mouse", get_global_mouse_position())
+		CURSOR_MODE.KEY:
+			emit_signal("moved", "cursor", _grid.map_to_world(cell))
 
-	emit_signal("moved", cell)
-	_timer.start()
+	timer.start()
 
 
-func _on_BoardCamera_camera_moved(mode, new_position):
-	if mode=='mouse':
-		self.cell = _grid.world_to_map(get_global_mouse_position())
+func _on_BoardCamera_camera_moved(camera_mode, cell_movement):
+	if camera_mode == "mouse":
+		_arrow.position = get_global_mouse_position() - MOUSE_OFFSET + cell_movement * _grid.cell_size
+		set_cell(cell + cell_movement, false)
+
+		

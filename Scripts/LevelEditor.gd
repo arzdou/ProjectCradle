@@ -40,7 +40,7 @@ func _on_HScrollBar_value_changed(value):
 func _on_FileDialog_file_selected(path):
 	# Loads the image given by the path and sets the zoom limits based on the size
 	var texture = load(path)
-	_game_map._sprite.texture = texture
+	_game_map.initialize(texture)
 	var texture_size = Vector2(_game_map._sprite.texture.get_width(), _game_map._sprite.texture.get_height())
 	$CanvasLayer/SideBar/VBoxContainer/HScrollBar.min_value = max(
 		_grid.cell_size.x * 15 / texture_size.x,
@@ -50,7 +50,6 @@ func _on_FileDialog_file_selected(path):
 		_grid.cell_size.x * 50 / texture_size.x,
 		_grid.cell_size.y * 50 / texture_size.y
 	)
-	_game_map.initialize(texture)
 	_side_bar.is_active = true
 
 

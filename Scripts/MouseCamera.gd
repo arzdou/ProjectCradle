@@ -11,7 +11,7 @@ var _is_menu_hidden
 
 export var _grid: Resource = preload("res://Resources/Grid.tres")
 onready var camera_2d = $Camera2D
-onready var _timer = $Timer
+onready var timer = $Timer
 onready var _tween = $Tween
 
 func _ready():
@@ -61,7 +61,7 @@ func update_camera_limits():
 
 
 func set_camera_zoom(new_zoom: float):
-	if not _timer.is_stopped():
+	if not timer.is_stopped():
 		return
 	
 	new_zoom = clamp(floor(new_zoom), zoom_min, zoom_max)
@@ -69,9 +69,9 @@ func set_camera_zoom(new_zoom: float):
 	if new_zoom == camera_2d.zoom.x:
 		return
 		
-	_tween.interpolate_property(camera_2d, "zoom", camera_2d.zoom, Vector2(new_zoom, new_zoom), _timer.wait_time*0.5)
+	_tween.interpolate_property(camera_2d, "zoom", camera_2d.zoom, Vector2(new_zoom, new_zoom), timer.wait_time*0.5)
 	_tween.start()
-	_timer.start()
+	timer.start()
 
 func set_camera_position(new_position_x: float, new_position_y: float, mode: String) -> void:
 	# Clamp the position of the camera between the edges of the map and send a 
@@ -92,23 +92,23 @@ func set_camera_position(new_position_x: float, new_position_y: float, mode: Str
 	if new_position == position:
 		return
 	var cell_movement: Vector2 = _grid.world_to_map(new_position-position)
-	_tween.interpolate_property(self, "position", position, new_position, _timer.wait_time*0.5)
-	_tween.start()
+	position = new_position
+	#_tween.interpolate_property(self, "position", position, new_position, timer.wait_time*0.5)
+	#_tween.start()
 	
-	_timer.start()
-	emit_signal("camera_moved", mode, new_position)
+	timer.start()
+	emit_signal("camera_moved", mode, cell_movement)
 
 
 func move_camera_based_on_cursor(cursor_position: Vector2, mode: String) -> void:
 	# Scroll the camera based on the position of cursor, be it the mouse or the in-game cursor
 	# TODO: Adapt the scroll speed and drag margin depending on the zoom
 	
-	if not _timer.is_stopped():
+	if not timer.is_stopped():
 		return
 	
 	var camera_center: Vector2 = _get_camera_center()
 	var delta_pos = (cursor_position - camera_center)
-	print(delta_pos)
 	
 	var delta_x := 0.0
 	if abs(delta_pos.x) > 0.8 * get_camera_size().x / 2:
@@ -121,9 +121,8 @@ func move_camera_based_on_cursor(cursor_position: Vector2, mode: String) -> void
 	set_camera_position(position.x + delta_x, position.y + delta_y, mode)
 
 
-func _on_Cursor_moved(new_cell):
-	if not camera_2d:
-		return
-	var cursor_position: Vector2 = _grid.map_to_world(new_cell)
+func _on_Cursor_moved(cursor_mode, cursor_position):
+	if not camera_2d: # During the first frames the camera node is not ready
+		yield($Camera2D, "ready")
 	move_camera_based_on_cursor(cursor_position, 'cursor')
 

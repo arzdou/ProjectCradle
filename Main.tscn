@@ -1,10 +1,9 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scripts/GameBoard.gd" type="Script" id=4]
 [ext_resource path="res://Scenes/Unit/UnitPath.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Scripts/ActionProcessor.gd" type="Script" id=7]
 [ext_resource path="res://Scripts/UnitManager.gd" type="Script" id=8]
-[ext_resource path="res://Scenes/BoardCamera.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Scenes/GameMap.tscn" type="PackedScene" id=10]
 
 [node name="Main" type="Node2D"]
@@ -21,7 +20,6 @@ script = ExtResource( 7 )
 [node name="GameMap" parent="GameBoard" instance=ExtResource( 10 )]
 
 [node name="UnitPath" parent="GameBoard" instance=ExtResource( 6 )]
-tile_data = PoolIntArray( 196616, 0, 65536, 196617, 0, 1, 196618, 0, 65539, 262152, 0, 2, 327683, 0, 131075, 327684, 0, 1, 327685, 0, 1, 327686, 0, 1, 327687, 0, 1, 327688, 0, 131073 )
 
 [node name="HUD" type="CanvasLayer" parent="GameBoard"]
 follow_viewport_enable = true
@@ -31,5 +29,3 @@ margin_left = 19.0
 margin_top = 12.0
 margin_right = 59.0
 margin_bottom = 26.0
-
-[node name="BoardCamera" parent="GameBoard" instance=ExtResource( 9 )]

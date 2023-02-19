@@ -8,15 +8,23 @@ onready var _overlay = $Overlay
 
 var marked_cells: Dictionary
 var selected_terrain_id := 0
+var drawing_cells = false
+var overlay_tiles = {} setget _set_overlay_tiles
 
 export var _grid: Resource = preload("res://Resources/Grid.tres")
 
 var map_size: Vector2
-var drawing_cells = false
-
-var overlay_tiles = {} setget _set_overlay_tiles
+var ui_timer := 1 # seconds
 
 func _ready():
+	if not cursor:
+		yield($Cursor, "ready")
+	cursor.timer.wait_time = ui_timer
+	
+	if not _mouse_camera:
+		yield($MouseCamera, "ready")
+	_mouse_camera.timer.wait_time = ui_timer
+	
 	initialize()
 
 
@@ -26,8 +34,8 @@ func initialize(texture: Texture = null) -> void:
 		map_size = _sprite.scale * Vector2(_sprite.texture.get_width(), _sprite.texture.get_height())
 		_grid.size = (map_size / cell_size).ceil() - Vector2.ONE
 	else:
-		map_size = _mouse_camera.get_camera_size()
-		_grid.size = (map_size / cell_size).ceil()
+		map_size = _mouse_camera.get_camera_size() 
+		_grid.size = (map_size / cell_size).ceil() + Vector2.ONE*500
 		
 	_sprite.position = map_size/2
 	_mouse_camera.update_camera_limits()

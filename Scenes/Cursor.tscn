@@ -1,17 +1,24 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/Cursor.gd" type="Script" id=1]
 [ext_resource path="res://Media/menu_selection_arrow.png" type="Texture" id=2]
+[ext_resource path="res://Media/CursorHighlight.png" type="Texture" id=3]
+[ext_resource path="res://Resources/Grid.tres" type="Resource" id=4]
 
 [node name="Cursor" type="Node2D"]
 visible = false
 script = ExtResource( 1 )
+mode = 1
+_grid = ExtResource( 4 )
 
-[node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 34, -35 )
-rotation = -0.656244
+[node name="Arrow" type="Sprite" parent="."]
+position = Vector2( -150.555, 65.1191 )
+rotation = -0.785398
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 2 )
+
+[node name="Highlight" type="Sprite" parent="."]
+texture = ExtResource( 3 )
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1

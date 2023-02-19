@@ -32,7 +32,6 @@ var _board_state: int = STATE.FREE setget change_state
 onready var _game_map = $GameMap
 onready var _action_processor = $ActionProcessor
 onready var _unit_manager = $UnitManager
-onready var _board_camera = $BoardCamera
 onready var _unit_path = $UnitPath
 
 func _ready() -> void:
@@ -40,8 +39,6 @@ func _ready() -> void:
 	_game_map.cursor.connect("moved", self, "_on_Cursor_moved")
 	
 	_game_map.initialize(map_res.image)
-	_grid.size = map_res.size
-	_board_camera.update_camera_limits()
 	_reinitialize()
 
 
