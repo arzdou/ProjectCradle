@@ -29,14 +29,17 @@ var team_turn_index = 0
 enum STATE {FREE, MOVEMENT, SELECTING, ACTING}
 var _board_state: int = STATE.FREE setget change_state
 
-onready var _map = $GameMap
+onready var _game_map = $GameMap
 onready var _action_processor = $ActionProcessor
 onready var _unit_manager = $UnitManager
 onready var _board_camera = $BoardCamera
-
+onready var _unit_path = $UnitPath
 
 func _ready() -> void:
-	_map.initialize(map_res)
+	_game_map.cursor.connect("accept_pressed", self, "_on_Cursor_accept_pressed")
+	_game_map.cursor.connect("moved", self, "_on_Cursor_moved")
+	
+	_game_map.initialize(map_res.image)
 	_grid.size = map_res.size
 	_board_camera.update_camera_limits()
 	_reinitialize()
@@ -64,7 +67,6 @@ func get_walkable_cells() -> Array:
 
 func _select_unit(cell: Vector2) -> void:
 	
-	
 	var was_unit_selected: bool
 	was_unit_selected = _unit_manager.try_selecting_unit(cell, 'ally')
 	
@@ -83,7 +85,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	var movement_complete
 	
 	movement_complete = _unit_manager.move_active_unit(
-		new_cell, _map.get_current_path()
+		new_cell, _unit_path.current_path
 	)
 	
 	# This creates problems since movement_complete is not a bool but a yield object, I dunno how to fix it but its ugly af
@@ -95,26 +97,31 @@ func _move_active_unit(new_cell: Vector2) -> void:
 func change_state(new_state: int) -> void:
 	match new_state:
 		STATE.FREE:
-			_map.is_cursor_active = true
-			_map.overlay_tiles = null
+			_game_map.cursor.is_active = true
+			_game_map.overlay_tiles = null
+			_unit_path.stop()
 			
 			_unit_manager.deselect_unit()
 			
 		STATE.MOVEMENT:
-			_map.is_cursor_active = true
-			_map.overlay_tiles = get_walkable_cells()
+			_game_map.cursor.is_active = true
+			_game_map.overlay_tiles = get_walkable_cells()
+			_unit_path.initialize(get_walkable_cells())
 			
 			_unit_manager.show_side_menu(false)
 			
 		STATE.SELECTING:
-			_map.is_cursor_active = false
-			_map.overlay_tiles = null
+			yield(_unit_manager.active_unit, "walk_finished")
+			_game_map.cursor.is_active = false
+			_game_map.overlay_tiles = null
+			_unit_path.stop()
 			
 			_unit_manager.show_side_menu(true) # Toggles the menu and animations of active unit
 			
 		STATE.ACTING:
-			_map.is_cursor_active = true
-			_map.overlay_tiles = null
+			_game_map.cursor.is_active = true
+			_game_map.overlay_tiles = null
+			_unit_path.stop()
 			
 			_unit_manager.show_side_menu(false)
 			
@@ -133,11 +140,11 @@ func finish_unit_turn() -> void:
 
 func _on_Cursor_moved(new_cell: Vector2) -> void:
 	if _board_state == STATE.MOVEMENT:
-		_map.draw_path(_unit_manager.active_unit.cell, new_cell)
+		_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
 		
 	elif _board_state == STATE.ACTING:
 		_action_processor.process_action_targeted(new_cell, false)
-		_map.overlay_tiles = _action_processor.marked_cells
+		_game_map.overlay_tiles = _action_processor.marked_cells
 	
 	if _unit_manager:
 		_unit_manager.update_hud(new_cell)
@@ -159,4 +166,5 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 func _on_Unit_action_selected(action) -> void:
 	change_state(STATE.ACTING)
 	_action_processor.initialize(action)
-	_on_Cursor_moved(_map.cursor_cell)
+	_on_Cursor_moved(_game_map.cursor.cell)
+

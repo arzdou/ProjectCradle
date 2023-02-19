@@ -10,6 +10,7 @@ onready var _hide_button = $HideButton
 onready var _tween = $Tween
 
 func _ready():
+	_set_is_active(false)
 	$VBoxContainer/MenuButton.get_popup().connect("id_pressed", self, "_on_item_selected")
 	
 

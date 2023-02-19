@@ -28,7 +28,6 @@ func _ready():
 	position = _grid.map_to_world(cell)
 	set_is_active(is_active)
 
-
 func _unhandled_input(event):
 	# Move the cursor to the mouse position
 	if event is InputEventMouseMotion:
@@ -96,6 +95,6 @@ func set_cell(value: Vector2, do_tween: bool = true) -> void:
 	_timer.start()
 
 
-func _on_MouseCamera_camera_moved(mode, cell_movement):
+func _on_BoardCamera_camera_moved(mode, new_position):
 	if mode=='mouse':
-		self.cell += cell_movement
+		self.cell = _grid.world_to_map(get_global_mouse_position())

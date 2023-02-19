@@ -99,7 +99,7 @@ func update_hud(cursor_cell: Vector2) -> void:
 func show_side_menu(value: bool) -> void:
 	if not active_unit:
 		return
-	
+		
 	active_unit.is_selecting_action = value
 
 

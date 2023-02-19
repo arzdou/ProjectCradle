@@ -12,7 +12,6 @@ var overlay_tiles = {} setget _set_overlay_tiles
 var cursor_cell := Vector2.ZERO setget _set_cursor_cell, _get_cursor_cell
 
 onready var _unit_overlay: UnitOverlay = $UnitOverlay
-onready var _unit_path: UnitPath = $UnitPath
 onready var _cursor: Cursor = $Cursor
 onready var _sprite = $Sprite
 
@@ -71,5 +70,3 @@ func draw_path(start: Vector2, end: Vector2) -> void:
 func get_current_path() -> PoolVector2Array:
 	return _unit_path.current_path
 
-func _on_MouseCamera_camera_moved():
-	_cursor.update()
