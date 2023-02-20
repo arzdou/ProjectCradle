@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/LevelEditor.gd" type="Script" id=1]
-[ext_resource path="res://Scenes/GameMap.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Scripts/SideBar.gd" type="Script" id=6]
+[ext_resource path="res://Scenes/GameMap/GameMap.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scripts/UI/SideBar.gd" type="Script" id=6]
 
 [node name="LevelEditor" type="YSort"]
 script = ExtResource( 1 )
@@ -106,7 +106,6 @@ text = "hide"
 
 [node name="Tween" type="Tween" parent="CanvasLayer/SideBar"]
 
-[connection signal="id_pressed" from="CanvasLayer/SideBar" to="." method="_on_SideBar_id_pressed"]
 [connection signal="pressed" from="CanvasLayer/SideBar/VBoxContainer/Button" to="CanvasLayer/SideBar" method="_on_LoadButton_pressed"]
 [connection signal="file_selected" from="CanvasLayer/SideBar/VBoxContainer/Button/FileDialog" to="." method="_on_FileDialog_file_selected"]
 [connection signal="value_changed" from="CanvasLayer/SideBar/VBoxContainer/HScrollBar" to="." method="_on_HScrollBar_value_changed"]

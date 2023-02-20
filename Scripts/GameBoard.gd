@@ -41,6 +41,7 @@ func _ready() -> void:
 	_game_map.cursor.connect("moved", self, "_on_Cursor_moved")
 	
 	_game_map.initialize(map_res.image)
+	_game_map.overlay_tiles = map_res.overlay_tiles
 	_reinitialize()
 
 

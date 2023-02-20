@@ -32,7 +32,7 @@ _global_script_classes=[ {
 "base": "Node2D",
 "class": "Cursor",
 "language": "GDScript",
-"path": "res://Scripts/Cursor.gd"
+"path": "res://Scripts/GameMap/Cursor.gd"
 }, {
 "base": "YSort",
 "class": "GameBoard",
@@ -40,14 +40,9 @@ _global_script_classes=[ {
 "path": "res://Scripts/GameBoard.gd"
 }, {
 "base": "TileMap",
-"class": "GameMap",
-"language": "GDScript",
-"path": "res://Scripts/Map.gd"
-}, {
-"base": "TileMap",
 "class": "GameMapp",
 "language": "GDScript",
-"path": "res://Scripts/GameMap.gd"
+"path": "res://Scripts/GameMap/GameMap.gd"
 }, {
 "base": "",
 "class": "GitAPI",
@@ -77,12 +72,12 @@ _global_script_classes=[ {
 "base": "Position2D",
 "class": "MouseCamera",
 "language": "GDScript",
-"path": "res://Scripts/MouseCamera.gd"
+"path": "res://Scripts/GameMap/MouseCamera.gd"
 }, {
 "base": "Resource",
 "class": "PathFinder",
 "language": "GDScript",
-"path": "res://Scripts/PathFinder.gd"
+"path": "res://Scripts/ResourceGenerators/PathFinder.gd"
 }, {
 "base": "Resource",
 "class": "PilotStats",
@@ -92,7 +87,7 @@ _global_script_classes=[ {
 "base": "ColorRect",
 "class": "SideBar",
 "language": "GDScript",
-"path": "res://Scripts/SideBar.gd"
+"path": "res://Scripts/UI/SideBar.gd"
 }, {
 "base": "ViewportContainer",
 "class": "SideMenu",
@@ -112,7 +107,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "UnitManager",
 "language": "GDScript",
-"path": "res://Scripts/UnitManager.gd"
+"path": "res://Scripts/Unit/UnitManager.gd"
 }, {
 "base": "TileMap",
 "class": "UnitOverlay",
@@ -141,7 +136,6 @@ _global_script_class_icons={
 "CONSTANTS": "",
 "Cursor": "",
 "GameBoard": "",
-"GameMap": "",
 "GameMapp": "",
 "GitAPI": "",
 "Grid": "",

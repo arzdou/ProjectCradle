@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/tileset_unit_overlay.svg-feba6e9ad3c76d5c42c32374fe56c0a0.stex"
+path="res://.import/CursorHighlight.png-0b3fd2d306ca2b277d5fe21c1035b68a.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Media/tileset_unit_overlay.svg"
-dest_files=[ "res://.import/tileset_unit_overlay.svg-feba6e9ad3c76d5c42c32374fe56c0a0.stex" ]
+source_file="res://Media/HUD/CursorHighlight.png"
+dest_files=[ "res://.import/CursorHighlight.png-0b3fd2d306ca2b277d5fe21c1035b68a.stex" ]
 
 [params]
 

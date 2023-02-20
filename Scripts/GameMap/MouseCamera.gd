@@ -15,6 +15,8 @@ onready var timer = $Timer
 onready var _tween = $Tween
 
 func _ready():
+	if not timer:
+		yield(timer, "ready")
 	set_as_toplevel(true)
 	update_camera_limits()
 

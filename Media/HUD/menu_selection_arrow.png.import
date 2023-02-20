@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/CursorHighlight.png-ef581a4ea370d19bbeb0ab45d880f98a.stex"
+path="res://.import/menu_selection_arrow.png-b29e6a476d6b3ff875abb3dd3044a33a.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Media/CursorHighlight.png"
-dest_files=[ "res://.import/CursorHighlight.png-ef581a4ea370d19bbeb0ab45d880f98a.stex" ]
+source_file="res://Media/HUD/menu_selection_arrow.png"
+dest_files=[ "res://.import/menu_selection_arrow.png-b29e6a476d6b3ff875abb3dd3044a33a.stex" ]
 
 [params]
 

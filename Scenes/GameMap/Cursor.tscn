@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Scripts/Cursor.gd" type="Script" id=1]
-[ext_resource path="res://Media/menu_selection_arrow.png" type="Texture" id=2]
-[ext_resource path="res://Media/CursorHighlight.png" type="Texture" id=3]
+[ext_resource path="res://Scripts/GameMap/Cursor.gd" type="Script" id=1]
+[ext_resource path="res://Media/HUD/menu_selection_arrow.png" type="Texture" id=2]
+[ext_resource path="res://Media/HUD/CursorHighlight.png" type="Texture" id=3]
 
 [node name="Cursor" type="Node2D"]
 visible = false
