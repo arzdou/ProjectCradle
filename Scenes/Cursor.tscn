@@ -1,15 +1,13 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/Cursor.gd" type="Script" id=1]
 [ext_resource path="res://Media/menu_selection_arrow.png" type="Texture" id=2]
 [ext_resource path="res://Media/CursorHighlight.png" type="Texture" id=3]
-[ext_resource path="res://Resources/Grid.tres" type="Resource" id=4]
 
 [node name="Cursor" type="Node2D"]
 visible = false
 script = ExtResource( 1 )
 mode = 1
-_grid = ExtResource( 4 )
 
 [node name="Arrow" type="Sprite" parent="."]
 position = Vector2( -150.555, 65.1191 )

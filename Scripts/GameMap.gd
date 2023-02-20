@@ -6,15 +6,15 @@ onready var _mouse_camera = $MouseCamera
 onready var _sprite = $Sprite
 onready var _overlay = $Overlay
 
-var marked_cells: Dictionary
+
 var selected_terrain_id := 0
-var drawing_cells = false
-var overlay_tiles = {} setget _set_overlay_tiles
+var drawing_cells := false
+var overlay_tiles := {} setget _set_overlay_tiles
 
 export var _grid: Resource = preload("res://Resources/Grid.tres")
 
 var map_size: Vector2
-var ui_timer := 1 # seconds
+var ui_timer := 0.1 # seconds
 
 func _ready():
 	if not cursor:
@@ -59,30 +59,26 @@ func draw_grid() -> void:
 			set_cellv(Vector2(i, j), 0)
 
 
-func _set_overlay_tiles(value) -> void:
-	# Maybe some checks here for the shape of value would be nice
-	
-	if not value:
-		overlay_tiles = {}
-		_overlay.clear()
-		return
-	
-	if typeof(value) == TYPE_DICTIONARY:
-		overlay_tiles = value
-	elif typeof(value) == TYPE_ARRAY:
-		overlay_tiles = {0: value}
-	
+func _set_overlay_tiles(value: Dictionary) -> void:
+	# The input dictionary should have the following structure
+	# value = {
+	#	[cell: Vector2] = index: int,
+	#	...
+	# }
+	# TODO: Add a check for the structure of the Dict, add an enum in CONSTANTS
+	overlay_tiles = value
 	_overlay.draw(overlay_tiles) # The draw function already handles clearing
 
 
 func _on_Cursor_accept_pressed(cell):
 	if not drawing_cells:
 		return
+		
 	if _overlay.get_cellv(cell) != selected_terrain_id and selected_terrain_id != 3:
-		_overlay.set_cellv(cell, selected_terrain_id)
-		marked_cells[cell] = selected_terrain_id
+		overlay_tiles[cell] = selected_terrain_id
+		_set_overlay_tiles(overlay_tiles)
 	else:
-		_overlay.set_cellv(cell, -1)
-		marked_cells.erase(cell)
+		overlay_tiles.erase(cell)
+		_set_overlay_tiles(overlay_tiles)
 
 

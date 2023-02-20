@@ -106,7 +106,7 @@ func set_cell(value: Vector2, do_tween: bool = true) -> void:
 	cell = new_cell
 	var new_highlight_pos = _grid.map_to_world(cell)
 	var new_cursor_pos = _grid.map_to_world(cell) + Vector2(_grid.cell_size.x, -_grid.cell_size.y)/2 - MOUSE_OFFSET
-	if do_tween:
+	if false:
 		_tween.interpolate_property(
 			_highlight, 'position', _highlight.position, new_highlight_pos, timer.wait_time*0.5
 		)
