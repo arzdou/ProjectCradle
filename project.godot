@@ -40,7 +40,7 @@ _global_script_classes=[ {
 "path": "res://Scripts/GameBoard.gd"
 }, {
 "base": "TileMap",
-"class": "GameMapp",
+"class": "GameMap",
 "language": "GDScript",
 "path": "res://Scripts/GameMap/GameMap.gd"
 }, {
@@ -136,7 +136,7 @@ _global_script_class_icons={
 "CONSTANTS": "",
 "Cursor": "",
 "GameBoard": "",
-"GameMapp": "",
+"GameMap": "",
 "GitAPI": "",
 "Grid": "",
 "LevelEditor": "",

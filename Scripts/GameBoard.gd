@@ -32,7 +32,8 @@ var _board_state: int = STATE.FREE setget change_state
 onready var _game_map = $GameMap
 onready var _action_processor = $ActionProcessor
 onready var _unit_manager = $UnitManager
-onready var _unit_path = $UnitPath
+onready var _unit_path = $GameMap/UnitPath
+onready var _unit_overlay = $GameMap/UnitOverlay
 
 func _ready() -> void:
 	if not _game_map:
@@ -41,7 +42,8 @@ func _ready() -> void:
 	_game_map.cursor.connect("moved", self, "_on_Cursor_moved")
 	
 	_game_map.initialize(map_res.image)
-	_game_map.overlay_tiles = map_res.overlay_tiles
+
+	_game_map.terrain_tiles = map_res.terrain_tiles
 	_reinitialize()
 
 
@@ -56,13 +58,11 @@ func _reinitialize() -> void:
 	_unit_manager.update_hud(Vector2(-1,-1))
 
 
-func is_occupied(cell: Vector2) -> bool:
-	return true if _unit_manager.in_cell(cell) else false
-
+func get_blocked_cells() -> Array:
+	return _unit_manager.get_occupied_cells() + _game_map.get_blocked_terrain()
 
 func get_walkable_cells() -> Array:
-	var blocked_spaces = _unit_manager.get_occupied_cells()
-	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.move_range, blocked_spaces)
+	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.move_range, get_blocked_cells())
 
 
 func _array_to_zero_dict(value: Array) -> Dictionary:
@@ -70,6 +70,7 @@ func _array_to_zero_dict(value: Array) -> Dictionary:
 	for key in value:
 		out[key] = 0
 	return out
+
 
 func _select_unit(cell: Vector2) -> void:
 	
@@ -104,7 +105,7 @@ func change_state(new_state: int) -> void:
 	match new_state:
 		STATE.FREE:
 			_game_map.cursor.is_active = true
-			_game_map.overlay_tiles = {}
+			_unit_overlay.draw({})
 			_unit_path.stop()
 			
 			_unit_manager.deselect_unit()
@@ -112,22 +113,22 @@ func change_state(new_state: int) -> void:
 		STATE.MOVEMENT:
 			_game_map.cursor.is_active = true
 			var walkable_cells = get_walkable_cells()
-			_game_map.overlay_tiles = _array_to_zero_dict(walkable_cells)
+			_unit_overlay.draw(_array_to_zero_dict(walkable_cells))
 			_unit_path.initialize(walkable_cells)
 			
 			_unit_manager.show_side_menu(false)
 			
 		STATE.SELECTING:
-			yield(_unit_manager.active_unit, "walk_finished")
+			if _unit_manager.active_unit._is_walking:
+				yield(_unit_manager.active_unit, "walk_finished")
 			_game_map.cursor.is_active = false
-			_game_map.overlay_tiles = {}
+			_unit_overlay.draw({})
 			_unit_path.stop()
-			
 			_unit_manager.show_side_menu(true) # Toggles the menu and animations of active unit
 			
 		STATE.ACTING:
 			_game_map.cursor.is_active = true
-			_game_map.overlay_tiles = {}
+			_unit_overlay.draw({})
 			_unit_path.stop()
 			
 			_unit_manager.show_side_menu(false)
@@ -152,7 +153,7 @@ func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
 		
 	elif _board_state == STATE.ACTING:
 		_action_processor.process_action_targeted(new_cell, false)
-		_game_map.overlay_tiles = _array_to_zero_dict(_action_processor.marked_cells)
+		_unit_overlay.draw(_array_to_zero_dict(_action_processor.marked_cells))
 	
 	if _unit_manager:
 		_unit_manager.update_hud(new_cell)
@@ -173,7 +174,8 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 
 func _on_Unit_action_selected(action) -> void:
 	change_state(STATE.ACTING)
-	_action_processor.initialize(action)
+	
+	_action_processor.initialize(action, _game_map.get_blocked_terrain())
 	var pos = _grid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 

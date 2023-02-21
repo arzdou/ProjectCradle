@@ -54,7 +54,7 @@ func try_selecting_unit(cell: Vector2, active_team) -> bool:
 	
 	if not possible_unit.team == active_team:
 		return false
-	
+
 	active_unit = possible_unit
 	active_unit.is_selected = true
 	return true
@@ -100,6 +100,7 @@ func show_side_menu(value: bool) -> void:
 	if not active_unit:
 		return
 		
+	print(active_unit)
 	active_unit.is_selecting_action = value
 
 

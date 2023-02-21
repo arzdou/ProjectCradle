@@ -57,7 +57,7 @@ func _on_SaveDialog_file_selected(path):
 	var new_map = Map.new(
 		_game_map._sprite.texture,
 		_grid.size,
-		_game_map.overlay_tiles,
+		_game_map.terrain_tiles,
 		{}
 	)
 	ResourceSaver.save(path, new_map)

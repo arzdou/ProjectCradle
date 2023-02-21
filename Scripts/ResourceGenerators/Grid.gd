@@ -91,7 +91,7 @@ func flood_fill(cell: Vector2, move_range: int, blocked_cells: Array = []) -> Ar
 	return out
 
 
-func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
+func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int, blocked_cells: Array) -> Array:
 	# Ray Casting algorithm from an initial cell and angle
 	var out := []
 	var ray_cast: Vector2 = map_to_world(cell)
@@ -99,6 +99,10 @@ func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 		ray_cast += Vector2(-cos(angle), -sin(angle)) * RAY_CAST_SPEED
 
 		var ray_cast_cell = world_to_map(ray_cast)
+		
+		if ray_cast_cell in blocked_cells:
+			break
+		
 		var distance = abs(ray_cast_cell.x - cell.x) +  abs(ray_cast_cell.y - cell.y)
 		
 
@@ -110,14 +114,29 @@ func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 	return out
 
 
-func cone_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
+func ray_cast_circular(cell: Vector2, view_range: int, blocked_cells: Array) -> Array:
+	var out := []
+	var min_angle = atan(1/float(view_range)) # Calculate this mathematically
+	print(1/view_range)
+	print(min_angle)
+	var number_of_raycast = floor(2*PI / min_angle)
+	for i in range(number_of_raycast):
+		var ray_cast_angle = ray_cast_from_cell(cell, i*min_angle, view_range, blocked_cells)
+		for cell in ray_cast_angle:
+			if out.has(cell):
+				continue
+			out.push_back(cell)
+	return out
+	
+
+func cone_from_cell(cell: Vector2, angle: float, view_range: int, blocked_cells: Array) -> Array:
 	# Ray Casting algorithm from an initial cell and angle
 	# Needs a rework
 	var out := []
 	var ANGLE_STEPS = 10
 	for i in range(ANGLE_STEPS):
 		var cone_angle: float = angle - PI/4 + PI/2 * i / ANGLE_STEPS
-		for new_cell in ray_cast_from_cell(cell, cone_angle, view_range):
+		for new_cell in ray_cast_from_cell(cell, cone_angle, view_range, blocked_cells):
 			if not out.has(new_cell):
 				out.push_back(new_cell)
 	return out

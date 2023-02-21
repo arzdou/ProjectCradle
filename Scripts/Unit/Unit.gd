@@ -113,9 +113,10 @@ func walk_along(path: PoolVector2Array) -> void:
 		curve.add_point(grid.map_to_world(point) - position)
 	
 	# Inmediately set the position to the last point
+	_set_is_walking(true)
 	used_move_range = min(used_move_range + path.size() - 1, move_range)
 	set_cell(path[-1])
-	_set_is_walking(true)
+	
 
 
 func _get_menu_layout() -> Dictionary:

@@ -72,7 +72,7 @@ tile_set = SubResource( 1 )
 format = 1
 script = ExtResource( 1 )
 
-[node name="Overlay" type="TileMap" parent="."]
+[node name="TerrainOverlay" type="TileMap" parent="."]
 tile_set = SubResource( 2 )
 format = 1
 script = ExtResource( 4 )

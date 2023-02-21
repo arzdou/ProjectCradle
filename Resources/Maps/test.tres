@@ -6,4 +6,10 @@
 [resource]
 script = ExtResource( 2 )
 image = ExtResource( 1 )
-size = Vector2( 50, 36 )
+size = Vector2( 49, 35 )
+terrain_tiles = {
+Vector2( 2, 2 ): 0,
+Vector2( 4, 4 ): 0
+}
+units = {
+}

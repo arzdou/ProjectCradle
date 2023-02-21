@@ -1,15 +1,15 @@
 extends TileMap
-class_name GameMapp
+class_name GameMap
 
 onready var cursor = $Cursor
 onready var _mouse_camera = $MouseCamera
 onready var _sprite = $Sprite
-onready var _overlay = $Overlay
+onready var _overlay = $TerrainOverlay
 
 
 var selected_terrain_id := 0
 var drawing_cells := false
-var overlay_tiles := {} setget _set_overlay_tiles
+var terrain_tiles := {} setget _set_terrain_tiles
 
 export var _grid: Resource = preload("res://Resources/Grid.tres")
 
@@ -59,15 +59,24 @@ func draw_grid() -> void:
 			set_cellv(Vector2(i, j), 0)
 
 
-func _set_overlay_tiles(value: Dictionary) -> void:
+func _set_terrain_tiles(value: Dictionary) -> void:
 	# The input dictionary should have the following structure
 	# value = {
 	#	[cell: Vector2] = index: int,
 	#	...
 	# }
 	# TODO: Add a check for the structure of the Dict, add an enum in CONSTANTS
-	overlay_tiles = value
-	_overlay.draw(overlay_tiles) # The draw function already handles clearing
+	terrain_tiles = value
+	_overlay.draw(terrain_tiles) # The draw function already handles clearing
+
+
+func get_blocked_terrain() -> Array:
+	# Checks the terrain and returns an array with the coordinates of all blocked cells
+	var out := []
+	for cell in terrain_tiles:
+		if terrain_tiles[cell] == 0:
+			out.push_back(cell)
+	return out
 
 
 func _on_Cursor_accept_pressed(cell):
@@ -75,10 +84,10 @@ func _on_Cursor_accept_pressed(cell):
 		return
 		
 	if _overlay.get_cellv(cell) != selected_terrain_id and selected_terrain_id != 3:
-		overlay_tiles[cell] = selected_terrain_id
-		_set_overlay_tiles(overlay_tiles)
+		terrain_tiles[cell] = selected_terrain_id
+		_set_terrain_tiles(terrain_tiles)
 	else:
-		overlay_tiles.erase(cell)
-		_set_overlay_tiles(overlay_tiles)
+		terrain_tiles.erase(cell)
+		_set_terrain_tiles(terrain_tiles)
 
 

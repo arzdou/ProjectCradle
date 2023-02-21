@@ -7,15 +7,17 @@ var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 var _units
 var _performing_action 
 var _performing_unit: Unit
+var _blocked_cells := []
 var marked_cells := []
 
 onready var _unit_manager = $"../UnitManager"
 
 
-func initialize(action):
+func initialize(action, blocked_cells):
 	_units = _unit_manager._unit_list
 	_performing_action = action
 	_performing_unit = _unit_manager.active_unit
+	_blocked_cells = blocked_cells
 
 
 func stop():
@@ -102,27 +104,27 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 		
 		match range_type: 
 			CONSTANTS.WEAPON_RANGE_TYPES.RANGE:
-				marked_cells = _grid.flood_fill(_performing_unit.cell, shooting_range)
+				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
 				if execute and marked_cells.has(target_cell):
 					return try_to_apply_damage(target_cell, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
-				marked_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, shooting_range)
+				marked_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
 				if execute:
 					return try_to_apply_damage_in_area(marked_cells, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
-				marked_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, shooting_range)
+				marked_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
 				if execute:
 					return try_to_apply_damage_in_area(marked_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
-				marked_cells = _grid.flood_fill(target_cell, shooting_range)
+				marked_cells = _grid.ray_cast_circular(target_cell, shooting_range, _blocked_cells)
 				if execute:
 					return try_to_apply_damage_in_area(marked_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
-				marked_cells = _grid.flood_fill(_performing_unit.cell, shooting_range)
+				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
 				if execute:
 					return try_to_apply_damage_in_area(marked_cells, damage_array)
 	
