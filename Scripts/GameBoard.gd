@@ -65,10 +65,11 @@ func get_walkable_cells() -> Array:
 	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.move_range, get_blocked_cells())
 
 
-func _array_to_zero_dict(value: Array) -> Dictionary:
+func _array_to_zero_dict(value: Array, type: int) -> Dictionary:
+	# key should be of CONSTANTS.UOVERLAY_CELLS type
 	var out := {}
 	for key in value:
-		out[key] = 0
+		out[key] = type
 	return out
 
 
@@ -113,7 +114,7 @@ func change_state(new_state: int) -> void:
 		STATE.MOVEMENT:
 			_game_map.cursor.is_active = true
 			var walkable_cells = get_walkable_cells()
-			_unit_overlay.draw(_array_to_zero_dict(walkable_cells))
+			_unit_overlay.draw(_array_to_zero_dict(walkable_cells, CONSTANTS.UOVERLAY_CELLS.MOVEMENT))
 			_unit_path.initialize(walkable_cells)
 			
 			_unit_manager.show_side_menu(false)
@@ -153,7 +154,8 @@ func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
 		
 	elif _board_state == STATE.ACTING:
 		_action_processor.process_action_targeted(new_cell, false)
-		_unit_overlay.draw(_array_to_zero_dict(_action_processor.marked_cells))
+
+		_unit_overlay.draw(_action_processor.get_overlay_cells())
 	
 	if _unit_manager:
 		_unit_manager.update_hud(new_cell)

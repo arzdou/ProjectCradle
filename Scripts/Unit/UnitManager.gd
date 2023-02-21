@@ -100,7 +100,6 @@ func show_side_menu(value: bool) -> void:
 	if not active_unit:
 		return
 		
-	print(active_unit)
 	active_unit.is_selecting_action = value
 
 

@@ -16,4 +16,3 @@ func _init(
 	size = _size
 	terrain_tiles = _terrain_tiles
 	units = _units
-	print(terrain_tiles)

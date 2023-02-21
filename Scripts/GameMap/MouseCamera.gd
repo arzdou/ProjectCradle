@@ -105,7 +105,9 @@ func set_camera_position(new_position_x: float, new_position_y: float, mode: Str
 func move_camera_based_on_cursor(cursor_position: Vector2, mode: String) -> void:
 	# Scroll the camera based on the position of cursor, be it the mouse or the in-game cursor
 	# TODO: Adapt the scroll speed and drag margin depending on the zoom
-	
+	if not timer:
+		return
+		
 	if not timer.is_stopped():
 		return
 	

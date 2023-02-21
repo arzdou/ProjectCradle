@@ -8,7 +8,9 @@ var _units
 var _performing_action 
 var _performing_unit: Unit
 var _blocked_cells := []
-var marked_cells := []
+
+var marked_cells := [] # Indicates the range of the weapon
+var damage_cells := [] # Indicates the damage area
 
 onready var _unit_manager = $"../UnitManager"
 
@@ -24,6 +26,17 @@ func stop():
 	_units = null
 	_performing_action = null
 	_performing_unit = null
+
+
+func get_overlay_cells() -> Dictionary:
+	var action_cells := {}
+	for d_cell in damage_cells:
+		action_cells[d_cell] = CONSTANTS.UOVERLAY_CELLS.DAMAGE
+	for m_cell in marked_cells:
+		if action_cells.has(m_cell):
+			continue
+		action_cells[m_cell] = CONSTANTS.UOVERLAY_CELLS.MARKED
+	return action_cells
 
 
 func roll_damage(damage_dict: Dictionary) -> int:
@@ -99,34 +112,40 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
 		# For now only range types
 		var range_type = _performing_action.weapon_range.keys()[0] #For now only first type
-		var shooting_range: int = _performing_action.weapon_range[range_type]
+		var shooting_range = _performing_action.weapon_range[range_type]
 		var damage_array: Array = _performing_action.weapon_damage
 		
 		match range_type: 
 			CONSTANTS.WEAPON_RANGE_TYPES.RANGE:
 				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
+				damage_cells = [target_cell]
 				if execute and marked_cells.has(target_cell):
 					return try_to_apply_damage(target_cell, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
-				marked_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
+				marked_cells.clear()
+				damage_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
 				if execute:
-					return try_to_apply_damage_in_area(marked_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
-				marked_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
+				marked_cells.clear()
+				damage_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
 				if execute:
-					return try_to_apply_damage_in_area(marked_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
-				marked_cells = _grid.ray_cast_circular(target_cell, shooting_range, _blocked_cells)
+				# For blast, shooting range should be an Vector2 of [range, blast radius]
+				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range.x, _blocked_cells)
+				damage_cells = _grid.ray_cast_circular(target_cell, shooting_range.y, _blocked_cells)
 				if execute:
-					return try_to_apply_damage_in_area(marked_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
-				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
+				marked_cells.clear()
+				damage_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
 				if execute:
-					return try_to_apply_damage_in_area(marked_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array)
 	
 	return false
 

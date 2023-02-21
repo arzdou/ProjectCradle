@@ -9,8 +9,7 @@ export(CONSTANTS.MOUNT_SIZES) var size = CONSTANTS.MOUNT_SIZES.MAIN
 export(CONSTANTS.WEAPON_TYPES) var type = CONSTANTS.WEAPON_TYPES.RIFLE
 
 
-# Since Godot does not allow type hints for dictionaries and I am not sure how to do it otherwise, I will have to check validity everytime I load the resource...
-# Weapon range should be given as {CONSTANTS.WEAPON_RANGE_TYPES: int, }
+# Weapon range should be given as {CONSTANTS.WEAPON_RANGE_TYPES: int, } if weapon range is blast then [range, radius]
 export(Dictionary) var weapon_range 
 # Weapon damage should be given as {CONSTANTS.DAMAGE_TYPES: String or int, }
 # String must be 'ndM' where n is the number of M dices to roll. int is fixed damage
@@ -19,7 +18,6 @@ export(Array, Dictionary) var weapon_damage = [{CONSTANTS.DAMAGE_TYPES.KINETIC: 
 export(Array, Resource) var tags
 
 func _check_weapon_range() -> bool:
-	print('hi')
 	for key in weapon_range:
 		var value = weapon_range[key]
 		# If the key is not a weapon range or the value is not correct dont save

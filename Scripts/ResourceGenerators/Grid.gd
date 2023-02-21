@@ -116,9 +116,7 @@ func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int, blocked_ce
 
 func ray_cast_circular(cell: Vector2, view_range: int, blocked_cells: Array) -> Array:
 	var out := []
-	var min_angle = atan(1/float(view_range)) # Calculate this mathematically
-	print(1/view_range)
-	print(min_angle)
+	var min_angle = atan(1/float(view_range)) # Did the math :)
 	var number_of_raycast = floor(2*PI / min_angle)
 	for i in range(number_of_raycast):
 		var ray_cast_angle = ray_cast_from_cell(cell, i*min_angle, view_range, blocked_cells)

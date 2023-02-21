@@ -8,7 +8,7 @@ weapon_name = "BLAST"
 size = 0
 type = 0
 weapon_range = {
-3: 2
+3: Vector2( 5, 3 )
 }
 weapon_damage = [ {
 0: "1d6"
