@@ -31,15 +31,18 @@ export var skin_offset := Vector2.ZERO setget set_skin_offset
 export var move_range: int setget ,_get_move_range
 # The unit's move speed in pixels, when it's moving along a path.
 export var move_speed := 600.0
+# Through its setter function, the `_is_walking` property toggles processing for this unit.
+# See `_set_is_walking()` at the bottom of this code snippet.
+var _is_walking := false setget _set_is_walking
 
 # Cell where the unit is located
 var cell := Vector2.ZERO setget set_cell
 var is_selected := false setget set_is_selected
 var is_selecting_action := false setget set_is_selecting_action
 var used_move_range := 0
-# Through its setter function, the `_is_walking` property toggles processing for this unit.
-# See `_set_is_walking()` at the bottom of this code snippet.
-var _is_walking := false setget _set_is_walking
+
+var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STATUS, and values bool. Except engaged will be an Array of the engaged units
+var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
 
 # Preload all components
 onready var _sprite: Sprite = $PathFollow2D/Sprite
@@ -83,6 +86,14 @@ func initialize(unit_data: Dictionary):
 	_unit_hud.initialize(_stats.max_hp, _stats.heat_cap)
 	_side_menu.initialize(_get_menu_layout())
 	move_range = _stats.speed
+	
+	# Reset status and conditions
+	for i in CONSTANTS.STATUS:
+		status[i] = false
+	status[CONSTANTS.STATUS.ENGAGED] = []
+	
+	for i in CONSTANTS.CONDITIONS:
+		conditions[i] = 0
 	
 	#In the future this should also set the skin
 	
@@ -146,6 +157,7 @@ func take_heat(heat: int) -> void:
 	_stats.heat -= heat
 	_unit_hud.heat = _stats.heat
 
+
 func take_structure(struct: int) -> void:
 	_stats.structure -= struct
 	_unit_hud.structure = _stats.structure
@@ -154,6 +166,24 @@ func take_structure(struct: int) -> void:
 func take_stress(stress: int) -> void:
 	_stats.stress -= stress
 	_unit_hud.stress = _stats.stress
+
+
+# Maybe unnecesary, too verbose
+func set_status(status_key: int, value) -> void:
+	if not CONSTANTS.STATUS.has(status_key):
+		print("Status not recognized")
+		return
+	
+	status[status_key] = value
+
+
+# Maybe unnecesary, too verbose
+func set_condition_time(condition_key: int, value: int) -> void:
+	if not CONSTANTS.CONDITIONS.has(condition_key):
+		print("Status not recognized")
+		return
+	
+	conditions[condition_key] = value
 
 
 func set_skin(value: Texture) -> void:
