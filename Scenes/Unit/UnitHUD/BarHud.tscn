@@ -2,13 +2,13 @@
 
 [ext_resource path="res://Media/HUD/barHorizontal_green.png" type="Texture" id=1]
 [ext_resource path="res://Media/HUD/barHorizontal_red.png" type="Texture" id=2]
-[ext_resource path="res://Scripts/Unit/UnitHUD.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/Unit/UnitHUD/BarHUD.gd" type="Script" id=3]
 [ext_resource path="res://Media/HUD/circleBar_large_back.svg" type="Texture" id=4]
 [ext_resource path="res://Media/HUD/circleBar_large_front.svg" type="Texture" id=5]
 [ext_resource path="res://Media/HUD/circleBar_small_back.svg" type="Texture" id=6]
 [ext_resource path="res://Media/HUD/circleBar_small_front.svg" type="Texture" id=7]
 
-[node name="UnitHUD" type="Control"]
+[node name="BarHUD" type="Control"]
 mouse_filter = 1
 script = ExtResource( 3 )
 

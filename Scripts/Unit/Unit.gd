@@ -45,12 +45,15 @@ var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STAT
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
 
 # Preload all components
-onready var _sprite: Sprite = $PathFollow2D/Sprite
-onready var _anim_player: AnimationPlayer = $AnimationPlayer
-onready var _path_follow: PathFollow2D = $PathFollow2D
-onready var _unit_hud = $PathFollow2D/UnitHUD
 onready var _stats = $UnitStats
-onready var _side_menu = $SideMenu
+onready var _sprite: Sprite = $PathFollow2D/Sprite
+onready var _path_follow: PathFollow2D = $PathFollow2D
+onready var _anim_player: AnimationPlayer = $AnimationPlayer
+
+
+onready var _side_menu = $PathFollow2D/HUD/SideMenu
+onready var _bar_hud = $PathFollow2D/HUD/Bars
+onready var _status_hud = $PathFollow2D/HUD/StatusHUD
 
 signal walk_finished
 
@@ -83,7 +86,7 @@ func initialize(unit_data: Dictionary):
 	pilot_name = _pilot.pilot_name
 	mech_name = _mech.frame_name
 	_stats.initialize(_pilot, _mech)
-	_unit_hud.initialize(_stats.max_hp, _stats.heat_cap)
+	_bar_hud.initialize(_stats.max_hp, _stats.heat_cap)
 	_side_menu.initialize(_get_menu_layout())
 	move_range = _stats.speed
 	
@@ -91,9 +94,11 @@ func initialize(unit_data: Dictionary):
 	for i in CONSTANTS.STATUS:
 		status[i] = false
 	status[CONSTANTS.STATUS.ENGAGED] = []
+	status[CONSTANTS.STATUS.INVISIBLE] = true
 	
 	for i in CONSTANTS.CONDITIONS:
 		conditions[i] = 0
+	conditions[CONSTANTS.CONDITIONS.LOCKED_ON] = 2
 	
 	#In the future this should also set the skin
 	
@@ -150,22 +155,22 @@ func take_damage(damage: int, damage_type: int) -> void:
 		take_heat(damage)
 		return
 	_stats.hp -= damage
-	_unit_hud.hp = _stats.hp
+	_bar_hud.hp = _stats.hp
 
 
 func take_heat(heat: int) -> void:
 	_stats.heat -= heat
-	_unit_hud.heat = _stats.heat
+	_bar_hud.heat = _stats.heat
 
 
 func take_structure(struct: int) -> void:
 	_stats.structure -= struct
-	_unit_hud.structure = _stats.structure
+	_bar_hud.structure = _stats.structure
 
 
 func take_stress(stress: int) -> void:
 	_stats.stress -= stress
-	_unit_hud.stress = _stats.stress
+	_bar_hud.stress = _stats.stress
 
 
 # Maybe unnecesary, too verbose
@@ -176,7 +181,6 @@ func set_status(status_key: int, value) -> void:
 	
 	status[status_key] = value
 
-
 # Maybe unnecesary, too verbose
 func set_condition_time(condition_key: int, value: int) -> void:
 	if not CONSTANTS.CONDITIONS.has(condition_key):
@@ -184,7 +188,6 @@ func set_condition_time(condition_key: int, value: int) -> void:
 		return
 	
 	conditions[condition_key] = value
-
 
 func set_skin(value: Texture) -> void:
 	skin = value
@@ -212,8 +215,10 @@ func set_is_selected(val: bool) -> void:
 	is_selected = val
 	if is_selected:
 		_anim_player.play("selected")
+		show_hud()
 	else:
 		_anim_player.play("idle") # idle animations reset the 'selected' animation
+		hide_hud()
 
 func set_is_selecting_action(val: bool) -> void:
 	if is_selecting_action == val:
@@ -235,10 +240,12 @@ func _get_move_range() -> int:
 	return move_range - used_move_range
 
 func show_hud() -> void:
-	_unit_hud.show()
+	_bar_hud.show()
+	_status_hud.set_from_dict(status, conditions)
 	
 func hide_hud() -> void:
-	_unit_hud.hide()
+	_bar_hud.hide()
+	_status_hud.clear()
 
 
 func _on_SideMenu_action_selected(action):
@@ -247,9 +254,9 @@ func _on_SideMenu_action_selected(action):
 
 
 func _on_UnitStats_structure_reduced(new_structure):
-	_unit_hud.structure = new_structure
+	_bar_hud.structure = new_structure
 
 
 func _on_UnitStats_stress_raised(new_stress):
-	_unit_hud.stress = new_stress
+	_bar_hud.stress = new_stress
 

@@ -150,11 +150,12 @@ func finish_unit_turn() -> void:
 func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
 	var new_cell = _grid.world_to_map(new_pos)
 	if _board_state == STATE.MOVEMENT:
+		# Show the arrows
 		_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
 		
 	elif _board_state == STATE.ACTING:
+		# This updates the unit overlay when the user is selecting an action
 		_action_processor.process_action_targeted(new_cell, false)
-
 		_unit_overlay.draw(_action_processor.get_overlay_cells())
 	
 	if _unit_manager:
@@ -177,6 +178,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 func _on_Unit_action_selected(action) -> void:
 	change_state(STATE.ACTING)
 	
+	print(action)
 	_action_processor.initialize(action, _game_map.get_blocked_terrain())
 	var pos = _grid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)

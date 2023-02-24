@@ -3,8 +3,8 @@ class_name SideMenu
 
 signal action_selected(action)
 
-const ActionContainer: PackedScene = preload("res://Scenes/UI/ActionContainer.tscn")
-const BaseUIButton: PackedScene = preload("res://Scenes/UI/BaseUIButton.tscn")
+const ActionContainer: PackedScene = preload("res://Scenes/Unit/UnitHUD/ActionContainer.tscn")
+const BaseUIButton: PackedScene = preload("res://Scenes/Unit/UnitHUD/BaseUIButton.tscn")
 
 export var menu_size := Vector2(250, 200)
 

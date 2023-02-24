@@ -1,7 +1,7 @@
 extends VBoxContainer
 class_name ActionContainer
 
-const BaseUIButton: PackedScene = preload("res://Scenes/UI/BaseUIButton.tscn")
+const BaseUIButton: PackedScene = preload("res://Scenes/Unit/UnitHUD/BaseUIButton.tscn")
 
 const HIDE_SPEED := 0.15  # second
 const HIDE_DISPACEMENT = Vector2(50, 0) # pixels

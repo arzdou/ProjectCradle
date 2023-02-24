@@ -1,6 +1,6 @@
 # Node that will manage the small HUD that moves with the unit
 extends Control
-class_name UnitHUD
+class_name BarHUD
 
 onready var _hp_bar = $HPBar
 onready var _heat_bar = $HeatBar

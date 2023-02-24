@@ -90,7 +90,9 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 func update_hud(cursor_cell: Vector2) -> void:
 	# Hide all huds except the active unit and the hovered unit
 	for unit in _unit_list:
-		if unit == active_unit or unit.cell == cursor_cell:
+		if unit == active_unit:
+			pass
+		if unit.cell == cursor_cell:
 			unit.show_hud()
 		else:
 			unit.hide_hud()

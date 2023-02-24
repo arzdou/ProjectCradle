@@ -3,7 +3,7 @@
 [ext_resource path="res://Scripts/GameMap/GameMap.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/GameMap/BoardCamera.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/GameMap/Cursor.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Scripts/Unit/UnitOverlay.gd" type="Script" id=4]
+[ext_resource path="res://Scripts/GameMap/UnitOverlay.gd" type="Script" id=4]
 [ext_resource path="res://Media/maps/grid_tile.png" type="Texture" id=5]
 [ext_resource path="res://Media/maps/select_tile.png" type="Texture" id=7]
 

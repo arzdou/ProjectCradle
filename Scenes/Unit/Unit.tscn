@@ -1,13 +1,14 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Scripts/Unit/Unit.gd" type="Script" id=1]
 [ext_resource path="res://Media/Player.png" type="Texture" id=2]
 [ext_resource path="res://Media/unit_shadow.svg" type="Texture" id=3]
 [ext_resource path="res://Scripts/ResourceGenerators/Grid.gd" type="Script" id=4]
 [ext_resource path="res://Scripts/Unit/UnitStats.gd" type="Script" id=5]
-[ext_resource path="res://Scenes/Unit/UnitHUD.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Scripts/Unit/SideMenu.gd" type="Script" id=7]
-[ext_resource path="res://Scenes/UI/ActionContainer.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Scenes/Unit/UnitHUD/BarHud.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scripts/Unit/UnitHUD/SideMenu.gd" type="Script" id=7]
+[ext_resource path="res://Scenes/Unit/UnitHUD/ActionContainer.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Scripts/Unit/UnitHUD/StatusHUD.gd" type="Script" id=9]
 
 [sub_resource type="Resource" id=1]
 script = ExtResource( 4 )
@@ -52,16 +53,12 @@ script = ExtResource( 1 )
 grid = SubResource( 1 )
 move_range = 6
 
+[node name="UnitStats" type="Node" parent="."]
+script = ExtResource( 5 )
+
 [node name="PathFollow2D" type="PathFollow2D" parent="."]
 rotate = false
 loop = false
-
-[node name="UnitHUD" parent="PathFollow2D" instance=ExtResource( 6 )]
-margin_left = -8.0
-margin_top = -115.0
-margin_right = -8.0
-margin_bottom = -115.0
-mouse_filter = 2
 
 [node name="Shadow" type="Sprite" parent="PathFollow2D"]
 modulate = Color( 0.129412, 0.109804, 0.109804, 0.388235 )
@@ -74,14 +71,9 @@ modulate = Color( 1.15861, 1.15861, 1.15861, 1 )
 scale = Vector2( 0.75, 0.75 )
 texture = ExtResource( 2 )
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/idle = SubResource( 3 )
-anims/selected = SubResource( 2 )
+[node name="HUD" type="Control" parent="PathFollow2D"]
 
-[node name="UnitStats" type="Node" parent="."]
-script = ExtResource( 5 )
-
-[node name="SideMenu" type="ViewportContainer" parent="."]
+[node name="SideMenu" type="ViewportContainer" parent="PathFollow2D/HUD"]
 margin_left = 48.0
 margin_top = -58.0
 margin_right = 262.0
@@ -89,8 +81,28 @@ margin_bottom = 78.0
 stretch = true
 script = ExtResource( 7 )
 
-[node name="MainContainer" parent="SideMenu" instance=ExtResource( 8 )]
+[node name="MainContainer" parent="PathFollow2D/HUD/SideMenu" instance=ExtResource( 8 )]
+
+[node name="StatusHUD" type="VBoxContainer" parent="PathFollow2D/HUD"]
+margin_left = -240.0
+margin_top = -58.0
+margin_right = -40.0
+margin_bottom = 105.0
+rect_min_size = Vector2( 200, 0 )
+mouse_filter = 2
+script = ExtResource( 9 )
+
+[node name="Bars" parent="PathFollow2D/HUD" instance=ExtResource( 6 )]
+margin_left = -8.0
+margin_top = -115.0
+margin_right = -8.0
+margin_bottom = -115.0
+mouse_filter = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/idle = SubResource( 3 )
+anims/selected = SubResource( 2 )
 
 [connection signal="stress_raised" from="UnitStats" to="." method="_on_UnitStats_stress_raised"]
 [connection signal="structure_reduced" from="UnitStats" to="." method="_on_UnitStats_structure_reduced"]
-[connection signal="action_selected" from="SideMenu" to="." method="_on_SideMenu_action_selected"]
+[connection signal="action_selected" from="PathFollow2D/HUD/SideMenu" to="." method="_on_SideMenu_action_selected"]
