@@ -181,6 +181,7 @@ config/name="LANCER"
 [autoload]
 
 GlobalGrid="*res://Scenes/GlobalGrid.tscn"
+LogRepeater="*res://Scripts/UI/LogRepeater.gd"
 
 [display]
 

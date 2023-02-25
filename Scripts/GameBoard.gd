@@ -84,6 +84,8 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	_unit_manager.move_active_unit(new_cell, _unit_path.current_path)
 	if _unit_manager.active_unit._is_walking:
 		yield(_unit_manager.active_unit, "walk_finished")
+	
+	LogRepeater.write(_unit_manager.name + ' moved')
 	change_state(CONSTANTS.BOARD_STATE.SELECTING)
 
 
@@ -120,13 +122,13 @@ func change_state(new_state: int) -> void:
 		_:
 			print('The state you are entering does not exist, the program will probably crash soon')
 	
-	$HUD/DEBUG_LABEL.text = teams[team_turn_index]
 	_board_state = new_state
 
 
 func finish_unit_turn() -> void:
 	_unit_manager.finish_turn()
 	change_state(CONSTANTS.BOARD_STATE.FREE)
+	LogRepeater.clear()
 	team_turn_index = (team_turn_index+1) % teams.size()
 
 
@@ -163,7 +165,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 
 func _on_Unit_action_selected(action) -> void:
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
-	_action_processor.initialize(action,  _game_map.terrain_tiles[CONSTANTS.EOVERLAY_CELLS.BLOCKED], _game_map.get_cover())
+	_action_processor.initialize(action, _game_map.get_cover())
 	var pos = GlobalGrid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 

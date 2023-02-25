@@ -7,7 +7,7 @@ var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
 var _units
 var _performing_action 
-var _performing_unit: Unit
+var active_unit: Unit
 var _blocked_cells := []
 var _cover := {}
 
@@ -18,19 +18,20 @@ var draw_arrows := false
 
 onready var _unit_manager = $"../UnitManager"
 
+var damage_string: String = "%s dealt %d %s damage to %s"
 
-func initialize(action, blocked_cells: Array, cover: Dictionary):
+
+func initialize(action, cover: Dictionary):
 	_units = _unit_manager._unit_list
 	_performing_action = action
-	_performing_unit = _unit_manager.active_unit
-	_blocked_cells = blocked_cells
+	active_unit = _unit_manager.active_unit
 	_cover = cover
 
 
 func stop():
 	_units = null
 	_performing_action = null
-	_performing_unit = null
+	active_unit = null
 
 
 func get_overlay_cells() -> Dictionary:
@@ -43,9 +44,9 @@ func get_overlay_cells() -> Dictionary:
 
 
 func find_cover_from_attack(target_unit: Unit) -> int:
-	var mouse_angle: float = _performing_unit.cell.angle_to_point(target_unit.cell)
-	var distance = _performing_unit.cell.distance_to(target_unit.cell)
-	var line_of_sight = GlobalGrid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, distance)
+	var mouse_angle: float = active_unit.cell.angle_to_point(target_unit.cell)
+	var distance = active_unit.cell.distance_to(target_unit.cell)
+	var line_of_sight = GlobalGrid.ray_cast_from_cell(active_unit.cell, mouse_angle, distance)
 	
 	if _cover['hard'].has(line_of_sight[-2]):
 		return 2
@@ -76,7 +77,7 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 	if not target_unit:
 		return false
 	
-	if target_unit == _performing_unit:
+	if target_unit == active_unit:
 		return false
 	
 	if target_unit.status[CONSTANTS.STATUS.INVISIBLE]:
@@ -86,22 +87,25 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 			return true
 	
 	var accuracy: int = 0
-	if _performing_unit.status[CONSTANTS.STATUS.ENGAGED] and range_type != CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
+	if active_unit.status[CONSTANTS.STATUS.ENGAGED] and range_type != CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
 		accuracy -= 1
 	if target_unit.status[CONSTANTS.STATUS.EXPOSED]:
 		accuracy += 1
 	if target_unit.status[CONSTANTS.STATUS.PRONE]:
 		accuracy += 1
-	if _performing_unit.conditions[CONSTANTS.CONDITIONS.IMPAIRED]:
+	if active_unit.conditions[CONSTANTS.CONDITIONS.IMPAIRED]:
 		accuracy -= 1
 	
 	accuracy += find_cover_from_attack(target_unit)
-
+	
 	for damage_resource in damage_array:
 		var damage_type: int = damage_resource.type
-		target_unit.take_damage(damage_resource.roll_damage(accuracy), damage_type)
+		var damage_dealt = damage_resource.roll_damage(accuracy)
+		target_unit.take_damage(damage_dealt, damage_type)
 		target_unit.show_hud()
-	
+		LogRepeater.write(
+			damage_string %[active_unit.mech_name, damage_dealt, CONSTANTS.DAMAGE_TYPES.keys()[damage_type], target_unit.mech_name]
+		)
 	return true
 
 
@@ -128,7 +132,7 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 	
 	# TODO: Probably it would be intelligent to isolate this behaviour in its own node since it will get pretty fucking chonky
 	# Also create new funcions for every type of action would help with readability
-	var mouse_angle: float = _performing_unit.cell.angle_to_point(target_cell)
+	var mouse_angle: float = active_unit.cell.angle_to_point(target_cell)
 	
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
 		# For now only range types
@@ -139,7 +143,7 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 		
 		match range_type: 
 			CONSTANTS.WEAPON_RANGE_TYPES.RANGE:
-				marked_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_value)
+				marked_cells = GlobalGrid.line_of_sight(active_unit.cell, range_value)
 				damage_cells = [target_cell]
 				move_cells.clear()
 				if execute and marked_cells.has(target_cell):
@@ -147,21 +151,21 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
 				marked_cells.clear()
-				damage_cells = GlobalGrid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, range_value)
+				damage_cells = GlobalGrid.ray_cast_from_cell(active_unit.cell, mouse_angle, range_value)
 				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
 				marked_cells.clear()
-				damage_cells = GlobalGrid.cone_from_cell(_performing_unit.cell, mouse_angle, range_value)
+				damage_cells = GlobalGrid.cone_from_cell(active_unit.cell, mouse_angle, range_value)
 				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
 				# For blast, shooting range should be an Vector2 of [range, blast radius]
-				marked_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_value)
+				marked_cells = GlobalGrid.line_of_sight(active_unit.cell, range_value)
 				damage_cells = GlobalGrid.line_of_sight(target_cell, range_blast)
 				move_cells.clear()
 				if execute:
@@ -169,13 +173,13 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
 				marked_cells.clear()
-				damage_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_blast)
+				damage_cells = GlobalGrid.line_of_sight(active_unit.cell, range_blast)
 				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 					
 			CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
-				marked_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_value)
+				marked_cells = GlobalGrid.line_of_sight(active_unit.cell, range_value)
 				damage_cells = [target_cell]
 				move_cells.clear()
 				if execute and marked_cells.has(target_cell):
@@ -186,7 +190,7 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 			draw_arrows = true
 			marked_cells.clear()
 			move_cells.clear()
-			move_cells = GlobalGrid.flood_fill(_performing_unit.cell, _performing_unit.move_range)
+			move_cells = GlobalGrid.flood_fill(active_unit.cell, active_unit.move_range)
 			
 			if execute and move_cells.has(target_cell):
 				draw_arrows = false
