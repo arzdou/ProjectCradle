@@ -35,21 +35,11 @@ func stop():
 
 
 func get_overlay_cells() -> Dictionary:
-	var action_cells := {}
-	
-	for d_cell in damage_cells:
-		action_cells[d_cell] = CONSTANTS.UOVERLAY_CELLS.DAMAGE
-		
-	for m_cell in marked_cells:
-		if action_cells.has(m_cell):
-			continue
-		action_cells[m_cell] = CONSTANTS.UOVERLAY_CELLS.MARKED
-		
-	for m_cell in move_cells:
-		if action_cells.has(m_cell):
-			continue
-		action_cells[m_cell] = CONSTANTS.UOVERLAY_CELLS.MOVEMENT
-		
+	var action_cells := {
+		CONSTANTS.UOVERLAY_CELLS.MARKED: marked_cells,
+		CONSTANTS.UOVERLAY_CELLS.MOVEMENT: move_cells,
+		CONSTANTS.UOVERLAY_CELLS.DAMAGE: damage_cells
+	}
 	return action_cells
 
 

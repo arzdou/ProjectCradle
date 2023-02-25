@@ -58,18 +58,10 @@ func _reinitialize() -> void:
 
 
 func get_blocked_cells() -> Array:
-	return _unit_manager.get_occupied_cells() + _game_map.get_blocked_terrain()
+	return _unit_manager.get_occupied_cells() + _game_map.terrain_tiles[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
 
 func get_walkable_cells() -> Array:
 	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.remaining_move_range, get_blocked_cells())
-
-
-func _array_to_zero_dict(value: Array, type: int) -> Dictionary:
-	# key should be of CONSTANTS.UOVERLAY_CELLS type
-	var out := {}
-	for key in value:
-		out[key] = type
-	return out
 
 
 func _select_unit(cell: Vector2) -> void:
@@ -112,7 +104,7 @@ func change_state(new_state: int) -> void:
 		CONSTANTS.BOARD_STATE.MOVEMENT:
 			_game_map.cursor.is_active = true
 			var walkable_cells = get_walkable_cells()
-			_unit_overlay.draw(_array_to_zero_dict(walkable_cells, CONSTANTS.UOVERLAY_CELLS.MOVEMENT))
+			_unit_overlay.draw_array(walkable_cells, CONSTANTS.UOVERLAY_CELLS.MOVEMENT)
 			_unit_path.initialize(walkable_cells)
 			
 			_unit_manager.show_side_menu(false)
@@ -177,7 +169,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 
 func _on_Unit_action_selected(action) -> void:
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
-	_action_processor.initialize(action, _game_map.get_blocked_terrain(), _game_map.get_cover())
+	_action_processor.initialize(action,  _game_map.terrain_tiles[CONSTANTS.EOVERLAY_CELLS.BLOCKED], _game_map.get_cover())
 	var pos = _grid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 

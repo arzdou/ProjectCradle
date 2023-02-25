@@ -1,56 +1,12 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scripts/GameMap/UnitOverlay.gd" type="Script" id=1]
-[ext_resource path="res://Media/maps/select_tile.png" type="Texture" id=2]
+[ext_resource path="res://Resources/board_overlay_tileset.tres" type="TileSet" id=2]
 [ext_resource path="res://Scripts/GameBoard.gd" type="Script" id=4]
 [ext_resource path="res://Scenes/Unit/UnitPath.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Scripts/ActionProcessor.gd" type="Script" id=7]
 [ext_resource path="res://Scripts/Unit/UnitManager.gd" type="Script" id=8]
 [ext_resource path="res://Scenes/GameMap/GameMap.tscn" type="PackedScene" id=10]
-
-[sub_resource type="TileSet" id=1]
-0/name = "movement"
-0/texture = ExtResource( 2 )
-0/tex_offset = Vector2( 0, 0 )
-0/modulate = Color( 0.584314, 0.992157, 0.333333, 0.352941 )
-0/region = Rect2( 0, 0, 64, 64 )
-0/tile_mode = 0
-0/occluder_offset = Vector2( 0, 0 )
-0/navigation_offset = Vector2( 0, 0 )
-0/shape_offset = Vector2( 0, 0 )
-0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-0/shape_one_way = false
-0/shape_one_way_margin = 0.0
-0/shapes = [  ]
-0/z_index = 0
-1/name = "marked"
-1/texture = ExtResource( 2 )
-1/tex_offset = Vector2( 0, 0 )
-1/modulate = Color( 1, 0.765333, 0.36, 0.352941 )
-1/region = Rect2( 0, 0, 64, 64 )
-1/tile_mode = 0
-1/occluder_offset = Vector2( 0, 0 )
-1/navigation_offset = Vector2( 0, 0 )
-1/shape_offset = Vector2( 0, 0 )
-1/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-1/shape_one_way = false
-1/shape_one_way_margin = 0.0
-1/shapes = [  ]
-1/z_index = 0
-2/name = "damage"
-2/texture = ExtResource( 2 )
-2/tex_offset = Vector2( 0, 0 )
-2/modulate = Color( 1, 0, 0, 0.352941 )
-2/region = Rect2( 0, 0, 64, 64 )
-2/tile_mode = 0
-2/occluder_offset = Vector2( 0, 0 )
-2/navigation_offset = Vector2( 0, 0 )
-2/shape_offset = Vector2( 0, 0 )
-2/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-2/shape_one_way = false
-2/shape_one_way_margin = 0.0
-2/shapes = [  ]
-2/z_index = 0
 
 [node name="Main" type="Node2D"]
 
@@ -66,7 +22,7 @@ script = ExtResource( 7 )
 [node name="GameMap" parent="GameBoard" instance=ExtResource( 10 )]
 
 [node name="UnitOverlay" type="TileMap" parent="GameBoard/GameMap"]
-tile_set = SubResource( 1 )
+tile_set = ExtResource( 2 )
 format = 1
 script = ExtResource( 1 )
 

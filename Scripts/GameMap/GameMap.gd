@@ -25,6 +25,9 @@ func _ready():
 		yield($MouseCamera, "ready")
 	_mouse_camera.timer.wait_time = ui_timer
 	
+	for terrain in CONSTANTS.EOVERLAY_CELLS.values():
+		terrain_tiles[terrain] = []
+	
 	initialize()
 
 
@@ -70,22 +73,11 @@ func _set_terrain_tiles(value: Dictionary) -> void:
 	_overlay.draw(terrain_tiles) # The draw function already handles clearing
 
 
-func get_blocked_terrain() -> Array:
-	# Checks the terrain and returns an array with the coordinates of all blocked cells
-	var out := []
-	for cell in terrain_tiles:
-		if terrain_tiles[cell] == 0:
-			out.push_back(cell)
-	return out
-
-
 func get_cover() -> Dictionary:
-	var cover = {"hard": [], "soft": []}
-	for cell in terrain_tiles:
-		if terrain_tiles[cell] == 1:
-			cover["hard"].push_back(cell)
-		if terrain_tiles[cell] == 2:
-			cover["soft"].push_back(cell)
+	var cover = {
+		"hard": terrain_tiles[CONSTANTS.EOVERLAY_CELLS.HARD_COVER], 
+		"soft": terrain_tiles[CONSTANTS.EOVERLAY_CELLS.SOFT_COVER]
+		}
 	return cover
 
 func _on_Cursor_accept_pressed(cell):
@@ -93,10 +85,11 @@ func _on_Cursor_accept_pressed(cell):
 		return
 		
 	if _overlay.get_cellv(cell) != selected_terrain_id and selected_terrain_id != 3:
-		terrain_tiles[cell] = selected_terrain_id
+		terrain_tiles[selected_terrain_id].push_back(cell)
 		_set_terrain_tiles(terrain_tiles)
 	else:
-		terrain_tiles.erase(cell)
+		for terrain in terrain_tiles:
+			terrain_tiles[terrain].erase(cell)
 		_set_terrain_tiles(terrain_tiles)
 
 
