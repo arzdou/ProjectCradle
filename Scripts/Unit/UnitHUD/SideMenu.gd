@@ -95,9 +95,9 @@ func menu_button_pressed(button_pressed: BaseUIButton, container: ActionContaine
 	var menu_to_show: ActionContainer = button_to_container_ref[button_pressed]
 	menu_to_show.show_menu()
 
+
 func on_action_selected(action, container: ActionContainer):
 	hide_menu()
-	print(action)
 	emit_signal('action_selected', action)
 
 

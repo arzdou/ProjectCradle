@@ -17,7 +17,6 @@ func draw(start_cell: Vector2, end_cell: Vector2) -> void:
 		return
 	
 	current_path = _pathfinder.calculate_point_path(start_cell, end_cell)
-	print(current_path)
 	for cell in current_path:
 		set_cellv(cell, 0)
 	

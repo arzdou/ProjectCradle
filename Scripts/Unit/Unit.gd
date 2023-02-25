@@ -162,9 +162,17 @@ func _get_menu_layout() -> Dictionary:
 		'QUICK ACTIONS': {}
 	}
 	
-	layout['FULL ACTIONS'] = _mech.weapons
-	layout['QUICK ACTIONS'] = _mech.weapons
-	layout['BOOST'] = load("res://Resources/Actions/Boost.tres")
+	var barrage := []
+	var skirmish := []
+	for weapon in _mech.weapons:
+		if weapon.barrage:
+			barrage.push_back(weapon)
+		if weapon.skirmish:
+			skirmish.push_back(weapon)
+	
+	layout['FULL ACTIONS']['BARRAGE'] = barrage
+	layout['QUICK ACTIONS']['SKIRMISH'] = skirmish
+	layout['QUICK ACTIONS']['BOOST'] = load("res://Resources/Actions/Boost.tres")
 	return layout 
 
 

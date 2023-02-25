@@ -8,13 +8,13 @@ export var map_res: Resource = preload("res://Resources/Maps/test.tres")
 var _unit_data := [
 	{
 		'pilot': "res://Resources/Pilots/BasePilot.tres",
-		'mech': "res://Resources/Frames/Everest2.tres",
+		'mech': "res://Resources/Frames/Everest.tres",
 		'cell': Vector2(2, 3),
 		'team': 'ally'
 	},
 	{
 		'pilot': "res://Resources/Pilots/BasePilot.tres",
-		'mech': "res://Resources/Frames/Everest2.tres",
+		'mech': "res://Resources/Frames/Everest.tres",
 		'cell': Vector2(2, 5),
 		'team': 'enemy'
 	}
@@ -177,8 +177,6 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 
 func _on_Unit_action_selected(action) -> void:
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
-	
-	print(action)
 	_action_processor.initialize(action, _game_map.get_blocked_terrain())
 	var pos = _grid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)

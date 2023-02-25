@@ -52,7 +52,7 @@ func get_overlay_cells() -> Dictionary:
 
 
 
-func try_to_apply_damage(target_cell: Vector2, damage_array: Array) -> bool:
+func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:int) -> bool:
 	# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
 	# return false and if the damage was applied it will return true
 	
@@ -78,8 +78,7 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array) -> bool:
 			return true
 	
 	var accuracy: int = 0
-	print(recieving_unit.status)
-	if _performing_unit.status[CONSTANTS.STATUS.ENGAGED]:
+	if _performing_unit.status[CONSTANTS.STATUS.ENGAGED] and range_type != CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
 		accuracy -= 1
 	if recieving_unit.status[CONSTANTS.STATUS.EXPOSED]:
 		accuracy += 1
@@ -96,12 +95,12 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array) -> bool:
 	return true
 
 
-func try_to_apply_damage_in_area(area: Array, damage_array: Array) -> bool:
+func try_to_apply_damage_in_area(area: Array, damage_array: Array, range_type: int) -> bool:
 	# Same as before but now we do it in an area, defined as an array of cells
 	var damage_applied := false
 	for target_cell in area:
 		# If *any* damage was done consider this action complete
-		damage_applied = damage_applied or try_to_apply_damage(target_cell, damage_array)
+		damage_applied = damage_applied or try_to_apply_damage(target_cell, damage_array, range_type)
 		
 	return damage_applied
 
@@ -134,21 +133,21 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 				damage_cells = [target_cell]
 				move_cells.clear()
 				if execute and marked_cells.has(target_cell):
-					return try_to_apply_damage(target_cell, damage_array)
+					return try_to_apply_damage(target_cell, damage_array, range_type)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
 				marked_cells.clear()
 				damage_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, range_value, _blocked_cells)
 				move_cells.clear()
 				if execute:
-					return try_to_apply_damage_in_area(damage_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
 				marked_cells.clear()
 				damage_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, range_value, _blocked_cells)
 				move_cells.clear()
 				if execute:
-					return try_to_apply_damage_in_area(damage_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
 				# For blast, shooting range should be an Vector2 of [range, blast radius]
@@ -156,17 +155,24 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 				damage_cells = _grid.ray_cast_circular(target_cell, range_blast, _blocked_cells)
 				move_cells.clear()
 				if execute:
-					return try_to_apply_damage_in_area(damage_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
 				marked_cells.clear()
 				damage_cells = _grid.ray_cast_circular(_performing_unit.cell, range_blast, _blocked_cells)
 				move_cells.clear()
 				if execute:
-					return try_to_apply_damage_in_area(damage_cells, damage_array)
+					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
+					
+			CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
+				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, range_value, _blocked_cells)
+				damage_cells = [target_cell]
+				move_cells.clear()
+				if execute and marked_cells.has(target_cell):
+					return try_to_apply_damage(target_cell, damage_array, range_type)
 					
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MOVEMENT:
-		if _performing_action.action_name == "BOOST":
+		if _performing_action.name == "BOOST":
 			draw_arrows = true
 			marked_cells.clear()
 			move_cells.clear()
