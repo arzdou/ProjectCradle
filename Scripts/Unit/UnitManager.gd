@@ -73,7 +73,7 @@ func get_active_move_range() -> int:
 	return active_unit.move_range
 
 
-func check_possible_engagement(unit: Unit, cell: Vector2) -> Array:
+func check_possible_engagement(cell: Vector2) -> Array:
 	# Find all units that unit will be engaged if it was in cell
 	var engaged_units := []
 	
@@ -102,22 +102,6 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	if get_occupied_cells().has(new_cell):
 		return false
 	
-	
-	# TODO: Move this to UnitPath and change the opacity of the arrow
-	# Check for any larger adjacent enemy in the path and stop the movement
-	for i in range(path.size()):
-		var stop_path := false
-		var engaged_units = check_possible_engagement(active_unit, path[i])
-		for engaged_unit in engaged_units:
-			if engaged_unit._mech.size < active_unit._mech.size:
-				continue 
-			stop_path = true
-			path = path.slice(0, i)
-			if i == 0: 
-				return true # If the unit can't move, dont bother
-		if stop_path:
-			break
-	
 	# Before moving break the engagement from the previous location
 	for old_engagned_unit in active_unit.status[CONSTANTS.STATUS.ENGAGED]:
 		old_engagned_unit.status[CONSTANTS.STATUS.ENGAGED].erase(active_unit)
@@ -127,7 +111,7 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	yield(active_unit, "walk_finished")
 	
 	# After moving to the correct position, engage the units with one another
-	for engaged_unit in check_possible_engagement(active_unit, path[-1]):
+	for engaged_unit in check_possible_engagement(path[-1]):
 		active_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(engaged_unit)
 		engaged_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(active_unit)
 		
