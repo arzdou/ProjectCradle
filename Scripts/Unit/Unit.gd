@@ -6,9 +6,28 @@ tool
 class_name Unit
 extends Path2D
 
+var _base_actions : Dictionary = {
+	"QUICK": {
+		"SKIRMISH": [],
+		"TECH": [],
+		"BOOST": null,
+		"RAM": null,
+		"GRAPPLE": null,
+		"HIDE": null,
+		"SEARCH": null,
+	},
+	"FULL" : {
+		"BARRAGE": [],
+		"TECH": [],
+		"IMPROVISED ATTACK": null,
+		"STABILIZE": null,
+		"DISENGAGE": null
+	},
+	"OVERCHARGE": null
+}
 
 signal action_selected(action)
-
+signal walk_finished
 
 # Preload the `Grid.tres` resource you created in the previous part.
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
@@ -27,20 +46,22 @@ export(String, 'ally', 'enemy') var team
 export var skin: Texture setget set_skin
 export var skin_offset := Vector2.ZERO setget set_skin_offset
 
-# Distance to which the unit can walk in cells.
-export var move_range: int setget ,_get_move_range
-# The unit's move speed in pixels, when it's moving along a path.
-export var move_speed := 600.0
 # Through its setter function, the `_is_walking` property toggles processing for this unit.
 # See `_set_is_walking()` at the bottom of this code snippet.
 var _is_walking := false setget _set_is_walking
+export var move_range: int # Distance to which the unit can walk in cells.
+export var move_speed := 600.0 # The unit's move speed in pixels, when it's moving along a path.
+var remaining_move_range: int = move_range setget ,_get_remaining_move_range
 
 # Cell where the unit is located
 var cell := Vector2.ZERO setget set_cell
 var is_selected := false setget set_is_selected
 var is_selecting_action := false setget set_is_selecting_action
+
+var is_boosting := false
 var used_move_range := 0
 
+var actions_left := 2
 var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STATUS, and values bool. Except engaged will be an Array of the engaged units
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
 
@@ -50,12 +71,9 @@ onready var _sprite: Sprite = $PathFollow2D/Sprite
 onready var _path_follow: PathFollow2D = $PathFollow2D
 onready var _anim_player: AnimationPlayer = $AnimationPlayer
 
-
 onready var _side_menu = $PathFollow2D/HUD/SideMenu
 onready var _bar_hud = $PathFollow2D/HUD/Bars
 onready var _status_hud = $PathFollow2D/HUD/StatusHUD
-
-signal walk_finished
 
 
 func _ready():
@@ -131,6 +149,9 @@ func walk_along(path: PoolVector2Array) -> void:
 	# Inmediately set the position to the last point
 	_set_is_walking(true)
 	used_move_range = min(used_move_range + path.size() - 1, move_range)
+	if is_boosting:
+		used_move_range = move_range
+		is_boosting = false
 	set_cell(path[-1])
 	
 
@@ -143,6 +164,7 @@ func _get_menu_layout() -> Dictionary:
 	
 	layout['FULL ACTIONS'] = _mech.weapons
 	layout['QUICK ACTIONS'] = _mech.weapons
+	layout['BOOST'] = load("res://Resources/Actions/Boost.tres")
 	return layout 
 
 
@@ -214,6 +236,7 @@ func set_is_selected(val: bool) -> void:
 		
 	is_selected = val
 	if is_selected:
+		actions_left = 2
 		_anim_player.play("selected")
 		show_hud()
 	else:
@@ -236,7 +259,7 @@ func _set_is_walking(val: bool) -> void:
 	_is_walking = val
 	set_process(_is_walking)
 
-func _get_move_range() -> int:
+func _get_remaining_move_range() -> int:
 	return move_range - used_move_range
 
 func show_hud() -> void:

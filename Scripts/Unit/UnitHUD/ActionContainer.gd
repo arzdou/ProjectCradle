@@ -38,8 +38,9 @@ func create_action_button(action):
 	var action_button := BaseUIButton.instance()
 	add_child(action_button)
 	
-	action_button.set_name(action.weapon_name)
-	action_button.initialize(action.weapon_name)
+	print(action)
+	action_button.set_name(action.action_name)
+	action_button.initialize(action.action_name)
 	action_button.connect("pressed", self, "_on_action_button_pressed", [action])
 	
 	button_array.push_back(action_button)

@@ -56,6 +56,10 @@ func create_menu_recursively(menu_dictionary: Dictionary, parent_container: Acti
 	for menu_key in menu_dictionary:
 		var value = menu_dictionary[menu_key]
 		
+		if typeof(value) != TYPE_DICTIONARY and typeof(value) != TYPE_ARRAY:
+			parent_container.create_action_button(value)
+			continue
+		
 		var child_container = ActionContainer.instance()
 		var menu_button = parent_container.create_menu_button(menu_key)
 		button_to_container_ref[menu_button] = child_container
@@ -70,6 +74,7 @@ func create_menu_recursively(menu_dictionary: Dictionary, parent_container: Acti
 		elif typeof(value) == TYPE_ARRAY:
 			for action in value:
 				child_container.create_action_button(action)
+			
 		child_container.hide()
 
 
@@ -92,6 +97,7 @@ func menu_button_pressed(button_pressed: BaseUIButton, container: ActionContaine
 
 func on_action_selected(action, container: ActionContainer):
 	hide_menu()
+	print(action)
 	emit_signal('action_selected', action)
 
 

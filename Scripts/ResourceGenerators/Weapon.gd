@@ -4,7 +4,7 @@ class_name Weapon
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 var action_type = CONSTANTS.ACTION_TYPES.WEAPON
 
-export(String) var weapon_name = 'Weapon' 
+export(String) var action_name = 'Weapon' 
 export(CONSTANTS.MOUNT_SIZES) var size = CONSTANTS.MOUNT_SIZES.MAIN
 export(CONSTANTS.WEAPON_TYPES) var type = CONSTANTS.WEAPON_TYPES.RIFLE
 

@@ -1,9 +1,9 @@
 class_name GameBoard
 extends YSort
 
+const CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 export var _grid: Resource = preload("res://Resources/Grid.tres")
-var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
-export(Resource) var map_res = preload("res://Resources/Maps/test.tres")
+export var map_res: Resource = preload("res://Resources/Maps/test.tres")
 
 var _unit_data := [
 	{
@@ -26,8 +26,7 @@ var _unit_data := [
 var teams := ['ally', 'enemy']
 var team_turn_index = 0
 
-enum STATE {FREE, MOVEMENT, SELECTING, ACTING}
-var _board_state: int = STATE.FREE setget change_state
+var _board_state: int = CONSTANTS.BOARD_STATE.FREE setget change_state
 
 onready var _game_map = $GameMap
 onready var _action_processor = $ActionProcessor
@@ -49,11 +48,11 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"): # It handles well all states
-		change_state(STATE.FREE)
+		change_state(CONSTANTS.BOARD_STATE.FREE)
 
 
 func _reinitialize() -> void:
-	change_state(STATE.FREE)
+	change_state(CONSTANTS.BOARD_STATE.FREE)
 	_unit_manager.initialize(_unit_data)
 	_unit_manager.update_hud(Vector2(-1,-1))
 
@@ -62,7 +61,7 @@ func get_blocked_cells() -> Array:
 	return _unit_manager.get_occupied_cells() + _game_map.get_blocked_terrain()
 
 func get_walkable_cells() -> Array:
-	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.move_range, get_blocked_cells())
+	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.remaining_move_range, get_blocked_cells())
 
 
 func _array_to_zero_dict(value: Array, type: int) -> Dictionary:
@@ -81,11 +80,11 @@ func _select_unit(cell: Vector2) -> void:
 	if not was_unit_selected:
 		return
 	
-	if _unit_manager.get_active_move_range() == 0:
-		change_state(STATE.SELECTING)
+	if _unit_manager.active_unit.remaining_move_range == 0:
+		change_state(CONSTANTS.BOARD_STATE.SELECTING)
 		return
 	
-	change_state(STATE.MOVEMENT)
+	change_state(CONSTANTS.BOARD_STATE.MOVEMENT)
 
 
 func _move_active_unit(new_cell: Vector2) -> void:
@@ -96,22 +95,21 @@ func _move_active_unit(new_cell: Vector2) -> void:
 		new_cell, _unit_path.current_path
 	)
 	
-	# This creates problems since movement_complete is not a bool but a yield object, I dunno how to fix it but its ugly af
 	if movement_complete:
-		change_state(STATE.SELECTING)
+		change_state(CONSTANTS.BOARD_STATE.SELECTING)
 
 
 # Maybe I could implement a state machine since I have already separated the code...
 func change_state(new_state: int) -> void:
 	match new_state:
-		STATE.FREE:
+		CONSTANTS.BOARD_STATE.FREE:
 			_game_map.cursor.is_active = true
 			_unit_overlay.draw({})
 			_unit_path.stop()
 			
 			_unit_manager.deselect_unit()
 			
-		STATE.MOVEMENT:
+		CONSTANTS.BOARD_STATE.MOVEMENT:
 			_game_map.cursor.is_active = true
 			var walkable_cells = get_walkable_cells()
 			_unit_overlay.draw(_array_to_zero_dict(walkable_cells, CONSTANTS.UOVERLAY_CELLS.MOVEMENT))
@@ -119,7 +117,7 @@ func change_state(new_state: int) -> void:
 			
 			_unit_manager.show_side_menu(false)
 			
-		STATE.SELECTING:
+		CONSTANTS.BOARD_STATE.SELECTING:
 			if _unit_manager.active_unit._is_walking:
 				yield(_unit_manager.active_unit, "walk_finished")
 			_game_map.cursor.is_active = false
@@ -127,11 +125,10 @@ func change_state(new_state: int) -> void:
 			_unit_path.stop()
 			_unit_manager.show_side_menu(true) # Toggles the menu and animations of active unit
 			
-		STATE.ACTING:
+		CONSTANTS.BOARD_STATE.ACTING:
 			_game_map.cursor.is_active = true
 			_unit_overlay.draw({})
 			_unit_path.stop()
-			
 			_unit_manager.show_side_menu(false)
 			
 		_:
@@ -143,43 +140,50 @@ func change_state(new_state: int) -> void:
 
 func finish_unit_turn() -> void:
 	_unit_manager.finish_turn()
-	change_state(STATE.FREE)
+	change_state(CONSTANTS.BOARD_STATE.FREE)
 	team_turn_index = (team_turn_index+1) % teams.size()
 
 
 func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
 	var new_cell = _grid.world_to_map(new_pos)
-	if _board_state == STATE.MOVEMENT:
+	if _board_state == CONSTANTS.BOARD_STATE.MOVEMENT:
 		# Show the arrows
 		_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
 		
-	elif _board_state == STATE.ACTING:
+	elif _board_state == CONSTANTS.BOARD_STATE.ACTING:
 		# This updates the unit overlay when the user is selecting an action
 		_action_processor.process_action_targeted(new_cell, false)
 		_unit_overlay.draw(_action_processor.get_overlay_cells())
+		if _action_processor.draw_arrows:
+			_unit_path.initialize(_action_processor.move_cells)
+			_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
 	
 	if _unit_manager:
 		_unit_manager.update_hud(new_cell)
 
 func _on_Cursor_accept_pressed(cell: Vector2) -> void:
-	if _board_state == STATE.FREE:
+	if _board_state == CONSTANTS.BOARD_STATE.FREE:
 		_select_unit(cell)
 		
-	elif _board_state == STATE.MOVEMENT:
+	elif _board_state == CONSTANTS.BOARD_STATE.MOVEMENT:
 		_move_active_unit(cell)
 		
-	elif _board_state == STATE.ACTING:
+	elif _board_state == CONSTANTS.BOARD_STATE.ACTING:
 	
-		var was_action_performed: bool = _action_processor.process_action_targeted(cell, true)
+		var finish_turn_after_action: bool = _action_processor.process_action_targeted(cell, true)
 			# Finish the unit action
-		if was_action_performed:
+		if finish_turn_after_action:
 			finish_unit_turn()
 
 func _on_Unit_action_selected(action) -> void:
-	change_state(STATE.ACTING)
+	change_state(CONSTANTS.BOARD_STATE.ACTING)
 	
 	print(action)
 	_action_processor.initialize(action, _game_map.get_blocked_terrain())
 	var pos = _grid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 
+
+func _on_ActionProcessor_move_unit(new_cell: Vector2, new_state: int):
+	_move_active_unit(new_cell)
+	change_state(new_state)

@@ -110,7 +110,7 @@ func _check_validity() -> bool:
 	if hull + agility + systems + engineering > license_level + 2:
 		return false
 	
-	# TODO: heck that the number of system points in the mech doesnt exceed the cap 
+	# TODO: check that the number of system points in the mech doesnt exceed the cap 
 	# and that the pilot has all the required liceses
 	if not mech_systems.empty():
 		var mounted_system_points = 0

@@ -1,6 +1,8 @@
 extends Node
 class_name ActionProcessor
 
+signal move_unit(new_cell, new_state)
+
 export var _grid: Resource = preload("res://Resources/Grid.tres")
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
@@ -11,6 +13,8 @@ var _blocked_cells := []
 
 var marked_cells := [] # Indicates the range of the weapon
 var damage_cells := [] # Indicates the damage area
+var move_cells := []   # Indicates movement
+var draw_arrows := false
 
 onready var _unit_manager = $"../UnitManager"
 
@@ -30,12 +34,20 @@ func stop():
 
 func get_overlay_cells() -> Dictionary:
 	var action_cells := {}
+	
 	for d_cell in damage_cells:
 		action_cells[d_cell] = CONSTANTS.UOVERLAY_CELLS.DAMAGE
+		
 	for m_cell in marked_cells:
 		if action_cells.has(m_cell):
 			continue
 		action_cells[m_cell] = CONSTANTS.UOVERLAY_CELLS.MARKED
+		
+	for m_cell in move_cells:
+		if action_cells.has(m_cell):
+			continue
+		action_cells[m_cell] = CONSTANTS.UOVERLAY_CELLS.MOVEMENT
+		
 	return action_cells
 
 
@@ -146,6 +158,15 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 				damage_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array)
+					
+	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MOVEMENT:
+		if _performing_action.action_name == "BOOST":
+			draw_arrows = true
+			move_cells = _grid.flood_fill(_performing_unit.cell, _performing_unit.move_range, _blocked_cells)
+			if execute and move_cells.has(target_cell):
+				draw_arrows = false
+				emit_signal("move_unit", target_cell, CONSTANTS.BOARD_STATE.SELECTING)
+				return false
 	
 	return false
 

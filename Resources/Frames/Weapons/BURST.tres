@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource( 1 )
-weapon_name = "BURST"
+action_name = "BURST"
 size = 0
 type = 0
 weapon_range = {
