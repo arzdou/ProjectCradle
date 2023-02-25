@@ -5,7 +5,6 @@
 extends Node
 class_name UnitManager
 
-var grid: Resource = preload("res://Resources/Grid.tres")
 const Unit: PackedScene = preload("res://Scenes/Unit/Unit.tscn")
 
 var active_unit: Unit = null
@@ -73,26 +72,6 @@ func get_active_move_range() -> int:
 	return active_unit.move_range
 
 
-func check_possible_engagement(cell: Vector2) -> Array:
-	# Find all units that unit will be engaged if it was in cell
-	var engaged_units := []
-	
-	for direction in grid.directions():
-		# Two conditions to NOT stop the path
-		# 1. No occupied unit in each direction
-		# 2. If occupied: Unit is on the same team
-		
-		if not get_occupied_cells().has(cell + direction): 
-			continue
-		
-		var close_unit = in_cell(cell+direction)
-		if close_unit.team == active_unit.team: 
-			continue
-			
-		engaged_units.push_back(close_unit)
-	
-	return engaged_units
-
 func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	
 	if new_cell == active_unit.cell:
@@ -111,7 +90,7 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	yield(active_unit, "walk_finished")
 	
 	# After moving to the correct position, engage the units with one another
-	for engaged_unit in check_possible_engagement(path[-1]):
+	for engaged_unit in GlobalGrid.get_neighbours(path[-1]):
 		active_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(engaged_unit)
 		engaged_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(active_unit)
 		

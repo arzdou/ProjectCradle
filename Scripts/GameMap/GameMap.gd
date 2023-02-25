@@ -11,7 +11,7 @@ var selected_terrain_id := 0
 var drawing_cells := false
 var terrain_tiles := {} setget _set_terrain_tiles
 
-export var _grid: Resource = preload("res://Resources/Grid.tres")
+
 
 var map_size: Vector2
 var ui_timer := 0.1 # seconds
@@ -35,10 +35,10 @@ func initialize(texture: Texture = null) -> void:
 	_sprite.texture = texture
 	if _sprite.texture:
 		map_size = _sprite.scale * Vector2(_sprite.texture.get_width(), _sprite.texture.get_height())
-		_grid.size = (map_size / cell_size).ceil() - Vector2.ONE
+		GlobalGrid.size = (map_size / cell_size).ceil() - Vector2.ONE
 	else:
 		map_size = _mouse_camera.get_camera_size() 
-		_grid.size = (map_size / cell_size).ceil() + Vector2.ONE*500
+		GlobalGrid.size = (map_size / cell_size).ceil() + Vector2.ONE*500
 		
 	_sprite.position = map_size/2
 	_mouse_camera.update_camera_limits()
@@ -57,8 +57,8 @@ func set_scale(texture_scale: Vector2) -> void:
 
 func draw_grid() -> void:
 	clear()
-	for i in _grid.size.x:
-		for j in _grid.size.y:
+	for i in GlobalGrid.size.x:
+		for j in GlobalGrid.size.y:
 			set_cellv(Vector2(i, j), 0)
 
 

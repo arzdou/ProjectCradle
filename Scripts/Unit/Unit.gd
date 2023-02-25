@@ -29,9 +29,7 @@ var _base_actions : Dictionary = {
 signal action_selected(action)
 signal walk_finished
 
-# Preload the `Grid.tres` resource you created in the previous part.
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
-export(Resource) var grid = preload("res://Resources/Grid.tres")
 
 var _pilot: Resource
 var _mech: Resource
@@ -120,7 +118,7 @@ func initialize(unit_data: Dictionary):
 	#In the future this should also set the skin
 	
 	# The following lines initialize the `cell` property and snap the unit to the cell's center on the map.
-	position = grid.map_to_world(cell)
+	position = GlobalGrid.map_to_world(cell)
 
 
 func _process(delta):
@@ -129,7 +127,7 @@ func _process(delta):
 	if _path_follow.unit_offset >= 1.0:
 		_set_is_walking(false) # This also sets _process as false due to the setter bellow
 		
-		position = grid.map_to_world(self.cell)
+		position = GlobalGrid.map_to_world(self.cell)
 		_path_follow.offset = 0.0
 		curve.clear_points()
 		# Finally, we emit a signal. We'll use this one with the game board.
@@ -143,7 +141,7 @@ func walk_along(path: PoolVector2Array) -> void:
 	
 	curve.add_point(Vector2.ZERO)
 	for point in path:
-		curve.add_point(grid.map_to_world(point) - position)
+		curve.add_point(GlobalGrid.map_to_world(point) - position)
 	
 	# Inmediately set the position to the last point
 	_set_is_walking(true)
@@ -235,7 +233,7 @@ func set_skin_offset(value: Vector2) -> void:
 	_sprite.position = value
 
 func set_cell(val: Vector2) -> void:
-	cell = grid.clamp_position(val) # We don't want to have out-of-grid cells
+	cell = GlobalGrid.clamp_position(val) # We don't want to have out-of-grid cells
 
 func set_is_selected(val: bool) -> void:
 	if is_selected == val:

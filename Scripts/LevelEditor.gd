@@ -1,8 +1,6 @@
 extends YSort
 class_name LevelEditor
 
-export var _grid: Resource = preload("res://Resources/Grid.tres")
-
 var _cursor_in_menu := false
 
 onready var _game_map = $GameMap
@@ -43,12 +41,12 @@ func _on_FileDialog_file_selected(path):
 	_game_map.initialize(texture)
 	var texture_size = Vector2(_game_map._sprite.texture.get_width(), _game_map._sprite.texture.get_height())
 	$CanvasLayer/SideBar/VBoxContainer/HScrollBar.min_value = max(
-		_grid.cell_size.x * 15 / texture_size.x,
-		_grid.cell_size.y * 15 / texture_size.y
+		GlobalGrid.cell_size.x * 15 / texture_size.x,
+		GlobalGrid.cell_size.y * 15 / texture_size.y
 	)
 	$CanvasLayer/SideBar/VBoxContainer/HScrollBar.max_value = max(
-		_grid.cell_size.x * 50 / texture_size.x,
-		_grid.cell_size.y * 50 / texture_size.y
+		GlobalGrid.cell_size.x * 50 / texture_size.x,
+		GlobalGrid.cell_size.y * 50 / texture_size.y
 	)
 	_side_bar.is_active = true
 
@@ -56,7 +54,7 @@ func _on_FileDialog_file_selected(path):
 func _on_SaveDialog_file_selected(path):
 	var new_map = Map.new(
 		_game_map._sprite.texture,
-		_grid.size,
+		GlobalGrid.size,
 		_game_map.terrain_tiles,
 		{}
 	)

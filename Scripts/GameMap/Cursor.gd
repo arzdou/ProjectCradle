@@ -1,4 +1,4 @@
-# Represents a player controlled cursor. Navigates the _grid, selects units, etc.
+# Represents a player controlled cursor. Navigates the GameMap, selects units, etc.
 # Supports both keyboard and mouse (or touch) input.
 class_name Cursor
 extends Node2D
@@ -16,8 +16,6 @@ export(CURSOR_MODE) var mode
 var _has_mouse_recently_moved := true
 var is_active := true setget set_is_active
 var cell := Vector2.ZERO setget set_cell # Coordinates of the current cell the cursor is hovering.
-
-export var _grid: Resource = preload("res://Resources/Grid.tres")
 
 onready var timer: Timer = $Timer
 onready var _tween: Tween = $Tween
@@ -44,7 +42,7 @@ func _process(delta):
 
 	mode = CURSOR_MODE.MOUSE
 	_arrow.position = current_mouse_position - MOUSE_OFFSET
-	self.cell = _grid.world_to_map(current_mouse_position)
+	self.cell = GlobalGrid.world_to_map(current_mouse_position)
 	_has_mouse_recently_moved = false
 
 func _unhandled_input(event):
@@ -90,22 +88,22 @@ func set_is_active(value: bool) -> void:
 	set_process_unhandled_input(is_active)
 	set_process(is_active)
 	if is_active:
-		set_cell(_grid.world_to_map(get_global_mouse_position()), false)
+		set_cell(GlobalGrid.world_to_map(get_global_mouse_position()), false)
 		show()
 	else:
 		hide()
 
 
 func set_cell(value: Vector2, do_tween: bool = true) -> void:
-	var new_cell = _grid.clamp_position(value)
+	var new_cell = GlobalGrid.clamp_position(value)
 	
 	# Change cell if different from the current one
 	if cell.is_equal_approx(new_cell):
 		return
 	
 	cell = new_cell
-	var new_highlight_pos = _grid.map_to_world(cell)
-	var new_cursor_pos = _grid.map_to_world(cell) + Vector2(_grid.cell_size.x, -_grid.cell_size.y)/2 - MOUSE_OFFSET
+	var new_highlight_pos = GlobalGrid.map_to_world(cell)
+	var new_cursor_pos = GlobalGrid.map_to_world(cell) + Vector2(GlobalGrid.cell_size.x, -GlobalGrid.cell_size.y)/2 - MOUSE_OFFSET
 	if false:
 		_tween.interpolate_property(
 			_highlight, 'position', _highlight.position, new_highlight_pos, timer.wait_time*0.5
@@ -124,14 +122,14 @@ func set_cell(value: Vector2, do_tween: bool = true) -> void:
 		CURSOR_MODE.MOUSE:
 			emit_signal("moved", "mouse", get_global_mouse_position())
 		CURSOR_MODE.KEY:
-			emit_signal("moved", "cursor", _grid.map_to_world(cell))
+			emit_signal("moved", "cursor", GlobalGrid.map_to_world(cell))
 
 	timer.start()
 
 
 func _on_BoardCamera_camera_moved(camera_mode, cell_movement):
 	if camera_mode == "mouse":
-		_arrow.position = get_global_mouse_position() - MOUSE_OFFSET + cell_movement * _grid.cell_size
+		_arrow.position = get_global_mouse_position() - MOUSE_OFFSET + cell_movement * GlobalGrid.cell_size
 		set_cell(cell + cell_movement, false)
 
 		

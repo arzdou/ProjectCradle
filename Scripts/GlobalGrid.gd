@@ -1,28 +1,24 @@
 # Represents a grid with its size, cells and helper functions to transform from indices to coordinates
-class_name Grid
-extends Resource
+extends Node
 
-export(String, 'square', 'hexagonal') var grid_type = 'square'
+var cell_size := Vector2(64, 64)
 
-export var size := Vector2(50, 32)
-export var cell_size := Vector2(64, 64)
+var size := Vector2(50, 32)
+var unit_array := []
+var terrain_dict := {}
 
 const RAY_CAST_SPEED := 10 # Speed of the ray casting in pixels
-const DIRECTION_SQ = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
-const DIRECTION_HEX = [
-	Vector2.LEFT, Vector2.RIGHT,
-	Vector2.RIGHT+Vector2.UP, Vector2.RIGHT+Vector2.DOWN,
-	Vector2.LEFT+Vector2.UP, Vector2.LEFT+Vector2.DOWN
-]
+const DIRECTIONS = [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]
 
 
-func directions() -> Array:
-	if grid_type == "square":
-		return DIRECTION_SQ
-	elif grid_type == "hexagonal":
-		return DIRECTION_HEX
-	else:
-		return []
+func _init():
+	pass
+
+
+func initialize(map_resource: Resource, units: Array) -> void:
+	unit_array = units
+	terrain_dict = map_resource.terrain_tiles
+	size = map_resource.size
 
 
 # Helper function to transform coordinates to cell index
@@ -49,10 +45,42 @@ func clamp_position(grid_position: Vector2) -> Vector2:
 	return out
 
 
-func flood_fill(cell: Vector2, move_range: int, blocked_cells: Array = []) -> Array:
-	# Flood fill algorithm to calculate vision and movement
+# Given Vector2 coordinates, calculates and returns the corresponding integer index. You can use
+# this function to convert 2D coordinates to a 1D array's indices.
+func as_index(cell: Vector2) -> int:
+	return int(cell.x + size.x * cell.y)
+
+
+# Returns all cells that are not traversable
+func get_occupied_cells() -> Array:
 	var out := []
-	
+	for unit in unit_array:
+		out.push_back(unit.cell)
+	return out
+
+
+# Finds if there is a unit in a given cell
+func in_cell(cell: Vector2) -> Unit:
+	for unit in unit_array:
+		if unit.cell == cell:
+			return unit
+	return null
+
+
+# Returns all the units contiguous to a given cell
+func get_neighbours(cell: Vector2) -> Array:
+	var neighbours := []
+	for direction in DIRECTIONS:
+		var unit = in_cell(cell + direction)
+		if unit:
+			neighbours.push_back(unit)
+	return neighbours
+
+
+# Flood fill algorithm to calculate vision and movement
+func flood_fill(cell: Vector2, move_range: int) -> Array:
+	var out := []
+	var blocked_cells = terrain_dict[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
 	# We use a stack of cells to process, when there are no more we exit
 	var stack := [cell]
 	
@@ -78,7 +106,7 @@ func flood_fill(cell: Vector2, move_range: int, blocked_cells: Array = []) -> Ar
 		# Only add new elements to the stack if:
 		# 1. They are not repeated
 		# 2. They are not occupied
-		for direction in directions():
+		for direction in DIRECTIONS:
 			var next_cell: Vector2 = current + direction
 			if blocked_cells.has(next_cell):
 				continue 
@@ -91,13 +119,14 @@ func flood_fill(cell: Vector2, move_range: int, blocked_cells: Array = []) -> Ar
 	return out
 
 
-func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int, blocked_cells: Array) -> Array:
-	# Ray Casting algorithm from an initial cell and angle
+# Ray Casting algorithm from an initial cell and angle
+func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 	var out := []
+	var blocked_cells = terrain_dict[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
 	var ray_cast: Vector2 = map_to_world(cell)
+	
 	while true:
 		ray_cast += Vector2(-cos(angle), -sin(angle)) * RAY_CAST_SPEED
-
 		var ray_cast_cell = world_to_map(ray_cast)
 		
 		if ray_cast_cell in blocked_cells:
@@ -114,33 +143,27 @@ func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int, blocked_ce
 	return out
 
 
-func ray_cast_circular(cell: Vector2, view_range: int, blocked_cells: Array) -> Array:
+# Ray casts in a circle around a cell, analogous to a line of sight
+func line_of_sight(cell: Vector2, view_range: int) -> Array:
 	var out := []
 	var min_angle = atan(1/float(view_range)) # Did the math :)
 	var number_of_raycast = floor(2*PI / min_angle)
 	for i in range(number_of_raycast):
-		var ray_cast_angle = ray_cast_from_cell(cell, i*min_angle, view_range, blocked_cells)
+		var ray_cast_angle = ray_cast_from_cell(cell, i*min_angle, view_range)
 		for cell in ray_cast_angle:
 			if out.has(cell):
 				continue
 			out.push_back(cell)
 	return out
-	
 
-func cone_from_cell(cell: Vector2, angle: float, view_range: int, blocked_cells: Array) -> Array:
-	# Ray Casting algorithm from an initial cell and angle
-	# Needs a rework
+
+# Create a firing cone from the origin cell. NEEDS REWORK
+func cone_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 	var out := []
 	var ANGLE_STEPS = 10
 	for i in range(ANGLE_STEPS):
 		var cone_angle: float = angle - PI/4 + PI/2 * i / ANGLE_STEPS
-		for new_cell in ray_cast_from_cell(cell, cone_angle, view_range, blocked_cells):
+		for new_cell in ray_cast_from_cell(cell, cone_angle, view_range):
 			if not out.has(new_cell):
 				out.push_back(new_cell)
 	return out
-
-
-# Given Vector2 coordinates, calculates and returns the corresponding integer index. You can use
-# this function to convert 2D coordinates to a 1D array's indices.
-func as_index(cell: Vector2) -> int:
-	return int(cell.x + size.x * cell.y)

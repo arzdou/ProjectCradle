@@ -3,7 +3,6 @@ class_name ActionProcessor
 
 signal move_unit(new_cell, new_state)
 
-export var _grid: Resource = preload("res://Resources/Grid.tres")
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
 var _units
@@ -46,7 +45,7 @@ func get_overlay_cells() -> Dictionary:
 func find_cover_from_attack(target_unit: Unit) -> int:
 	var mouse_angle: float = _performing_unit.cell.angle_to_point(target_unit.cell)
 	var distance = _performing_unit.cell.distance_to(target_unit.cell)
-	var line_of_sight = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, distance, _blocked_cells)
+	var line_of_sight = GlobalGrid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, distance)
 	
 	if _cover['hard'].has(line_of_sight[-2]):
 		return 2
@@ -140,7 +139,7 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 		
 		match range_type: 
 			CONSTANTS.WEAPON_RANGE_TYPES.RANGE:
-				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, range_value, _blocked_cells)
+				marked_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_value)
 				damage_cells = [target_cell]
 				move_cells.clear()
 				if execute and marked_cells.has(target_cell):
@@ -148,35 +147,35 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
 				marked_cells.clear()
-				damage_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, range_value, _blocked_cells)
+				damage_cells = GlobalGrid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, range_value)
 				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
 				marked_cells.clear()
-				damage_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, range_value, _blocked_cells)
+				damage_cells = GlobalGrid.cone_from_cell(_performing_unit.cell, mouse_angle, range_value)
 				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
 				# For blast, shooting range should be an Vector2 of [range, blast radius]
-				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, range_value, _blocked_cells)
-				damage_cells = _grid.ray_cast_circular(target_cell, range_blast, _blocked_cells)
+				marked_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_value)
+				damage_cells = GlobalGrid.line_of_sight(target_cell, range_blast)
 				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
 				marked_cells.clear()
-				damage_cells = _grid.ray_cast_circular(_performing_unit.cell, range_blast, _blocked_cells)
+				damage_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_blast)
 				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array, range_type)
 					
 			CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
-				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, range_value, _blocked_cells)
+				marked_cells = GlobalGrid.line_of_sight(_performing_unit.cell, range_value)
 				damage_cells = [target_cell]
 				move_cells.clear()
 				if execute and marked_cells.has(target_cell):
@@ -187,7 +186,7 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 			draw_arrows = true
 			marked_cells.clear()
 			move_cells.clear()
-			move_cells = _grid.flood_fill(_performing_unit.cell, _performing_unit.move_range, _blocked_cells)
+			move_cells = GlobalGrid.flood_fill(_performing_unit.cell, _performing_unit.move_range)
 			
 			if execute and move_cells.has(target_cell):
 				draw_arrows = false

@@ -64,11 +64,6 @@ _global_script_classes=[ {
 "language": "NativeScript",
 "path": "res://addons/godot-git-plugin/git_api.gdns"
 }, {
-"base": "Resource",
-"class": "Grid",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Grid.gd"
-}, {
 "base": "YSort",
 "class": "LevelEditor",
 "language": "GDScript",
@@ -161,7 +156,6 @@ _global_script_class_icons={
 "GameBoard": "",
 "GameMap": "",
 "GitAPI": "",
-"Grid": "",
 "LevelEditor": "",
 "Map": "",
 "Mech": "",
@@ -183,6 +177,10 @@ _global_script_class_icons={
 [application]
 
 config/name="LANCER"
+
+[autoload]
+
+GlobalGrid="*res://Scenes/GlobalGrid.tscn"
 
 [display]
 

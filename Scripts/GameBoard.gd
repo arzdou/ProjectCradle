@@ -2,7 +2,6 @@ class_name GameBoard
 extends YSort
 
 const CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
-export var _grid: Resource = preload("res://Resources/Grid.tres")
 export var map_res: Resource = preload("res://Resources/Maps/test.tres")
 
 var _unit_data := [
@@ -40,6 +39,7 @@ func _ready() -> void:
 	_game_map.cursor.connect("accept_pressed", self, "_on_Cursor_accept_pressed")
 	_game_map.cursor.connect("moved", self, "_on_Cursor_moved")
 	
+	
 	_game_map.initialize(map_res.image)
 
 	_game_map.terrain_tiles = map_res.terrain_tiles
@@ -55,13 +55,14 @@ func _reinitialize() -> void:
 	change_state(CONSTANTS.BOARD_STATE.FREE)
 	_unit_manager.initialize(_unit_data)
 	_unit_manager.update_hud(Vector2(-1,-1))
+	GlobalGrid.initialize(map_res, _unit_manager._unit_list)
 
 
 func get_blocked_cells() -> Array:
 	return _unit_manager.get_occupied_cells() + _game_map.terrain_tiles[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
 
 func get_walkable_cells() -> Array:
-	return _grid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.remaining_move_range, get_blocked_cells())
+	return GlobalGrid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.remaining_move_range)
 
 
 func _select_unit(cell: Vector2) -> void:
@@ -80,15 +81,10 @@ func _select_unit(cell: Vector2) -> void:
 
 
 func _move_active_unit(new_cell: Vector2) -> void:
-	
-	var movement_complete
-	
-	movement_complete = _unit_manager.move_active_unit(
-		new_cell, _unit_path.current_path
-	)
-	
-	if movement_complete:
-		change_state(CONSTANTS.BOARD_STATE.SELECTING)
+	_unit_manager.move_active_unit(new_cell, _unit_path.current_path)
+	if _unit_manager.active_unit._is_walking:
+		yield(_unit_manager.active_unit, "walk_finished")
+	change_state(CONSTANTS.BOARD_STATE.SELECTING)
 
 
 # Maybe I could implement a state machine since I have already separated the code...
@@ -96,7 +92,7 @@ func change_state(new_state: int) -> void:
 	match new_state:
 		CONSTANTS.BOARD_STATE.FREE:
 			_game_map.cursor.is_active = true
-			_unit_overlay.draw({})
+			_unit_overlay.clear()
 			_unit_path.stop()
 			
 			_unit_manager.deselect_unit()
@@ -110,16 +106,14 @@ func change_state(new_state: int) -> void:
 			_unit_manager.show_side_menu(false)
 			
 		CONSTANTS.BOARD_STATE.SELECTING:
-			if _unit_manager.active_unit._is_walking:
-				yield(_unit_manager.active_unit, "walk_finished")
 			_game_map.cursor.is_active = false
-			_unit_overlay.draw({})
+			_unit_overlay.clear()
 			_unit_path.stop()
 			_unit_manager.show_side_menu(true) # Toggles the menu and animations of active unit
 			
 		CONSTANTS.BOARD_STATE.ACTING:
 			_game_map.cursor.is_active = true
-			_unit_overlay.draw({})
+			_unit_overlay.clear()
 			_unit_path.stop()
 			_unit_manager.show_side_menu(false)
 			
@@ -137,7 +131,7 @@ func finish_unit_turn() -> void:
 
 
 func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
-	var new_cell = _grid.world_to_map(new_pos)
+	var new_cell = GlobalGrid.world_to_map(new_pos)
 	if _board_state == CONSTANTS.BOARD_STATE.MOVEMENT:
 		# Show the arrows
 		_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
@@ -170,7 +164,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 func _on_Unit_action_selected(action) -> void:
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
 	_action_processor.initialize(action,  _game_map.terrain_tiles[CONSTANTS.EOVERLAY_CELLS.BLOCKED], _game_map.get_cover())
-	var pos = _grid.map_to_world(_game_map.cursor.cell)
+	var pos = GlobalGrid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 
 

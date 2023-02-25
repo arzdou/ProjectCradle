@@ -9,7 +9,6 @@ var zoom_max: float
 var _cursor_in_menu := false
 var _is_menu_hidden
 
-export var _grid: Resource = preload("res://Resources/Grid.tres")
 onready var camera_2d = $Camera2D
 onready var timer = $Timer
 onready var _tween = $Tween
@@ -52,13 +51,13 @@ func _get_camera_center() -> Vector2:
 func update_camera_limits():
 	camera_2d.limit_left = 0
 	camera_2d.limit_top = 0
-	camera_2d.limit_right = _grid.size.x * _grid.cell_size.x
-	camera_2d.limit_bottom = _grid.size.y * _grid.cell_size.y
+	camera_2d.limit_right = GlobalGrid.size.x * GlobalGrid.cell_size.x
+	camera_2d.limit_bottom = GlobalGrid.size.y * GlobalGrid.cell_size.y
 	position = _get_camera_center()
 	
 	zoom_max = min(
-		(_grid.size.x * _grid.cell_size.x) / get_camera_size().x,
-		(_grid.size.x * _grid.cell_size.x) / get_camera_size().y
+		(GlobalGrid.size.x * GlobalGrid.cell_size.x) / get_camera_size().x,
+		(GlobalGrid.size.x * GlobalGrid.cell_size.x) / get_camera_size().y
 	)
 
 
@@ -93,7 +92,7 @@ func set_camera_position(new_position_x: float, new_position_y: float, mode: Str
 	
 	if new_position == position:
 		return
-	var cell_movement: Vector2 = _grid.world_to_map(new_position-position)
+	var cell_movement: Vector2 = GlobalGrid.world_to_map(new_position-position)
 	position = new_position
 	#_tween.interpolate_property(self, "position", position, new_position, timer.wait_time*0.5)
 	#_tween.start()
@@ -116,11 +115,11 @@ func move_camera_based_on_cursor(cursor_position: Vector2, mode: String) -> void
 	
 	var delta_x := 0.0
 	if abs(delta_pos.x) > 0.8 * get_camera_size().x / 2:
-		delta_x = sign(delta_pos.x) * _grid.cell_size.x
+		delta_x = sign(delta_pos.x) * GlobalGrid.cell_size.x
 
 	var delta_y := 0.0
 	if abs(delta_pos.y) > 0.8 * get_camera_size().y / 2:
-		delta_y = sign(delta_pos.y) * _grid.cell_size.y
+		delta_y = sign(delta_pos.y) * GlobalGrid.cell_size.y
 	
 	set_camera_position(position.x + delta_x, position.y + delta_y, mode)
 

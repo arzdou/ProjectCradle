@@ -1,25 +1,23 @@
 class_name PathFinder
 extends Resource
 
-var _grid: Resource
 # The script is used to initialize this class correctly
 var _astar := AStar2D.new()
 var _directions: Array
 
 
-func _init(grid: Resource, walkable_cells: Array) -> void:
-	_grid = grid
-	_directions = _grid.directions()
+func _init(walkable_cells: Array) -> void:
+	_directions = GlobalGrid.DIRECTIONS
 	
 	var _cell_mappings := {}
 	for cell in walkable_cells:
-		_cell_mappings[cell] = _grid.as_index(cell)
+		_cell_mappings[cell] = GlobalGrid.as_index(cell)
 	_add_and_connect_points(_cell_mappings)
 
 
 func calculate_point_path(start_point: Vector2, end_point: Vector2) -> PoolVector2Array:
-	var start_index: int = _grid.as_index(start_point)
-	var end_index: int = _grid.as_index(end_point)
+	var start_index: int = GlobalGrid.as_index(start_point)
+	var end_index: int = GlobalGrid.as_index(end_point)
 	
 	if _astar.has_point(start_index) and _astar.has_point(end_index):
 		# The AStar2D object then finds the best path between the two indices.
