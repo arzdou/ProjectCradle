@@ -74,7 +74,7 @@ margin_top = 106.0
 margin_right = 186.0
 margin_bottom = 126.0
 text = "Tile Type"
-items = [ "Blocked", null, 0, false, false, 0, 0, null, "", false, "Cover", null, 0, false, false, 1, 0, null, "", false, "Dangerous", null, 0, false, false, 2, 0, null, "", false, "None", null, 0, false, false, -1, 0, null, "", false ]
+items = [ "Blocked", null, 0, false, false, 0, 0, null, "", false, "Hard Cover", null, 0, false, false, 1, 0, null, "", false, "Soft Cover", null, 0, false, false, 2, 0, null, "", false, "None", null, 0, false, false, -1, 0, null, "", false ]
 
 [node name="Panel3" type="Panel" parent="CanvasLayer/SideBar/VBoxContainer"]
 modulate = Color( 0, 0, 0, 0 )
@@ -106,6 +106,7 @@ text = "hide"
 
 [node name="Tween" type="Tween" parent="CanvasLayer/SideBar"]
 
+[connection signal="id_pressed" from="CanvasLayer/SideBar" to="." method="_on_SideBar_id_pressed"]
 [connection signal="pressed" from="CanvasLayer/SideBar/VBoxContainer/Button" to="CanvasLayer/SideBar" method="_on_LoadButton_pressed"]
 [connection signal="file_selected" from="CanvasLayer/SideBar/VBoxContainer/Button/FileDialog" to="." method="_on_FileDialog_file_selected"]
 [connection signal="value_changed" from="CanvasLayer/SideBar/VBoxContainer/HScrollBar" to="." method="_on_HScrollBar_value_changed"]

@@ -8,8 +8,12 @@ script = ExtResource( 2 )
 image = ExtResource( 1 )
 size = Vector2( 49, 35 )
 terrain_tiles = {
-Vector2( 2, 2 ): 0,
-Vector2( 4, 4 ): 0
+Vector2( 2, 2 ): 2,
+Vector2( 2, 3 ): 0,
+Vector2( 3, 2 ): 1,
+Vector2( 4, 4 ): 1,
+Vector2( 5, 4 ): 0,
+Vector2( 5, 5 ): 2
 }
 units = {
 }

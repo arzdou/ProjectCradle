@@ -13,4 +13,3 @@ grid = ExtResource( 3 )
 [node name="BackTileMap" type="TileMap" parent="."]
 tile_set = ExtResource( 1 )
 format = 1
-tile_data = PoolIntArray( 196613, 1, 131075, 196614, 1, 1, 196615, 1, 1, 196616, 1, 1, 196617, 1, 65537, 262153, 1, 2, 327689, 1, 131072, 327690, 1, 65539 )

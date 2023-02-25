@@ -10,6 +10,7 @@ var _units
 var _performing_action 
 var _performing_unit: Unit
 var _blocked_cells := []
+var _cover := {}
 
 var marked_cells := [] # Indicates the range of the weapon
 var damage_cells := [] # Indicates the damage area
@@ -19,11 +20,12 @@ var draw_arrows := false
 onready var _unit_manager = $"../UnitManager"
 
 
-func initialize(action, blocked_cells):
+func initialize(action, blocked_cells: Array, cover: Dictionary):
 	_units = _unit_manager._unit_list
 	_performing_action = action
 	_performing_unit = _unit_manager.active_unit
 	_blocked_cells = blocked_cells
+	_cover = cover
 
 
 func stop():
@@ -51,6 +53,23 @@ func get_overlay_cells() -> Dictionary:
 	return action_cells
 
 
+func find_cover_from_attack(target_unit: Unit) -> int:
+	var mouse_angle: float = _performing_unit.cell.angle_to_point(target_unit.cell)
+	var distance = _performing_unit.cell.distance_to(target_unit.cell)
+	var line_of_sight = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, distance, _blocked_cells)
+	
+	if _cover['hard'].has(line_of_sight[-2]):
+		return 2
+	
+	if _cover['soft'].has(line_of_sight[-2]):
+		return 1
+		
+	for cell in line_of_sight:
+		if _cover['hard'].has(cell):
+			return 1
+			
+	return 0
+
 
 func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:int) -> bool:
 	# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
@@ -59,19 +78,19 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 	# There are two conditions to apply damage:
 	# 1. The cell has a unit
 	# 2. You cannot be the target
-	var recieving_unit: Unit = null
+	var target_unit: Unit = null
 	
 	for unit in _units:
 		if target_cell == unit.cell:
-			recieving_unit = unit
+			target_unit = unit
 	
-	if not recieving_unit:
+	if not target_unit:
 		return false
 	
-	if recieving_unit == _performing_unit:
+	if target_unit == _performing_unit:
 		return false
 	
-	if recieving_unit.status[CONSTANTS.STATUS.INVISIBLE]:
+	if target_unit.status[CONSTANTS.STATUS.INVISIBLE]:
 		var coin_toss = randi()%2
 		if coin_toss:
 			# Damage avoided
@@ -80,17 +99,19 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 	var accuracy: int = 0
 	if _performing_unit.status[CONSTANTS.STATUS.ENGAGED] and range_type != CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
 		accuracy -= 1
-	if recieving_unit.status[CONSTANTS.STATUS.EXPOSED]:
+	if target_unit.status[CONSTANTS.STATUS.EXPOSED]:
 		accuracy += 1
-	if recieving_unit.status[CONSTANTS.STATUS.PRONE]:
+	if target_unit.status[CONSTANTS.STATUS.PRONE]:
 		accuracy += 1
 	if _performing_unit.conditions[CONSTANTS.CONDITIONS.IMPAIRED]:
 		accuracy -= 1
+	
+	accuracy += find_cover_from_attack(target_unit)
 
 	for damage_resource in damage_array:
 		var damage_type: int = damage_resource.type
-		recieving_unit.take_damage(damage_resource.roll_damage(accuracy), damage_type)
-		recieving_unit.show_hud()
+		target_unit.take_damage(damage_resource.roll_damage(accuracy), damage_type)
+		target_unit.show_hud()
 	
 	return true
 

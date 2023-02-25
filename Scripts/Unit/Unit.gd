@@ -112,7 +112,6 @@ func initialize(unit_data: Dictionary):
 	for i in CONSTANTS.STATUS.values():
 		status[i] = false
 	status[CONSTANTS.STATUS.ENGAGED] = []
-	status[CONSTANTS.STATUS.INVISIBLE] = true
 	
 	for i in CONSTANTS.CONDITIONS.values():
 		conditions[i] = 0

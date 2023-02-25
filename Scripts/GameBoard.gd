@@ -9,13 +9,13 @@ var _unit_data := [
 	{
 		'pilot': "res://Resources/Pilots/BasePilot.tres",
 		'mech': "res://Resources/Frames/Everest.tres",
-		'cell': Vector2(2, 3),
+		'cell': Vector2(6, 3),
 		'team': 'ally'
 	},
 	{
 		'pilot': "res://Resources/Pilots/BasePilot.tres",
 		'mech': "res://Resources/Frames/Everest.tres",
-		'cell': Vector2(2, 5),
+		'cell': Vector2(4, 6),
 		'team': 'enemy'
 	}
 ]
@@ -177,7 +177,7 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 
 func _on_Unit_action_selected(action) -> void:
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
-	_action_processor.initialize(action, _game_map.get_blocked_terrain())
+	_action_processor.initialize(action, _game_map.get_blocked_terrain(), _game_map.get_cover())
 	var pos = _grid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 

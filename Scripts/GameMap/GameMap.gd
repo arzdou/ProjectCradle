@@ -79,6 +79,15 @@ func get_blocked_terrain() -> Array:
 	return out
 
 
+func get_cover() -> Dictionary:
+	var cover = {"hard": [], "soft": []}
+	for cell in terrain_tiles:
+		if terrain_tiles[cell] == 1:
+			cover["hard"].push_back(cell)
+		if terrain_tiles[cell] == 2:
+			cover["soft"].push_back(cell)
+	return cover
+
 func _on_Cursor_accept_pressed(cell):
 	if not drawing_cells:
 		return
