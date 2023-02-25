@@ -51,22 +51,6 @@ func get_overlay_cells() -> Dictionary:
 	return action_cells
 
 
-func roll_damage(damage_dict: Dictionary) -> int:
-	# The dictionary can take two shapes:
-	# 1. {CONSTANTS.TYPES_DAMAGE, int}     fixed value
-	# 1. {CONSTANTS.TYPES_DAMAGE, String}  random value
-	var damage = damage_dict.values()[0]
-	if typeof(damage) == TYPE_INT:
-		return damage
-	
-	# If not its a string of shape 'ndM' where n is the number of M dices
-	var number_of_dices := int(damage[0])
-	var type_of_dice := int(damage[-1])
-	var out_damage := 0 # this is the variable that we will return
-	for _i in range(number_of_dices):
-		out_damage += randi() % type_of_dice + 1
-	return out_damage
-
 
 func try_to_apply_damage(target_cell: Vector2, damage_array: Array) -> bool:
 	# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
@@ -86,10 +70,27 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array) -> bool:
 	
 	if recieving_unit == _performing_unit:
 		return false
+	
+	if recieving_unit.status[CONSTANTS.STATUS.INVISIBLE]:
+		var coin_toss = randi()%2
+		if coin_toss:
+			# Damage avoided
+			return true
+	
+	var accuracy: int = 0
+	print(recieving_unit.status)
+	if _performing_unit.status[CONSTANTS.STATUS.ENGAGED]:
+		accuracy -= 1
+	if recieving_unit.status[CONSTANTS.STATUS.EXPOSED]:
+		accuracy += 1
+	if recieving_unit.status[CONSTANTS.STATUS.PRONE]:
+		accuracy += 1
+	if _performing_unit.conditions[CONSTANTS.CONDITIONS.IMPAIRED]:
+		accuracy -= 1
 
-	for damage in damage_array:
-		var damage_type: int = damage.keys()[0]
-		recieving_unit.take_damage(roll_damage(damage), damage_type)
+	for damage_resource in damage_array:
+		var damage_type: int = damage_resource.type
+		recieving_unit.take_damage(damage_resource.roll_damage(accuracy), damage_type)
 		recieving_unit.show_hud()
 	
 	return true
@@ -103,7 +104,6 @@ func try_to_apply_damage_in_area(area: Array, damage_array: Array) -> bool:
 		damage_applied = damage_applied or try_to_apply_damage(target_cell, damage_array)
 		
 	return damage_applied
-
 
 
 func process_action_targeted(target_cell: Vector2, execute: bool = false) -> bool:
@@ -123,46 +123,55 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 	
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
 		# For now only range types
-		var range_type = _performing_action.weapon_range.keys()[0] #For now only first type
-		var shooting_range = _performing_action.weapon_range[range_type]
-		var damage_array: Array = _performing_action.weapon_damage
+		var range_type = _performing_action.ranges[0].type #For now only first type
+		var range_value = _performing_action.ranges[0].range_value
+		var range_blast = _performing_action.ranges[0].blast
+		var damage_array: Array = _performing_action.damage
 		
 		match range_type: 
 			CONSTANTS.WEAPON_RANGE_TYPES.RANGE:
-				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
+				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, range_value, _blocked_cells)
 				damage_cells = [target_cell]
+				move_cells.clear()
 				if execute and marked_cells.has(target_cell):
 					return try_to_apply_damage(target_cell, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.LINE:
 				marked_cells.clear()
-				damage_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
+				damage_cells = _grid.ray_cast_from_cell(_performing_unit.cell, mouse_angle, range_value, _blocked_cells)
+				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array)
 			
 			CONSTANTS.WEAPON_RANGE_TYPES.CONE:
 				marked_cells.clear()
-				damage_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, shooting_range, _blocked_cells)
+				damage_cells = _grid.cone_from_cell(_performing_unit.cell, mouse_angle, range_value, _blocked_cells)
+				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BLAST:
 				# For blast, shooting range should be an Vector2 of [range, blast radius]
-				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range.x, _blocked_cells)
-				damage_cells = _grid.ray_cast_circular(target_cell, shooting_range.y, _blocked_cells)
+				marked_cells = _grid.ray_cast_circular(_performing_unit.cell, range_value, _blocked_cells)
+				damage_cells = _grid.ray_cast_circular(target_cell, range_blast, _blocked_cells)
+				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array)
 				
 			CONSTANTS.WEAPON_RANGE_TYPES.BURST:
 				marked_cells.clear()
-				damage_cells = _grid.ray_cast_circular(_performing_unit.cell, shooting_range, _blocked_cells)
+				damage_cells = _grid.ray_cast_circular(_performing_unit.cell, range_blast, _blocked_cells)
+				move_cells.clear()
 				if execute:
 					return try_to_apply_damage_in_area(damage_cells, damage_array)
 					
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MOVEMENT:
 		if _performing_action.action_name == "BOOST":
 			draw_arrows = true
+			marked_cells.clear()
+			move_cells.clear()
 			move_cells = _grid.flood_fill(_performing_unit.cell, _performing_unit.move_range, _blocked_cells)
+			
 			if execute and move_cells.has(target_cell):
 				draw_arrows = false
 				emit_signal("move_unit", target_cell, CONSTANTS.BOARD_STATE.SELECTING)

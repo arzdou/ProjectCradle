@@ -39,8 +39,8 @@ func create_action_button(action):
 	add_child(action_button)
 	
 	print(action)
-	action_button.set_name(action.action_name)
-	action_button.initialize(action.action_name)
+	action_button.set_name(action.name)
+	action_button.initialize(action.name)
 	action_button.connect("pressed", self, "_on_action_button_pressed", [action])
 	
 	button_array.push_back(action_button)

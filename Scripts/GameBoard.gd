@@ -8,13 +8,13 @@ export var map_res: Resource = preload("res://Resources/Maps/test.tres")
 var _unit_data := [
 	{
 		'pilot': "res://Resources/Pilots/BasePilot.tres",
-		'mech': "res://Resources/Frames/Everest.tres",
+		'mech': "res://Resources/Frames/Everest2.tres",
 		'cell': Vector2(2, 3),
 		'team': 'ally'
 	},
 	{
 		'pilot': "res://Resources/Pilots/BasePilot.tres",
-		'mech': "res://Resources/Frames/Everest.tres",
+		'mech': "res://Resources/Frames/Everest2.tres",
 		'cell': Vector2(2, 5),
 		'team': 'enemy'
 	}

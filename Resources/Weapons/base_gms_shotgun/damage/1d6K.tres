@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/ResourceGenerators/Actions/DamageResource.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+type = 0
+number_of_dices = 1
+dice_faces = 6
+constant_damage = 0

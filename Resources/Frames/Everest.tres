@@ -1,12 +1,8 @@
-[gd_resource type="Resource" load_steps=8 format=2]
+[gd_resource type="Resource" load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/ResourceGenerators/Mech.gd" type="Script" id=1]
 [ext_resource path="res://Resources/CONSTANTS.tres" type="Resource" id=2]
-[ext_resource path="res://Resources/Frames/Weapons/RANGE.tres" type="Resource" id=3]
-[ext_resource path="res://Resources/Frames/Weapons/LINE.tres" type="Resource" id=4]
-[ext_resource path="res://Resources/Frames/Weapons/BLAST.tres" type="Resource" id=5]
-[ext_resource path="res://Resources/Frames/Weapons/BURST.tres" type="Resource" id=6]
-[ext_resource path="res://Resources/Frames/Weapons/CONE.tres" type="Resource" id=7]
+[ext_resource path="res://Resources/Weapons/base_gms_shotgun/base_gms_shotgun.tres" type="Resource" id=3]
 
 [resource]
 script = ExtResource( 1 )
@@ -25,5 +21,5 @@ tech_attack = 5
 system_points = 6
 heat_cap = 6
 mounts = [ 0 ]
-weapons = [ ExtResource( 3 ), ExtResource( 4 ), ExtResource( 7 ), ExtResource( 5 ), ExtResource( 6 ) ]
+weapons = [ ExtResource( 3 ) ]
 mech_systems = [  ]
