@@ -170,6 +170,7 @@ func _get_menu_layout() -> Dictionary:
 	layout['FULL ACTIONS']['BARRAGE'] = barrage
 	layout['QUICK ACTIONS']['SKIRMISH'] = skirmish
 	layout['QUICK ACTIONS']['BOOST'] = load("res://Resources/Actions/Boost.tres")
+	layout['QUICK ACTIONS']['RAM'] = load("res://Resources/Actions/Ram.tres")
 	return layout 
 
 
@@ -178,6 +179,7 @@ func finish_turn() -> void:
 
 
 func take_damage(damage: int, damage_type: int) -> void:
+	show_hud()
 	if damage_type == CONSTANTS.DAMAGE_TYPES.HEAT:
 		take_heat(damage)
 		return
@@ -202,7 +204,7 @@ func take_stress(stress: int) -> void:
 
 # Maybe unnecesary, too verbose
 func set_status(status_key: int, value) -> void:
-	if not CONSTANTS.STATUS.has(status_key):
+	if not CONSTANTS.STATUS.values().has(status_key):
 		print("Status not recognized")
 		return
 	
@@ -210,7 +212,7 @@ func set_status(status_key: int, value) -> void:
 
 # Maybe unnecesary, too verbose
 func set_condition_time(condition_key: int, value: int) -> void:
-	if not CONSTANTS.CONDITIONS.has(condition_key):
+	if not CONSTANTS.CONDITIONS.values().has(condition_key):
 		print("Status not recognized")
 		return
 	

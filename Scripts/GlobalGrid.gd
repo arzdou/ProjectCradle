@@ -167,3 +167,10 @@ func cone_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 			if not out.has(new_cell):
 				out.push_back(new_cell)
 	return out
+
+
+func sum_int_array(arr: Array) -> int:
+	var out: int = 0
+	for i in arr:
+		out += i
+	return out

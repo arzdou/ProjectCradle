@@ -85,7 +85,7 @@ func _move_active_unit(new_cell: Vector2) -> void:
 	if _unit_manager.active_unit._is_walking:
 		yield(_unit_manager.active_unit, "walk_finished")
 	
-	LogRepeater.write(_unit_manager.name + ' moved')
+	LogRepeater.write(_unit_manager.active_unit.mech_name + ' moved')
 	change_state(CONSTANTS.BOARD_STATE.SELECTING)
 
 
@@ -128,7 +128,6 @@ func change_state(new_state: int) -> void:
 func finish_unit_turn() -> void:
 	_unit_manager.finish_turn()
 	change_state(CONSTANTS.BOARD_STATE.FREE)
-	LogRepeater.clear()
 	team_turn_index = (team_turn_index+1) % teams.size()
 
 

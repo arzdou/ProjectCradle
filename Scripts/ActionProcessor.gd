@@ -49,41 +49,26 @@ func find_cover_from_attack(target_unit: Unit) -> int:
 	var line_of_sight = GlobalGrid.ray_cast_from_cell(active_unit.cell, mouse_angle, distance)
 	
 	if _cover['hard'].has(line_of_sight[-2]):
-		return 2
+		return -2
 	
 	if _cover['soft'].has(line_of_sight[-2]):
-		return 1
+		return -1
 		
 	for cell in line_of_sight:
 		if _cover['hard'].has(cell):
-			return 1
+			return -1
 			
 	return 0
 
 
-func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:int) -> bool:
-	# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
-	# return false and if the damage was applied it will return true
-	
-	# There are two conditions to apply damage:
-	# 1. The cell has a unit
-	# 2. You cannot be the target
-	var target_unit: Unit = null
-	
-	for unit in _units:
-		if target_cell == unit.cell:
-			target_unit = unit
-	
-	if not target_unit:
-		return false
-	
-	if target_unit == active_unit:
-		return false
-	
+# Perform an attack roll against a character
+func attack_roll(target_unit: Unit, range_type: int) -> bool:
+		
+	# Attacks to invisible characters miss half of the time
 	if target_unit.status[CONSTANTS.STATUS.INVISIBLE]:
 		var coin_toss = randi()%2
 		if coin_toss:
-			# Damage avoided
+			LogRepeater.write("%s's attack missed since the enemy is invisible!" % active_unit.mech_name)
 			return true
 	
 	var accuracy: int = 0
@@ -95,17 +80,51 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 		accuracy += 1
 	if active_unit.conditions[CONSTANTS.CONDITIONS.IMPAIRED]:
 		accuracy -= 1
-	
 	accuracy += find_cover_from_attack(target_unit)
 	
+	var roll_array := []
+	for _i in range(1 + accuracy):
+		roll_array.push_back(randi() % 20 + 1)
+	roll_array.sort()
+	
+	var shift: int = accuracy if accuracy>0 else 0 # Shift the array to get the highest or lowest values
+	var roll = GlobalGrid.sum_int_array(roll_array.slice(shift, 1 + shift))
+	
+	var out: bool = roll + active_unit._stats.grit >= target_unit._stats.evasion
+	
+	if not out:
+		LogRepeater.write("%s's attack misses the target!" % active_unit.mech_name)
+		
+	return out
+
+
+func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:int) -> bool:
+	# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
+	# return false and if the damage was applied it will return true
+	
+	# There are two conditions to apply damage:
+	# 1. The cell has a unit
+	# 2. You cannot be the target
+	
+	var target_unit: Unit = GlobalGrid.in_cell(target_cell)
+	
+	if not target_unit:
+		return false
+		
+	if target_unit == active_unit:
+		return false
+	
+	# Roll to see if the attack connects
+	if not attack_roll(target_unit, range_type):
+		return true
+	
 	for damage_resource in damage_array:
-		var damage_type: int = damage_resource.type
-		var damage_dealt = damage_resource.roll_damage(accuracy)
-		target_unit.take_damage(damage_dealt, damage_type)
-		target_unit.show_hud()
+		var damage_dealt = damage_resource.roll_damage()
+		target_unit.take_damage(damage_dealt, damage_resource.type)
 		LogRepeater.write(
-			damage_string %[active_unit.mech_name, damage_dealt, CONSTANTS.DAMAGE_TYPES.keys()[damage_type], target_unit.mech_name]
+			damage_string %[active_unit.mech_name, damage_dealt, CONSTANTS.DAMAGE_TYPES.keys()[damage_resource.type], target_unit.mech_name]
 		)
+	
 	return true
 
 
@@ -117,6 +136,21 @@ func try_to_apply_damage_in_area(area: Array, damage_array: Array, range_type: i
 		damage_applied = damage_applied or try_to_apply_damage(target_cell, damage_array, range_type)
 		
 	return damage_applied
+
+
+func try_to_ram(target_cell) -> bool:
+	var target_unit: Unit = GlobalGrid.in_cell(target_cell)
+	if not target_unit:
+		return false
+	if target_unit == active_unit:
+		return false
+	if not attack_roll(target_unit, CONSTANTS.WEAPON_RANGE_TYPES.THREAT):
+		return true
+	
+	print()
+	target_unit.set_status(CONSTANTS.STATUS.PRONE, true)
+	LogRepeater.write("%s rammed %s and knocked it prone" % [active_unit.mech_name, target_unit.mech_name])
+	return true
 
 
 func process_action_targeted(target_cell: Vector2, execute: bool = false) -> bool:
@@ -196,6 +230,14 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 				draw_arrows = false
 				emit_signal("move_unit", target_cell, CONSTANTS.BOARD_STATE.SELECTING)
 				return false
+	
+	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MISC:
+		if _performing_action.name == "RAM":
+			marked_cells = GlobalGrid.line_of_sight(active_unit.cell, 1)
+			damage_cells = [target_cell]
+			move_cells.clear()
+			if execute and marked_cells.has(target_cell):
+				return try_to_ram(target_cell)
 	
 	return false
 
