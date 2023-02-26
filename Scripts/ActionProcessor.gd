@@ -118,6 +118,9 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 	if not attack_roll(target_unit, range_type):
 		return true
 	
+	if _performing_action.is_on_hit:
+		_performing_action.on_hit.apply_effect(active_unit, target_unit)
+	
 	for damage_resource in damage_array:
 		var damage_dealt = damage_resource.roll_damage()
 		target_unit.take_damage(damage_dealt, damage_resource.type)
@@ -138,6 +141,7 @@ func try_to_apply_damage_in_area(area: Array, damage_array: Array, range_type: i
 	return damage_applied
 
 
+# TODO: Create a resource as a weapon for ramming
 func try_to_ram(target_cell) -> bool:
 	var target_unit: Unit = GlobalGrid.in_cell(target_cell)
 	if not target_unit:
@@ -149,7 +153,7 @@ func try_to_ram(target_cell) -> bool:
 	
 	print()
 	target_unit.set_status(CONSTANTS.STATUS.PRONE, true)
-	LogRepeater.write("%s rammed %s and knocked it prone" % [active_unit.mech_name, target_unit.mech_name])
+	LogRepeater.write("%s rammed %s and knocked them prone" % [active_unit.mech_name, target_unit.mech_name])
 	return true
 
 
@@ -233,7 +237,7 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 	
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MISC:
 		if _performing_action.name == "RAM":
-			marked_cells = GlobalGrid.line_of_sight(active_unit.cell, 1)
+			marked_cells = GlobalGrid.line_of_sight(active_unit.cell, 1) 
 			damage_cells = [target_cell]
 			move_cells.clear()
 			if execute and marked_cells.has(target_cell):

@@ -1,27 +1,27 @@
 [gd_resource type="Resource" load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" type="Script" id=1]
-[ext_resource path="res://Resources/Weapons/base_shotgun/damage/1d6K.tres" type="Resource" id=2]
-[ext_resource path="res://Resources/Weapons/base_shotgun/range/5_range.tres" type="Resource" id=3]
+[ext_resource path="res://Resources/Actions/ram/range/1_threat.tres" type="Resource" id=2]
+[ext_resource path="res://Resources/Actions/ram/effects/on_hit_prone.tres" type="Resource" id=3]
 
 [resource]
 script = ExtResource( 1 )
-id = "base_shotgun"
-name = "SHOTGUN"
-source = "GMS"
-licence = "GMS"
+id = "action_ram"
+name = "RAM"
+source = "BASE"
+licence = "BASE"
 license_id = ""
 license_level = 0
 mount = 1
-weapon_type = 0
-cost = 1
-barrage = true
-skirmish = true
-no_attack = false
+weapon_type = 1
+cost = 0
+barrage = false
+skirmish = false
+no_attack = true
 no_mods = false
 no_core_bonus = false
-damage = [ ExtResource( 2 ) ]
-ranges = [ ExtResource( 3 ) ]
+damage = [  ]
+ranges = [ ExtResource( 2 ) ]
 tag = [  ]
 sp = 0
 description = ""
@@ -30,10 +30,11 @@ bonuses = [  ]
 no_bonus = false
 is_effect = false
 is_on_attack = false
-is_on_hit = false
+is_on_hit = true
+on_hit = ExtResource( 3 )
 is_on_crit = false
 synergies = [  ]
-no_synergy = false
+no_synergy = true
 deployable = [  ]
 counters = [  ]
 integrated = [  ]

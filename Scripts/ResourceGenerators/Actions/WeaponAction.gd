@@ -31,7 +31,17 @@ export var actions: Array  # Action resource
 export var bonuses: Array  # Bonus resource
 export var no_bonus: bool
 
-export var synergis: Array
+# Resource that contains the effects of the action, use the bool to mark that the effect is active
+export var is_effect: bool
+export(Resource) var effects
+export var is_on_attack: bool
+export(Resource) var on_attack
+export var is_on_hit: bool
+export(Resource) var on_hit
+export var is_on_crit: bool
+export(Resource) var on_crit
+
+export var synergies: Array
 export var no_synergy: bool
 
 export var deployable: Array  # Deployable resource
@@ -39,17 +49,4 @@ export var counters: Array    # Counter resource
 
 export var integrated: Array
 export var special_equipment: Array
-
-
-func effect():
-	pass
-
-func on_attack():
-	pass
-
-func on_hit():
-	pass
-
-func on_crit():
-	pass
 	

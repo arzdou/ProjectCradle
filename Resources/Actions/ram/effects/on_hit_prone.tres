@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/ResourceGenerators/Actions/EffectResource.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+activation = 3
+self_status = [  ]
+target_status = [ 5 ]
+self_conditions = [  ]
+target_conditions = [  ]

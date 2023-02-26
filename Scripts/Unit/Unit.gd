@@ -170,7 +170,7 @@ func _get_menu_layout() -> Dictionary:
 	layout['FULL ACTIONS']['BARRAGE'] = barrage
 	layout['QUICK ACTIONS']['SKIRMISH'] = skirmish
 	layout['QUICK ACTIONS']['BOOST'] = load("res://Resources/Actions/Boost.tres")
-	layout['QUICK ACTIONS']['RAM'] = load("res://Resources/Actions/Ram.tres")
+	layout['QUICK ACTIONS']['RAM'] = load("res://Resources/Actions/ram/ram.tres")
 	return layout 
 
 
@@ -209,6 +209,7 @@ func set_status(status_key: int, value) -> void:
 		return
 	
 	status[status_key] = value
+	LogRepeater.write("%s's %s is set to %d"%[mech_name, CONSTANTS.STATUS.keys()[status_key], int(value)])
 
 # Maybe unnecesary, too verbose
 func set_condition_time(condition_key: int, value: int) -> void:
