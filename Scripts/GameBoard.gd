@@ -126,15 +126,6 @@ func change_state(new_state: int) -> void:
 	_board_state = new_state
 
 
-func finish_unit_turn() -> void:
-	print(_unit_manager.active_unit.actions_left)
-	if _unit_manager.active_unit.actions_left == 0:
-		_unit_manager.finish_turn()
-		team_turn_index = (team_turn_index+1) % teams.size()
-		LogRepeater.write("%s turn"%teams[team_turn_index])
-	change_state(CONSTANTS.BOARD_STATE.FREE)
-
-
 func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
 	var new_cell = GlobalGrid.world_to_map(new_pos)
 	if _board_state == CONSTANTS.BOARD_STATE.MOVEMENT:
@@ -162,18 +153,24 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 	elif _board_state == CONSTANTS.BOARD_STATE.ACTING:
 	
 		var finish_turn_after_action: bool = _action_processor.process_action_targeted(cell, true)
-			# Finish the unit action
+		
+		# Deduct the cost from the unit action pool and if no more actions left then finish the turn
 		if finish_turn_after_action:
-			finish_unit_turn()
+			_unit_manager.active_unit.actions_left -= _action_processor._performing_action.cost
+			if _unit_manager.active_unit.actions_left == 0:
+				_unit_manager.finish_turn()
+				team_turn_index = (team_turn_index+1) % teams.size()
+				LogRepeater.write("%s turn"%teams[team_turn_index])
+			change_state(CONSTANTS.BOARD_STATE.FREE)
 
-func _on_Unit_action_selected(action) -> void:
+func _on_Unit_action_selected(action, mode) -> void:
 	if not action:
 		LogRepeater.write("Not enough actions left!")
 		change_state(CONSTANTS.BOARD_STATE.FREE)
 		return
 	
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
-	_action_processor.initialize(action, _game_map.get_cover())
+	_action_processor.initialize(action, mode, _game_map.get_cover())
 	var pos = GlobalGrid.map_to_world(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 

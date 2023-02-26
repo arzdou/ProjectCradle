@@ -8,7 +8,7 @@ var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 var _units
 var _performing_action 
 var active_unit: Unit
-var _blocked_cells := []
+var _action_mode: int
 var _cover := {}
 
 var marked_cells := [] # Indicates the range of the weapon
@@ -21,10 +21,12 @@ onready var _unit_manager = $"../UnitManager"
 var damage_string: String = "%s dealt %d %s damage to %s"
 
 
-func initialize(action, cover: Dictionary):
+func initialize(action, action_mode: int, cover: Dictionary):
 	_units = _unit_manager._unit_list
-	_performing_action = action
 	active_unit = _unit_manager.active_unit
+	
+	_performing_action = action
+	_action_mode = action_mode
 	_cover = cover
 
 
@@ -158,9 +160,9 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 	
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
 		# For now only range types
-		var range_type = _performing_action.ranges[0].type #For now only first type
-		var range_value = _performing_action.ranges[0].range_value
-		var range_blast = _performing_action.ranges[0].blast
+		var range_type = _performing_action.ranges[_action_mode].type #For now only first type
+		var range_value = _performing_action.ranges[_action_mode].range_value
+		var range_blast = _performing_action.ranges[_action_mode].blast
 		var damage_array: Array = _performing_action.damage
 		
 		match range_type: 

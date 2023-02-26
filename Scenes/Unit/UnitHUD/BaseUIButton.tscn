@@ -5,10 +5,8 @@
 
 [node name="BaseUIButton" type="Button"]
 margin_left = -104.0
-margin_top = -18.0
-margin_right = 105.0
-margin_bottom = 17.0
+margin_top = -17.0
+margin_right = 196.0
+margin_bottom = 23.0
 theme = ExtResource( 2 )
-text = "BUTTON"
-align = 0
 script = ExtResource( 1 )

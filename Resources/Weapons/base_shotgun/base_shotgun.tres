@@ -1,8 +1,9 @@
-[gd_resource type="Resource" load_steps=4 format=2]
+[gd_resource type="Resource" load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" type="Script" id=1]
 [ext_resource path="res://Resources/Weapons/base_shotgun/damage/1d6K.tres" type="Resource" id=2]
 [ext_resource path="res://Resources/Weapons/base_shotgun/range/5_range.tres" type="Resource" id=3]
+[ext_resource path="res://Resources/Weapons/base_shotgun/range/3_threat.tres" type="Resource" id=4]
 
 [resource]
 script = ExtResource( 1 )
@@ -21,7 +22,7 @@ no_attack = false
 no_mods = false
 no_core_bonus = false
 damage = [ ExtResource( 2 ) ]
-ranges = [ ExtResource( 3 ) ]
+ranges = [ ExtResource( 3 ), ExtResource( 4 ) ]
 tag = [  ]
 sp = 0
 description = ""

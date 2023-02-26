@@ -26,7 +26,7 @@ var _base_actions : Dictionary = {
 	"OVERCHARGE": null
 }
 
-signal action_selected(action)
+signal action_selected(action, mode)
 signal walk_finished
 
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
@@ -171,7 +171,7 @@ func _get_menu_layout() -> Dictionary:
 	
 	layout['FULL ACTIONS']['BARRAGE'] = barrage
 	layout['QUICK ACTIONS']['SKIRMISH'] = skirmish
-	layout['QUICK ACTIONS']['BOOST'] = load("res://Resources/Actions/Boost.tres")
+	layout['QUICK ACTIONS']['BOOST'] = load("res://Resources/Actions/boost.tres")
 	layout['QUICK ACTIONS']['RAM'] = load("res://Resources/Actions/ram/ram.tres")
 	return layout 
 
@@ -281,13 +281,12 @@ func hide_hud() -> void:
 	_status_hud.clear()
 
 
-func _on_SideMenu_action_selected(action):
+func _on_SideMenu_action_selected(action, mode):
 	# Here should be all the action preprocessing
 	if action.cost <= actions_left:
-		actions_left -= action.cost
-		emit_signal("action_selected", action)
+		emit_signal("action_selected", action, mode)
 	else:
-		emit_signal("action_selected", null)
+		emit_signal("action_selected", null, -1)
 
 
 func _on_UnitStats_structure_reduced(new_structure):

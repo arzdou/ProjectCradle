@@ -73,7 +73,9 @@ func create_menu_recursively(menu_dictionary: Dictionary, parent_container: Acti
 		
 		elif typeof(value) == TYPE_ARRAY:
 			for action in value:
-				child_container.create_action_button(action)
+				# Actions can have several modes, like range modes in weapons. 
+				# This creates a button for each mode
+				child_container.create_all_action_button(action)
 			
 		child_container.hide()
 
@@ -96,8 +98,8 @@ func menu_button_pressed(button_pressed: BaseUIButton, container: ActionContaine
 	menu_to_show.show_menu()
 
 
-func on_action_selected(action, container: ActionContainer):
+func on_action_selected(action, mode: int, container: ActionContainer):
 	hide_menu()
-	emit_signal('action_selected', action)
+	emit_signal('action_selected', action, mode)
 
 
