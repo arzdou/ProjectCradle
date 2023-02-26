@@ -141,22 +141,6 @@ func try_to_apply_damage_in_area(area: Array, damage_array: Array, range_type: i
 	return damage_applied
 
 
-# TODO: Create a resource as a weapon for ramming
-func try_to_ram(target_cell) -> bool:
-	var target_unit: Unit = GlobalGrid.in_cell(target_cell)
-	if not target_unit:
-		return false
-	if target_unit == active_unit:
-		return false
-	if not attack_roll(target_unit, CONSTANTS.WEAPON_RANGE_TYPES.THREAT):
-		return true
-	
-	print()
-	target_unit.set_status(CONSTANTS.STATUS.PRONE, true)
-	LogRepeater.write("%s rammed %s and knocked them prone" % [active_unit.mech_name, target_unit.mech_name])
-	return true
-
-
 func process_action_targeted(target_cell: Vector2, execute: bool = false) -> bool:
 	# This function processes all events after an action has been selected. It will probably be very
 	# large and convoluted but its behaviour is not very complicated.
@@ -234,14 +218,7 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 				draw_arrows = false
 				emit_signal("move_unit", target_cell, CONSTANTS.BOARD_STATE.SELECTING)
 				return false
-	
-	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MISC:
-		if _performing_action.name == "RAM":
-			marked_cells = GlobalGrid.line_of_sight(active_unit.cell, 1) 
-			damage_cells = [target_cell]
-			move_cells.clear()
-			if execute and marked_cells.has(target_cell):
-				return try_to_ram(target_cell)
+
 	
 	return false
 

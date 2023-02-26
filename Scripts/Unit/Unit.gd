@@ -106,6 +106,8 @@ func initialize(unit_data: Dictionary):
 	_side_menu.initialize(_get_menu_layout())
 	move_range = _stats.speed
 	
+	actions_left = 2
+	
 	# Reset status and conditions
 	for i in CONSTANTS.STATUS.values():
 		status[i] = false
@@ -176,6 +178,7 @@ func _get_menu_layout() -> Dictionary:
 
 func finish_turn() -> void:
 	used_move_range = 0
+	actions_left = 2
 
 
 func take_damage(damage: int, damage_type: int) -> void:
@@ -244,7 +247,6 @@ func set_is_selected(val: bool) -> void:
 		
 	is_selected = val
 	if is_selected:
-		actions_left = 2
 		_anim_player.play("selected")
 		show_hud()
 	else:
@@ -281,7 +283,11 @@ func hide_hud() -> void:
 
 func _on_SideMenu_action_selected(action):
 	# Here should be all the action preprocessing
-	emit_signal("action_selected", action)
+	if action.cost <= actions_left:
+		actions_left -= action.cost
+		emit_signal("action_selected", action)
+	else:
+		emit_signal("action_selected", null)
 
 
 func _on_UnitStats_structure_reduced(new_structure):

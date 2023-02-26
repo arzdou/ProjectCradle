@@ -9,6 +9,7 @@ name = "BOOST"
 action_type = 2
 terse = "Additional movement"
 detail = ""
+cost = 1
 activation_type = [ 2 ]
 pilot = true
 mech = true

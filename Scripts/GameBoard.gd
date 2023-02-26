@@ -22,7 +22,7 @@ var _unit_data := [
 
 
 # Array to store the different identifiers for the sides the unit belong in the map
-var teams := ['ally', 'enemy']
+var teams := []
 var team_turn_index = 0
 
 var _board_state: int = CONSTANTS.BOARD_STATE.FREE setget change_state
@@ -38,11 +38,7 @@ func _ready() -> void:
 		yield(_game_map, "ready")
 	_game_map.cursor.connect("accept_pressed", self, "_on_Cursor_accept_pressed")
 	_game_map.cursor.connect("moved", self, "_on_Cursor_moved")
-	
-	
-	_game_map.initialize(map_res.image)
 
-	_game_map.terrain_tiles = map_res.terrain_tiles
 	_reinitialize()
 
 
@@ -53,8 +49,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _reinitialize() -> void:
 	change_state(CONSTANTS.BOARD_STATE.FREE)
+	_game_map.initialize(map_res.image)
+	_game_map.terrain_tiles = map_res.terrain_tiles
 	_unit_manager.initialize(_unit_data)
 	_unit_manager.update_hud(Vector2(-1,-1))
+	
+	for unit in _unit_manager._unit_list:
+		if not teams.has(unit.team):
+			teams.push_back(unit.team)
+	
 	GlobalGrid.initialize(map_res, _unit_manager._unit_list)
 
 
@@ -66,9 +69,7 @@ func get_walkable_cells() -> Array:
 
 
 func _select_unit(cell: Vector2) -> void:
-	
-	var was_unit_selected: bool
-	was_unit_selected = _unit_manager.try_selecting_unit(cell, 'ally')
+	var was_unit_selected: bool = _unit_manager.try_selecting_unit(cell, teams[team_turn_index])
 	
 	if not was_unit_selected:
 		return
@@ -126,9 +127,12 @@ func change_state(new_state: int) -> void:
 
 
 func finish_unit_turn() -> void:
-	_unit_manager.finish_turn()
+	print(_unit_manager.active_unit.actions_left)
+	if _unit_manager.active_unit.actions_left == 0:
+		_unit_manager.finish_turn()
+		team_turn_index = (team_turn_index+1) % teams.size()
+		LogRepeater.write("%s turn"%teams[team_turn_index])
 	change_state(CONSTANTS.BOARD_STATE.FREE)
-	team_turn_index = (team_turn_index+1) % teams.size()
 
 
 func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
@@ -163,6 +167,11 @@ func _on_Cursor_accept_pressed(cell: Vector2) -> void:
 			finish_unit_turn()
 
 func _on_Unit_action_selected(action) -> void:
+	if not action:
+		LogRepeater.write("Not enough actions left!")
+		change_state(CONSTANTS.BOARD_STATE.FREE)
+		return
+	
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
 	_action_processor.initialize(action, _game_map.get_cover())
 	var pos = GlobalGrid.map_to_world(_game_map.cursor.cell)

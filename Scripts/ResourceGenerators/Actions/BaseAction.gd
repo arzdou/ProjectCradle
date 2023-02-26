@@ -10,6 +10,8 @@ export(CONSTANTS.ACTION_TYPES) var action_type
 export var terse: String
 export var detail: String
 
+export var cost: int = 1
+
 # NO IDEA, NEED TO CHECK
 export(Array, CONSTANTS.ACTIVATION_TYPE) var activation_type
 
