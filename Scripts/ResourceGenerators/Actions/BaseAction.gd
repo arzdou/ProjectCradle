@@ -19,8 +19,8 @@ export(Array, CONSTANTS.ACTIVATION_TYPE) var activation_type
 export var pilot: bool
 export var mech: bool = true
 
-# Pointers to synnergies, I dont know if this will be useful
-export var synergy: Array
+export var synergies: Array
+export var no_synergy: bool
 
 # For the log chat
 export(Array, String) var confirm
@@ -30,3 +30,7 @@ export var log_str: String
 export var ignore_used: bool
 export var heat_cost: bool
 
+
+# Returns an array with the ordered elements of the name: strings and icons
+func get_display_name(mode: int = 0) -> Array:
+	return [name]

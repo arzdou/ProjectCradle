@@ -1,10 +1,6 @@
-extends Resource
+extends BaseAction
 class_name WeaponAction
 
-var action_type = CONSTANTS.ACTION_TYPES.WEAPON
-
-export var id: String = "missing_mechweapon"
-export var name: String = "ERR: DATA NOT FOUND"
 export var source: String = "GMS"
 export var licence: String = "GMS"
 export var license_id: String = ""
@@ -13,7 +9,6 @@ export var license_level: int = 0
 export(CONSTANTS.WEAPON_SIZE) var mount = CONSTANTS.WEAPON_SIZE.MAIN
 export(CONSTANTS.WEAPON_TYPES) var weapon_type = CONSTANTS.WEAPON_TYPES.RIFLE
 
-export var cost: int = 1
 export var barrage: bool
 export var skirmish: bool
 export var no_attack: bool
@@ -41,12 +36,23 @@ export(Resource) var on_hit
 export var is_on_crit: bool
 export(Resource) var on_crit
 
-export var synergies: Array
-export var no_synergy: bool
-
 export var deployable: Array  # Deployable resource
 export var counters: Array    # Counter resource
 
 export var integrated: Array
 export var special_equipment: Array
-	
+
+
+const range_type_dict = {
+	CONSTANTS.WEAPON_RANGE_TYPES.RANGE: "res://Media/icons/range/range.svg",
+	CONSTANTS.WEAPON_RANGE_TYPES.LINE: "res://Media/icons/range/aoe_line.svg",
+	CONSTANTS.WEAPON_RANGE_TYPES.CONE: "res://Media/icons/range/aoe_cone.svg",
+	CONSTANTS.WEAPON_RANGE_TYPES.BLAST: "res://Media/icons/range/aoe_blast.svg",
+	CONSTANTS.WEAPON_RANGE_TYPES.BURST: "res://Media/icons/range/aoe_burst.svg",
+	CONSTANTS.WEAPON_RANGE_TYPES.THREAT: "res://Media/icons/range/threat.svg",
+}
+
+func get_display_name(mode: int = 0) -> Array:
+	var text = "%s - %d" % [name, ranges[mode].range_value]
+	var icon = load(range_type_dict[ranges[mode].type])
+	return [text, icon]

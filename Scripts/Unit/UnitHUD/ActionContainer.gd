@@ -22,7 +22,7 @@ func create_menu_button(button_name: String):
 	var menu_button := BaseUIButton.instance()
 	add_child(menu_button)
 	
-	menu_button.initialize(button_name)
+	menu_button.initialize([button_name])
 	menu_button.connect(
 		"pressed", self, "_on_menu_button_pressed", [menu_button]
 	)
@@ -40,16 +40,15 @@ func _on_menu_button_pressed(button_pressed: BaseUIButton) -> void:
 func create_all_action_button(action):
 	if action.action_type == CONSTANTS.ACTION_TYPES.WEAPON:
 		for mode in range(action.ranges.size()):
-			var extra_name = " - %d %s"%[action.ranges[mode].range_value, CONSTANTS.WEAPON_RANGE_TYPES.keys()[action.ranges[mode].type]]
-			create_action_button(action, mode, extra_name)
+			create_action_button(action, mode)
 	else:
 		create_action_button(action)
 
-func create_action_button(action, mode: int = 0, extra_name: String = ''):
+func create_action_button(action, mode: int = 0):
 	var action_button := BaseUIButton.instance()
 	add_child(action_button)
 	
-	action_button.initialize(action.name + extra_name)
+	action_button.initialize(action.get_display_name(mode))
 	action_button.connect(
 		"pressed", self, "_on_action_button_pressed", [action, mode]
 	)
