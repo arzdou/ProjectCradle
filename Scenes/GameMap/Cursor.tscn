@@ -21,5 +21,3 @@ texture = ExtResource( 3 )
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1
 one_shot = true
-
-[node name="Tween" type="Tween" parent="."]

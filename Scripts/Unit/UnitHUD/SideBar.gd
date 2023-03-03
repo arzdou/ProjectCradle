@@ -7,7 +7,6 @@ var hidden := false
 var is_active := false setget _set_is_active
 
 onready var _hide_button = $HideButton
-onready var _tween = $Tween
 
 func _ready():
 	_set_is_active(false)
@@ -31,14 +30,14 @@ func _on_item_selected(id):
 
 func _on_HideButton_pressed():
 	hidden = not hidden
+	var tween = create_tween().set_trans(Tween.TRANS_CIRC)
 	if hidden:
 		_hide_button.text = 'show'
-		_tween.interpolate_property(self, 'rect_position', rect_position, rect_position+Vector2(64*4-32,0), 0.2)
+		tween.tween_property(self, 'rect_position', rect_position+Vector2(64*4-32,0), 0.2)
 	if not hidden:
 		_hide_button.text = 'hide'
-		_tween.interpolate_property(self, 'rect_position', rect_position, rect_position-Vector2(64*4-32,0), 0.2)
+		tween.tween_property(self, 'rect_position', rect_position-Vector2(64*4-32,0), 0.2)
 	
-	_tween.start()
 
 func _on_LoadButton_pressed():
 	$VBoxContainer/Button/FileDialog.popup_centered()

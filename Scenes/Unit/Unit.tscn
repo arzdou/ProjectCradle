@@ -85,11 +85,10 @@ mouse_filter = 2
 script = ExtResource( 9 )
 
 [node name="Bars" parent="PathFollow2D/HUD" instance=ExtResource( 6 )]
-margin_left = -8.0
-margin_top = -115.0
-margin_right = -8.0
-margin_bottom = -115.0
-mouse_filter = 2
+margin_left = -18.0
+margin_top = -101.0
+margin_right = -18.0
+margin_bottom = -101.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/idle = SubResource( 3 )

@@ -18,7 +18,6 @@ var is_active := true setget set_is_active
 var cell := Vector2.ZERO setget set_cell # Coordinates of the current cell the cursor is hovering.
 
 onready var timer: Timer = $Timer
-onready var _tween: Tween = $Tween
 onready var _arrow: Sprite = $Arrow
 onready var _highlight:Sprite = $Highlight
 
@@ -105,14 +104,14 @@ func set_cell(value: Vector2, do_tween: bool = true) -> void:
 	var new_highlight_pos = GlobalGrid.map_to_world(cell)
 	var new_cursor_pos = GlobalGrid.map_to_world(cell) + Vector2(GlobalGrid.cell_size.x, -GlobalGrid.cell_size.y)/2 - MOUSE_OFFSET
 	if false:
-		_tween.interpolate_property(
-			_highlight, 'position', _highlight.position, new_highlight_pos, timer.wait_time*0.5
+		var tween = create_tween()
+		tween.tween_property(
+			_highlight, 'position', new_highlight_pos, timer.wait_time*0.5
 		)
 		if mode == CURSOR_MODE.KEY:
-			_tween.interpolate_property(
-				_arrow, 'position', _arrow.position, new_cursor_pos, timer.wait_time*0.5
+			tween.tween_property(
+				_arrow, 'position', new_cursor_pos, timer.wait_time*0.5
 			)
-		_tween.start()
 	else:
 		_highlight.position = new_highlight_pos
 		if mode == CURSOR_MODE.KEY:

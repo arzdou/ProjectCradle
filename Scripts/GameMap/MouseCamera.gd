@@ -11,7 +11,6 @@ var _is_menu_hidden
 
 onready var camera_2d = $Camera2D
 onready var timer = $Timer
-onready var _tween = $Tween
 
 func _ready():
 	if not timer:
@@ -69,9 +68,9 @@ func set_camera_zoom(new_zoom: float):
 	
 	if new_zoom == camera_2d.zoom.x:
 		return
-		
-	_tween.interpolate_property(camera_2d, "zoom", camera_2d.zoom, Vector2(new_zoom, new_zoom), timer.wait_time*0.5)
-	_tween.start()
+	
+	var tween = create_tween().set_trans(Tween.TRANS_CIRC)
+	tween.tween_property(camera_2d, "zoom", Vector2(new_zoom, new_zoom), timer.wait_time*0.5)
 	timer.start()
 
 func set_camera_position(new_position_x: float, new_position_y: float, mode: String) -> void:
@@ -94,8 +93,9 @@ func set_camera_position(new_position_x: float, new_position_y: float, mode: Str
 		return
 	var cell_movement: Vector2 = GlobalGrid.world_to_map(new_position-position)
 	position = new_position
-	#_tween.interpolate_property(self, "position", position, new_position, timer.wait_time*0.5)
-	#_tween.start()
+	# var tween = create_tween().set_trans(Tween.TRANS_CIRC)
+	# tween.interpolate_property(self, "position", new_position, timer.wait_time*0.5)
+
 	
 	timer.start()
 	emit_signal("camera_moved", mode, cell_movement)

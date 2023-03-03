@@ -104,8 +104,6 @@ margin_bottom = 343.0
 rect_rotation = -90.0
 text = "hide"
 
-[node name="Tween" type="Tween" parent="CanvasLayer/SideBar"]
-
 [connection signal="id_pressed" from="CanvasLayer/SideBar" to="." method="_on_SideBar_id_pressed"]
 [connection signal="pressed" from="CanvasLayer/SideBar/VBoxContainer/Button" to="CanvasLayer/SideBar" method="_on_LoadButton_pressed"]
 [connection signal="file_selected" from="CanvasLayer/SideBar/VBoxContainer/Button/FileDialog" to="." method="_on_FileDialog_file_selected"]

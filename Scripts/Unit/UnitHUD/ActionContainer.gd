@@ -3,18 +3,15 @@ class_name ActionContainer
 
 const BaseUIButton: PackedScene = preload("res://Scenes/Unit/UnitHUD/BaseUIButton.tscn")
 
-const HIDE_SPEED := 0.15  # second
+const HIDE_SPEED := 0.3  # second
 const HIDE_DISPACEMENT = Vector2(50, 0) # pixels
 
 var hidden := true
 var button_array := []
 
-onready var tween = $Tween
-
 func _ready():
 	show_menu() # This fixes a graphical bug on the first call to show the menu, don't me ask why...
 	hide_menu()
-	#tween.connect("tween_all_completed", self, '_on_Tween_tween_all_completed')
 
 
 
@@ -64,16 +61,16 @@ func _on_action_button_pressed(action: Resource, mode: int) -> void:
 func hide_menu() -> void:
 	if hidden:
 		return
-	
-	tween.interpolate_property(
-		self, "rect_position", rect_position, rect_position + HIDE_DISPACEMENT, HIDE_SPEED
-	)
-	tween.interpolate_property(
-		self, "modulate", Color(1, 1, 1, 1), Color(1, 1, 1, 0), HIDE_SPEED
-	)
-	tween.start()
+	var tween = create_tween().set_trans(Tween.TRANS_CIRC).set_parallel(true)
+	tween.tween_property(
+		self, "rect_position", rect_position + HIDE_DISPACEMENT, HIDE_SPEED
+	).from(rect_position)
+	tween.tween_property(
+		self, "modulate", Color(1, 1, 1, 0), HIDE_SPEED
+	).from(Color(1, 1, 1, 1))
+
 	hidden = true
-	yield(tween, 'tween_all_completed')
+	yield(tween, 'finished')
 	hide()
 
 func show_menu() -> void:
@@ -82,14 +79,14 @@ func show_menu() -> void:
 		return
 	
 	show()
-	tween.interpolate_property(
-		self, "rect_position", rect_position, rect_position - HIDE_DISPACEMENT, HIDE_SPEED
-	)
-	tween.interpolate_property(
-		self, "modulate", Color(1, 1, 1, 0), Color(1, 1, 1, 1), HIDE_SPEED
-	)
-	
-	tween.start()
+	var tween = create_tween().set_trans(Tween.TRANS_CIRC).set_parallel(true)
+	tween.tween_property(
+		self, "rect_position", rect_position - HIDE_DISPACEMENT, HIDE_SPEED
+	).from(rect_position)
+	tween.tween_property(
+		self, "modulate", Color(1, 1, 1, 1), HIDE_SPEED
+	).from(Color(1, 1, 1, 0))
+
 	hidden = false
 
 func reset_position() -> void:
