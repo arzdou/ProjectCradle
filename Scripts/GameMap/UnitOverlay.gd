@@ -7,11 +7,11 @@ func draw(terrain_dictionary: Dictionary) -> void:
 	# We loop over the cells and assign them the only tile available in the tileset, tile 0.
 	for key in terrain_dictionary:
 		for cell in terrain_dictionary[key]:
-			set_cellv(cell, key)
+			set_cell(0, cell, key, Vector2i(0,0))
 
 
 func draw_array(cell_array: Array, terrain_key: int) -> void:
 	clear()
 	# We loop over the cells and assign them the only tile available in the tileset, tile 0.
 	for cell in cell_array:
-		set_cellv(cell, terrain_key)
+		set_cell(0, cell, 0, Vector2i(0,0))

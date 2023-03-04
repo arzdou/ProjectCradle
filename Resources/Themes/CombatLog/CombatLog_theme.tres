@@ -1,13 +1,25 @@
-[gd_resource type="Theme" load_steps=4 format=2]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://c2wr1np5wv2m5"]
 
-[ext_resource path="res://Resources/Themes/CombatLog/flatBox_style.tres" type="StyleBox" id=1]
-[ext_resource path="res://Media/fonts/Consolas.ttf" type="DynamicFontData" id=2]
+[ext_resource type="StyleBox" uid="uid://dtyyp588u8es8" path="res://Resources/Themes/CombatLog/flatBox_style.tres" id="1"]
+[ext_resource type="FontFile" uid="uid://cw35pbv37vrp2" path="res://Media/fonts/Consolas.ttf" id="2"]
 
-[sub_resource type="DynamicFont" id=1]
-size = 12
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("2")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [resource]
-Label/colors/font_color = Color( 0, 0, 0, 1 )
-Label/fonts/font = SubResource( 1 )
-ScrollContainer/styles/bg = ExtResource( 1 )
+Label/colors/font_color = Color(0, 0, 0, 1)
+Label/fonts/font = SubResource("1")
+MarginContainer/constants/margin_bottom = 20
+MarginContainer/constants/margin_left = 20
+MarginContainer/constants/margin_right = 20
+MarginContainer/constants/margin_top = 20
+ScrollContainer/styles/panel = ExtResource("1")

@@ -1,4 +1,4 @@
-extends ViewportContainer
+extends CenterContainer
 class_name SideMenu
 
 signal action_selected(action)
@@ -6,9 +6,9 @@ signal action_selected(action)
 const ActionContainer: PackedScene = preload("res://Scenes/Unit/UnitHUD/ActionContainer.tscn")
 const BaseUIButton: PackedScene = preload("res://Scenes/Unit/UnitHUD/BaseUIButton.tscn")
 
-export var menu_size := Vector2(250, 200)
+@export var menu_size := Vector2(250, 200)
 
-onready var main_container = $MainContainer
+@onready var main_container = $MainContainer
 
 # This variable will hold references to the relations between buttons and containers
 # Its used for transitioning between menus
@@ -60,12 +60,12 @@ func create_menu_recursively(menu_dictionary: Dictionary, parent_container: Acti
 			parent_container.create_action_button(value)
 			continue
 		
-		var child_container = ActionContainer.instance()
+		var child_container = ActionContainer.instantiate()
 		var menu_button = parent_container.create_menu_button(menu_key)
 		button_to_container_ref[menu_button] = child_container
 		
 		add_child(child_container)
-		 # We set the owner to self to be able to call the emit signal function bellow directly
+		# We set the owner to self to be able to call the emit signal function bellow directly
 		child_container.set_owner(self)
 		
 		if typeof(value) == TYPE_DICTIONARY:
@@ -89,16 +89,17 @@ func hide_menu():
 	main_container.hide_menu()
 	for child_container in get_children():
 		child_container.hide_menu()
-	yield(get_tree().create_timer(main_container.HIDE_SPEED), 'timeout')
+	await get_tree().create_timer(main_container.HIDE_SPEED).timeout
 	hide()
 
 
 func menu_button_pressed(button_pressed: BaseUIButton, container: ActionContainer) -> void:
 	var menu_to_show: ActionContainer = button_to_container_ref[button_pressed]
+	container.hide_menu()
 	menu_to_show.show_menu()
 
 
-func on_action_selected(action, mode: int, container: ActionContainer):
+func on_action_selected(action, mode: int):
 	hide_menu()
 	emit_signal('action_selected', action, mode)
 

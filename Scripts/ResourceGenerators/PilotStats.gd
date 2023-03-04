@@ -1,28 +1,28 @@
 extends Resource
 class_name PilotStats
 
-export(String) var pilot_name = 'BRIGADOR'
-export(int, 0, 12) var license_level = 0
+@export var pilot_name: String = 'BRIGADOR'
+@export var license_level = 0 # (int, 0, 12)
 
 # Basic stats for a pilot
 var size := '1/2'
-var max_hp:  int =  6 setget ,_get_max_hp
-var evasion:       int = 10 setget ,_get_evasion
-var e_defense:     int = 10 setget ,_get_e_defense
-var speed:         int =  4 setget ,_get_speed
+var max_hp:  int =  6 : get = _get_max_hp
+var evasion:       int = 10 : get = _get_evasion
+var e_defense:     int = 10 : get = _get_e_defense
+var speed:         int =  4 : get = _get_speed
 
 # Level up stats
-export(int) var hull = 0
-export(int) var agility = 0
-export(int) var systems = 0
-export(int) var engineering = 0
+@export var hull: int = 0
+@export var agility: int = 0
+@export var systems: int = 0
+@export var engineering: int = 0
 
 # Equipment of the pilot
 # TO DO: Define the different types of resources
-export(Resource) var armor = null
-export(Resource) var weapon = null
-export(Array, Resource) var gear = []
-export(Array, Resource) var traits = []
+@export var armor: Resource = null
+@export var weapon: Resource = null
+@export var gear = [] # (Array, Resource)
+@export var traits = [] # (Array, Resource)
 
 
 func _get_max_hp() -> int:

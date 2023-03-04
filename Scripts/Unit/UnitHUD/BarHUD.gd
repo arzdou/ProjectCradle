@@ -2,15 +2,15 @@
 extends Control
 class_name BarHUD
 
-onready var _hp_bar = $HPBar
-onready var _heat_bar = $HeatBar
-onready var _structure_bar = $StructureBar
-onready var _stress_bar = $StressBar
+@onready var _hp_bar = $HPBar
+@onready var _heat_bar = $HeatBar
+@onready var _structure_bar = $StructureBar
+@onready var _stress_bar = $StressBar
 
-export var hp: int setget set_hp, get_hp
-export var heat: int setget set_heat, get_heat
-export var structure: int setget set_structure, get_structure
-export var stress: int setget set_stress, get_stress
+@export var hp: int : get = get_hp, set = set_hp
+@export var heat: int : get = get_heat, set = set_heat
+@export var structure: int : get = get_structure, set = set_structure
+@export var stress: int : get = get_stress, set = set_stress
 
 
 func initialize(max_hp: int, heat_cap: int) -> void:

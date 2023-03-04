@@ -22,12 +22,12 @@ func initialize(map_resource: Resource, units: Array) -> void:
 
 
 # Helper function to transform coordinates to cell index
-func map_to_world(map_position: Vector2) -> Vector2:
+func map_to_local(map_position: Vector2) -> Vector2:
 	return map_position * cell_size + cell_size / 2
 
 
 # Reverse helper function
-func world_to_map(world_position: Vector2) -> Vector2:
+func local_to_map(world_position: Vector2) -> Vector2:
 	return ( world_position / cell_size ).floor()
 
 
@@ -84,7 +84,7 @@ func flood_fill(cell: Vector2, move_range: int) -> Array:
 	# We use a stack of cells to process, when there are no more we exit
 	var stack := [cell]
 	
-	while not stack.empty():
+	while not stack.is_empty():
 		var current: Vector2 = stack.pop_back()
 		# The conditions are:
 		# 1. We haven't already visited and filled this cell
@@ -123,11 +123,11 @@ func flood_fill(cell: Vector2, move_range: int) -> Array:
 func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 	var out := []
 	var blocked_cells = terrain_dict[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
-	var ray_cast: Vector2 = map_to_world(cell)
+	var ray_cast: Vector2 = map_to_local(cell)
 	
 	while true:
 		ray_cast += Vector2(-cos(angle), -sin(angle)) * RAY_CAST_SPEED
-		var ray_cast_cell = world_to_map(ray_cast)
+		var ray_cast_cell = local_to_map(ray_cast)
 		
 		if ray_cast_cell in blocked_cells:
 			break
@@ -150,10 +150,10 @@ func line_of_sight(cell: Vector2, view_range: int) -> Array:
 	var number_of_raycast = floor(2*PI / min_angle)
 	for i in range(number_of_raycast):
 		var ray_cast_angle = ray_cast_from_cell(cell, i*min_angle, view_range)
-		for cell in ray_cast_angle:
-			if out.has(cell):
+		for cast_cell in ray_cast_angle:
+			if out.has(cast_cell):
 				continue
-			out.push_back(cell)
+			out.push_back(cast_cell)
 	return out
 
 

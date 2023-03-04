@@ -15,7 +15,7 @@ var _teams = []
 func initialize(units_data: Array) -> void:
 	# Create the different units based on the input data
 	for udata in units_data:
-		var unit = Unit.instance()
+		var unit = Unit.instantiate()
 		add_child(unit)
 		
 		unit.set_owner(self)
@@ -26,7 +26,7 @@ func initialize(units_data: Array) -> void:
 		if not unit.team in _teams:
 			_teams.push_back(unit.team)
 		
-		unit.connect("action_selected", get_parent(), "_on_Unit_action_selected")
+		unit.connect("action_selected",Callable(get_parent(),"_on_Unit_action_selected"))
 
 
 func get_occupied_cells() -> Array:
@@ -87,7 +87,7 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	active_unit.status[CONSTANTS.STATUS.ENGAGED].clear()
 	
 	active_unit.walk_along(path)
-	yield(active_unit, "walk_finished")
+	await active_unit.walk_finished
 	
 	# After moving to the correct position, engage the units with one another
 	for engaged_unit in GlobalGrid.get_neighbours(path[-1]):

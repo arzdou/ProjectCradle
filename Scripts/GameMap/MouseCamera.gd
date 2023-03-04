@@ -1,4 +1,4 @@
-extends Position2D
+extends Marker2D
 class_name MouseCamera
 
 signal camera_moved(mode, new_position)
@@ -9,13 +9,13 @@ var zoom_max: float
 var _cursor_in_menu := false
 var _is_menu_hidden
 
-onready var camera_2d = $Camera2D
-onready var timer = $Timer
+@onready var camera_2d = $Camera2D
+@onready var timer = $Timer
 
 func _ready():
 	if not timer:
-		yield(timer, "ready")
-	set_as_toplevel(true)
+		await timer.ready
+	set_as_top_level(true)
 	update_camera_limits()
 
 
@@ -91,10 +91,10 @@ func set_camera_position(new_position_x: float, new_position_y: float, mode: Str
 	
 	if new_position == position:
 		return
-	var cell_movement: Vector2 = GlobalGrid.world_to_map(new_position-position)
-	position = new_position
-	# var tween = create_tween().set_trans(Tween.TRANS_CIRC)
-	# tween.interpolate_property(self, "position", new_position, timer.wait_time*0.5)
+	var cell_movement: Vector2 = GlobalGrid.local_to_map(new_position-position)
+
+	var tween = create_tween().set_trans(Tween.TRANS_CIRC)
+	tween.tween_property(self, "position", new_position, timer.wait_time*0.0)
 
 	
 	timer.start()
@@ -126,6 +126,6 @@ func move_camera_based_on_cursor(cursor_position: Vector2, mode: String) -> void
 
 func _on_Cursor_moved(cursor_mode, cursor_position):
 	if not camera_2d: # During the first frames the camera node is not ready
-		yield($Camera2D, "ready")
+		await $Camera2D.ready
 	move_camera_based_on_cursor(cursor_position, 'cursor')
 

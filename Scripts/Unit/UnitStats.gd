@@ -6,12 +6,12 @@ signal structure_reduced(new_structure)
 signal stress_raised(new_stress)
 
 var license_level: int
-var grit: int setget ,_get_grit
+var grit: int : get = _get_grit
 
 # Basic stats for a pilot
 var pilot_size: String
 var pilot_max_hp: int 
-var pilot_hp: int setget _set_pilot_hp
+var pilot_hp: int : set = _set_pilot_hp
 var pilot_evasion: int 
 var pilot_e_defense: int 
 var pilot_speed: int 
@@ -35,22 +35,22 @@ var save_target : int
 var sensors: int
 
 # HULL
-var max_hp: int setget ,_get_max_hp
-var hp: int setget _set_hp
-var repair_cap: int setget ,_get_repair_cap
+var max_hp: int : get = _get_max_hp
+var hp: int : set = _set_hp
+var repair_cap: int : get = _get_repair_cap
 
 # AGILITY
-var evasion: int setget ,_get_evasion
-var speed: int setget ,_get_speed
+var evasion: int : get = _get_evasion
+var speed: int : get = _get_speed
 
 # SYSTEMS
-var e_defense: int setget ,_get_e_defense
-var tech_attack: int setget ,_get_tech_attack
-var system_points: int setget ,_get_system_points
+var e_defense: int : get = _get_e_defense
+var tech_attack: int : get = _get_tech_attack
+var system_points: int : get = _get_system_points
 
 # ENGINEERING
-var heat_cap: int setget ,_get_heat_cap
-var heat: int setget _set_heat
+var heat_cap: int : get = _get_heat_cap
+var heat: int : set = _set_heat
 
 var structure := 4
 var stress := 0
@@ -60,7 +60,7 @@ var mech_systems: Array
 var core_system: Resource
 
 
-func initialize(pilot_stats: PilotStats, mech: Mech) -> void:
+func initialize(pilot_stats: PilotStats, mech) -> void:
 	license_level = pilot_stats.license_level
 
 	pilot_size = pilot_stats.size
@@ -112,7 +112,7 @@ func _check_validity() -> bool:
 	
 	# TODO: check that the number of system points in the mech doesnt exceed the cap 
 	# and that the pilot has all the required liceses
-	if not mech_systems.empty():
+	if not mech_systems.is_empty():
 		var mounted_system_points = 0
 		for system in mech_systems:
 			mounted_system_points += 0 # system.points

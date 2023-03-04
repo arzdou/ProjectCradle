@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="WeaponAction" load_steps=4 format=3 uid="uid://bn5jlrufspim3"]
+
+[ext_resource type="Resource" uid="uid://cbymbtjbru2tn" path="res://Resources/Actions/improvised_attack/damage/1d6K.tres" id="1_4uyle"]
+[ext_resource type="Resource" path="res://Resources/Actions/improvised_attack/range/1_threat.tres" id="2_1mb54"]
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" id="3_iw4q1"]
+
+[resource]
+script = ExtResource("3_iw4q1")
+source = "BASE"
+licence = "BASE"
+license_id = ""
+license_level = 0
+mount = 1
+weapon_type = 1
+barrage = false
+skirmish = false
+no_attack = false
+no_mods = false
+no_core_bonus = false
+damage = Array[Resource("res://Scripts/ResourceGenerators/Actions/DamageResource.gd")]([ExtResource("1_4uyle")])
+ranges = Array[Resource("res://Scripts/ResourceGenerators/Actions/RangeResource.gd")]([ExtResource("2_1mb54")])
+tag = Array[Resource]([])
+sp = 0
+description = ""
+actions = []
+bonuses = []
+no_bonus = false
+is_effect = false
+is_on_attack = false
+is_on_hit = false
+is_on_crit = false
+deployable = []
+counters = []
+integrated = []
+special_equipment = []
+id = "action_improvised_attack"
+name = "IMPR ATTACK"
+action_type = 0
+terse = ""
+detail = ""
+cost = 2
+activation_type = Array[int]([])
+pilot = false
+mech = true
+synergies = []
+no_synergy = true
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

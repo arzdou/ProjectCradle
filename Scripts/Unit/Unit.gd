@@ -2,7 +2,7 @@
 # The board manages the Unit's position inside the game grid.
 # The unit itself is only a visual representation that moves smoothly in the game world.
 # We use the tool mode so the `skin` and `skin_offset` below update in the editor.
-tool 
+@tool 
 class_name Unit
 extends Path2D
 
@@ -31,30 +31,30 @@ signal walk_finished
 
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
-var _pilot: Resource
-var _mech: Resource
+var _pilot: PilotStats
+var _mech: Mech
 
 var pilot_name: String = 'PILOT'
 var mech_name: String = 'MECH'
 
 # Type of the unit
-export(String, 'ally', 'enemy') var team
+@export var team: String # (String, 'ally', 'enemy')
 
-# Texture representing the unit.
-export var skin: Texture setget set_skin
-export var skin_offset := Vector2.ZERO setget set_skin_offset
+# Texture2D representing the unit.
+@export var skin: Texture2D : set = set_skin
+@export var skin_offset := Vector2.ZERO : set = set_skin_offset
 
 # Through its setter function, the `_is_walking` property toggles processing for this unit.
 # See `_set_is_walking()` at the bottom of this code snippet.
-var _is_walking := false setget _set_is_walking
-export var move_range: int # Distance to which the unit can walk in cells.
-export var move_speed := 600.0 # The unit's move speed in pixels, when it's moving along a path.
-var remaining_move_range: int = move_range setget ,_get_remaining_move_range
+var _is_walking := false : set = _set_is_walking
+@export var move_range: int # Distance to which the unit can walk in cells.
+@export var move_speed := 600.0 # The unit's move speed in pixels, when it's moving along a path.
+var remaining_move_range: int = move_range : get = _get_remaining_move_range
 
 # Cell where the unit is located
-var cell := Vector2.ZERO setget set_cell
-var is_selected := false setget set_is_selected
-var is_selecting_action := false setget set_is_selecting_action
+var cell := Vector2.ZERO : set = set_cell
+var is_selected := false : set = set_is_selected
+var is_selecting_action := false : set = set_is_selecting_action
 
 var is_boosting := false
 var used_move_range := 0
@@ -64,20 +64,20 @@ var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STAT
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
 
 # Preload all components
-onready var _stats = $UnitStats
-onready var _sprite: Sprite = $PathFollow2D/Sprite
-onready var _path_follow: PathFollow2D = $PathFollow2D
-onready var _anim_player: AnimationPlayer = $AnimationPlayer
+@onready var _stats = $UnitStats
+@onready var _sprite: Sprite2D = $PathFollow2D/Sprite2D
+@onready var _path_follow: PathFollow2D = $PathFollow2D
+@onready var _anim_player: AnimationPlayer = $AnimationPlayer
 
-onready var _side_menu = $PathFollow2D/HUD/SideMenu
-onready var _bar_hud = $PathFollow2D/HUD/Bars
-onready var _status_hud = $PathFollow2D/HUD/StatusHUD
+@onready var _side_menu = $PathFollow2D/HUD/SideMenu
+@onready var _bar_hud = $PathFollow2D/HUD/Bars
+@onready var _status_hud = $PathFollow2D/HUD/StatusHUD
 
 
 func _ready():
 	# _process will only run if the unit needs to move
 	set_process(false)
-	if not Engine.editor_hint:
+	if not Engine.is_editor_hint():
 		# We create the curve resource here because creating it in the editor prevents us from
 		# moving the unit.
 		curve = Curve2D.new()
@@ -88,8 +88,8 @@ func initialize(unit_data: Dictionary):
 	# ----------
 	# unit_data: Dictionary
 	# {
-	#	pilot: String. Path to the resource of the pilot
-	#	mech: String. Path to the resource of the mech
+	#	pilot: String. Path3D to the resource of the pilot
+	#	mech: String. Path3D to the resource of the mech
 	#	position: Vector2. Postion in the map in cells
 	#	team: String. Team the unit is part of
 	# }
@@ -120,30 +120,30 @@ func initialize(unit_data: Dictionary):
 	#In the future this should also set the skin
 	
 	# The following lines initialize the `cell` property and snap the unit to the cell's center on the map.
-	position = GlobalGrid.map_to_world(cell)
+	position = GlobalGrid.map_to_local(cell)
 
 
 func _process(delta):
-	_path_follow.offset += move_speed * delta
+	_path_follow.progress += move_speed * delta
 	
-	if _path_follow.unit_offset >= 1.0:
+	if _path_follow.progress_ratio >= 1.0:
 		_set_is_walking(false) # This also sets _process as false due to the setter bellow
 		
-		position = GlobalGrid.map_to_world(self.cell)
-		_path_follow.offset = 0.0
+		position = GlobalGrid.map_to_local(self.cell)
+		_path_follow.progress = 0.01
 		curve.clear_points()
 		# Finally, we emit a signal. We'll use this one with the game board.
 		emit_signal("walk_finished")
 
 
-func walk_along(path: PoolVector2Array) -> void:
+func walk_along(path: PackedVector2Array) -> void:
 	# path is a set of points given as relative from the current position
-	if path.empty():
+	if path.is_empty():
 		return
 	
 	curve.add_point(Vector2.ZERO)
 	for point in path:
-		curve.add_point(GlobalGrid.map_to_world(point) - position)
+		curve.add_point(GlobalGrid.map_to_local(point) - position)
 	
 	# Inmediately set the position to the last point
 	_set_is_walking(true)
@@ -170,6 +170,7 @@ func _get_menu_layout() -> Dictionary:
 			skirmish.push_back(weapon)
 	
 	layout['FULL ACTIONS']['BARRAGE'] = barrage
+	layout['FULL ACTIONS']['IMPROVISED ATTACK'] = load("res://Resources/Actions/improvised_attack/improvised_attack.tres")
 	layout['QUICK ACTIONS']['SKIRMISH'] = skirmish
 	layout['QUICK ACTIONS']['BOOST'] = load("res://Resources/Actions/boost.tres")
 	layout['QUICK ACTIONS']['RAM'] = load("res://Resources/Actions/ram/ram.tres")
@@ -222,20 +223,20 @@ func set_condition_time(condition_key: int, value: int) -> void:
 	
 	conditions[condition_key] = value
 
-func set_skin(value: Texture) -> void:
+func set_skin(value: Texture2D) -> void:
 	skin = value
 	
 	# Due to the onready preloading the sprite node might not be ready, wait using yield until the 
 	# ready signal is recieved
 	if not _sprite:
-		yield(self, "ready")
+		await self.ready
 	_sprite.texture = value
 
 func set_skin_offset(value: Vector2) -> void:
 	skin_offset = value
 	# See above
 	if not _sprite:
-		yield(self, "ready")
+		await self.ready
 	_sprite.position = value
 
 func set_cell(val: Vector2) -> void:

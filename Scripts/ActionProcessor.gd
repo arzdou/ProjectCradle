@@ -16,7 +16,7 @@ var damage_cells := [] # Indicates the damage area
 var move_cells := []   # Indicates movement
 var draw_arrows := false
 
-onready var _unit_manager = $"../UnitManager"
+@onready var _unit_manager = $"../UnitManager"
 
 var damage_string: String = "%s dealt %d %s damage to %s"
 

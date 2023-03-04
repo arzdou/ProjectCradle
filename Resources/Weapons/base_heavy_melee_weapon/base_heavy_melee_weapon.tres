@@ -1,26 +1,11 @@
-[gd_resource type="Resource" load_steps=4 format=2]
+[gd_resource type="Resource" script_class="WeaponAction" load_steps=4 format=3 uid="uid://durr6c2g6aveq"]
 
-[ext_resource path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" type="Script" id=1]
-[ext_resource path="res://Resources/Weapons/base_heavy_melee_weapon/range/1_threat.tres" type="Resource" id=2]
-[ext_resource path="res://Resources/Weapons/base_heavy_melee_weapon/damage/2d6+1K.tres" type="Resource" id=3]
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" id="1"]
+[ext_resource type="Resource" path="res://Resources/Weapons/base_heavy_melee_weapon/range/1_threat.tres" id="2"]
+[ext_resource type="Resource" path="res://Resources/Weapons/base_heavy_melee_weapon/damage/2d6+1K.tres" id="3"]
 
 [resource]
-script = ExtResource( 1 )
-id = "base_heavy_melee_weapon"
-name = "HEAVY MELEE WEAPON"
-action_type = 0
-terse = ""
-detail = ""
-cost = 1
-activation_type = [  ]
-pilot = false
-mech = true
-synergies = [  ]
-no_synergy = false
-confirm = [  ]
-log_str = ""
-ignore_used = false
-heat_cost = false
+script = ExtResource("1")
 source = "GMS"
 licence = "GMS"
 license_id = ""
@@ -32,19 +17,34 @@ skirmish = true
 no_attack = false
 no_mods = false
 no_core_bonus = false
-damage = [ ExtResource( 3 ) ]
-ranges = [ ExtResource( 2 ) ]
-tag = [  ]
+damage = Array[Resource("res://Scripts/ResourceGenerators/Actions/DamageResource.gd")]([ExtResource("3")])
+ranges = Array[Resource("res://Scripts/ResourceGenerators/Actions/RangeResource.gd")]([ExtResource("2")])
+tag = Array[Resource]([])
 sp = 0
 description = ""
-actions = [  ]
-bonuses = [  ]
+actions = []
+bonuses = []
 no_bonus = false
 is_effect = false
 is_on_attack = false
 is_on_hit = false
 is_on_crit = false
-deployable = [  ]
-counters = [  ]
-integrated = [  ]
-special_equipment = [  ]
+deployable = []
+counters = []
+integrated = []
+special_equipment = []
+id = "base_heavy_melee_weapon"
+name = "HEAVY MELEE WEAPON"
+action_type = 0
+terse = ""
+detail = ""
+cost = 1
+activation_type = Array[int]([])
+pilot = false
+mech = true
+synergies = []
+no_synergy = false
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

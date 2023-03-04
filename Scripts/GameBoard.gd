@@ -1,8 +1,8 @@
 class_name GameBoard
-extends YSort
+extends Node2D
 
 const CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
-export var map_res: Resource = preload("res://Resources/Maps/test.tres")
+@export var map_res: Resource = preload("res://Resources/Maps/test.tres")
 
 var _unit_data := [
 	{
@@ -25,19 +25,19 @@ var _unit_data := [
 var teams := []
 var team_turn_index = 0
 
-var _board_state: int = CONSTANTS.BOARD_STATE.FREE setget change_state
+var _board_state: int = CONSTANTS.BOARD_STATE.FREE : set = change_state
 
-onready var _game_map = $GameMap
-onready var _action_processor = $ActionProcessor
-onready var _unit_manager = $UnitManager
-onready var _unit_path = $GameMap/UnitPath
-onready var _unit_overlay = $GameMap/UnitOverlay
+@onready var _game_map = $GameMap
+@onready var _action_processor = $ActionProcessor
+@onready var _unit_manager = $UnitManager
+@onready var _unit_path = $GameMap/UnitPath
+@onready var _unit_overlay = $GameMap/UnitOverlay
 
 func _ready() -> void:
 	if not _game_map:
-		yield(_game_map, "ready")
-	_game_map.cursor.connect("accept_pressed", self, "_on_Cursor_accept_pressed")
-	_game_map.cursor.connect("moved", self, "_on_Cursor_moved")
+		await _game_map.ready
+	_game_map.cursor.connect("accept_pressed",Callable(self,"_on_Cursor_accept_pressed"))
+	_game_map.cursor.connect("moved",Callable(self,"_on_Cursor_moved"))
 
 	_reinitialize()
 
@@ -84,7 +84,7 @@ func _select_unit(cell: Vector2) -> void:
 func _move_active_unit(new_cell: Vector2) -> void:
 	_unit_manager.move_active_unit(new_cell, _unit_path.current_path)
 	if _unit_manager.active_unit._is_walking:
-		yield(_unit_manager.active_unit, "walk_finished")
+		await _unit_manager.active_unit.walk_finished
 	
 	LogRepeater.write(_unit_manager.active_unit.mech_name + ' moved')
 	change_state(CONSTANTS.BOARD_STATE.SELECTING)
@@ -127,7 +127,7 @@ func change_state(new_state: int) -> void:
 
 
 func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
-	var new_cell = GlobalGrid.world_to_map(new_pos)
+	var new_cell = GlobalGrid.local_to_map(new_pos)
 	if _board_state == CONSTANTS.BOARD_STATE.MOVEMENT:
 		# Show the arrows
 		_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
@@ -171,7 +171,7 @@ func _on_Unit_action_selected(action, mode) -> void:
 	
 	change_state(CONSTANTS.BOARD_STATE.ACTING)
 	_action_processor.initialize(action, mode, _game_map.get_cover())
-	var pos = GlobalGrid.map_to_world(_game_map.cursor.cell)
+	var pos = GlobalGrid.map_to_local(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 
 

@@ -1,13 +1,13 @@
 extends Resource
 class_name Map
 
-export(Texture) var image
-export(Vector2) var size
-export(Dictionary) var terrain_tiles
-export(Dictionary) var units
+@export var image: Texture2D
+@export var size: Vector2
+@export var terrain_tiles: Dictionary
+@export var units: Dictionary
 
 func _init(
-	_image: Texture = null, 
+	_image: Texture2D = null, 
 	_size: Vector2 = Vector2(0,0), 
 	_terrain_tiles: Dictionary = {}, 
 	_units: Dictionary = {}

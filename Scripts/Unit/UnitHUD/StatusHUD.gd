@@ -14,13 +14,13 @@ func set_from_dict(status_dict: Dictionary, condition_dict: Dictionary) -> void:
 			add_condition(condition_index)
 
 func add_status(status_index: int) -> void:
-	var status_container := StatusContainer.instance()
+	var status_container := StatusContainer.instantiate()
 	add_child(status_container)
 	status_container.initialize("status", status_index)
 		
 
 func add_condition(condition_index: int) -> void:
-	var condition_container := StatusContainer.instance()
+	var condition_container := StatusContainer.instantiate()
 	add_child(condition_container)
 	condition_container.initialize("condition", condition_index)
 

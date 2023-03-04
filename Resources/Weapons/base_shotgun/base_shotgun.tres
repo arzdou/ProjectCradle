@@ -1,41 +1,51 @@
-[gd_resource type="Resource" load_steps=5 format=2]
+[gd_resource type="Resource" script_class="WeaponAction" load_steps=5 format=3 uid="uid://bx273fhqvd3n0"]
 
-[ext_resource path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" type="Script" id=1]
-[ext_resource path="res://Resources/Weapons/base_shotgun/damage/1d6K.tres" type="Resource" id=2]
-[ext_resource path="res://Resources/Weapons/base_shotgun/range/5_range.tres" type="Resource" id=3]
-[ext_resource path="res://Resources/Weapons/base_shotgun/range/3_threat.tres" type="Resource" id=4]
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" id="1"]
+[ext_resource type="Resource" path="res://Resources/Weapons/base_shotgun/damage/1d6K.tres" id="2"]
+[ext_resource type="Resource" path="res://Resources/Weapons/base_shotgun/range/5_range.tres" id="3"]
+[ext_resource type="Resource" path="res://Resources/Weapons/base_shotgun/range/3_threat.tres" id="4"]
 
 [resource]
-script = ExtResource( 1 )
-id = "base_shotgun"
-name = "SHOTGUN"
+script = ExtResource("1")
 source = "GMS"
 licence = "GMS"
 license_id = ""
 license_level = 0
 mount = 1
-weapon_type = 0
-cost = 1
+weapon_type = 5
 barrage = true
 skirmish = true
 no_attack = false
 no_mods = false
 no_core_bonus = false
-damage = [ ExtResource( 2 ) ]
-ranges = [ ExtResource( 3 ), ExtResource( 4 ) ]
-tag = [  ]
+damage = Array[Resource("res://Scripts/ResourceGenerators/Actions/DamageResource.gd")]([ExtResource("2")])
+ranges = Array[Resource("res://Scripts/ResourceGenerators/Actions/RangeResource.gd")]([ExtResource("4"), ExtResource("3")])
+tag = Array[Resource]([])
 sp = 0
 description = ""
-actions = [  ]
-bonuses = [  ]
+actions = []
+bonuses = []
 no_bonus = false
 is_effect = false
 is_on_attack = false
 is_on_hit = false
 is_on_crit = false
-synergies = [  ]
+deployable = []
+counters = []
+integrated = []
+special_equipment = []
+id = "base_shotgun"
+name = "SHOTGUN"
+action_type = 0
+terse = ""
+detail = ""
+cost = 1
+activation_type = Array[int]([])
+pilot = false
+mech = true
+synergies = []
 no_synergy = false
-deployable = [  ]
-counters = [  ]
-integrated = [  ]
-special_equipment = [  ]
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

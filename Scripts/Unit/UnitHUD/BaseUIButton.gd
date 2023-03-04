@@ -4,14 +4,14 @@ class_name BaseUIButton
 #This padding is necessary due to the button skewness
 const PAD := '   '
 
-onready var h_box_container = $HBoxContainer
+@onready var h_box_container = $HBoxContainer
 
 func _ready():
 	hide()
-	rect_min_size.x = 300
-	rect_min_size.y = 40
+	custom_minimum_size.x = 300
+	custom_minimum_size.y = 40
 	text = ""
-	align = ALIGN_LEFT
+	alignment = HORIZONTAL_ALIGNMENT_LEFT
 
 
 func initialize(button_name: Array) -> void:
@@ -26,6 +26,6 @@ func initialize(button_name: Array) -> void:
 			h_box_container.add_child(texture)
 			texture.expand = true
 			texture.stretch_mode = texture.STRETCH_KEEP_ASPECT_CENTERED
-			texture.rect_min_size = Vector2(h_box_container.rect_size.y*2/3, h_box_container.rect_size.y*2/3)
+			texture.custom_minimum_size = Vector2(h_box_container.size.y*2/3, h_box_container.size.y*2/3)
 			texture.texture = element
 	show()

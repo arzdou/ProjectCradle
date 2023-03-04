@@ -1,24 +1,32 @@
-[gd_resource type="Theme" load_steps=8 format=2]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://d3gbtoks645p6"]
 
-[ext_resource path="res://Resources/Themes/UnitUI/Button/NormalButton.tres" type="StyleBox" id=1]
-[ext_resource path="res://Resources/Themes/UnitUI/Button/DisabledButton.tres" type="StyleBox" id=2]
-[ext_resource path="res://Resources/Themes/UnitUI/Button/ClickButton.tres" type="StyleBox" id=3]
-[ext_resource path="res://Resources/Themes/UnitUI/Button/HoverButton.tres" type="StyleBox" id=4]
-[ext_resource path="res://Media/fonts/Helvetica-Bold.otf" type="DynamicFontData" id=5]
+[ext_resource type="StyleBox" path="res://Resources/Themes/UnitUI/Button/NormalButton.tres" id="1"]
+[ext_resource type="StyleBox" path="res://Resources/Themes/UnitUI/Button/DisabledButton.tres" id="2"]
+[ext_resource type="StyleBox" path="res://Resources/Themes/UnitUI/Button/ClickButton.tres" id="3"]
+[ext_resource type="StyleBox" path="res://Resources/Themes/UnitUI/Button/HoverButton.tres" id="4"]
+[ext_resource type="FontFile" uid="uid://c4pne64vm3jju" path="res://Media/fonts/Helvetica-Bold.otf" id="5"]
 
-[sub_resource type="DynamicFont" id=1]
-size = 15
-font_data = ExtResource( 5 )
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("5")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[sub_resource type="StyleBoxEmpty" id=2]
+[sub_resource type="StyleBoxEmpty" id="2"]
 
 [resource]
-default_font = SubResource( 1 )
-Button/colors/font_color_pressed = Color( 0.627451, 0.627451, 0.627451, 1 )
-Button/fonts/font = SubResource( 1 )
-Button/styles/disabled = ExtResource( 2 )
-Button/styles/focus = SubResource( 2 )
-Button/styles/hover = ExtResource( 4 )
-Button/styles/normal = ExtResource( 1 )
-Button/styles/pressed = ExtResource( 3 )
+default_font = SubResource("1")
+Button/colors/font_color_pressed = Color(0.627451, 0.627451, 0.627451, 1)
+Button/fonts/font = SubResource("1")
+Button/styles/disabled = ExtResource("2")
+Button/styles/focus = SubResource("2")
+Button/styles/hover = ExtResource("4")
+Button/styles/normal = ExtResource("1")
+Button/styles/pressed = ExtResource("3")
 VBoxContainer/constants/separation = 15

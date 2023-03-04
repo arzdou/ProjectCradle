@@ -2,13 +2,13 @@ extends Resource
 class_name EffectResource
 
 
-export(CONSTANTS.EFFECT_ACTIVATION) var activation = CONSTANTS.EFFECT_ACTIVATION.EFFECT
+@export var activation = CONSTANTS.EFFECT_ACTIVATION.EFFECT # (CONSTANTS.EFFECT_ACTIVATION)
 
-export(Array, CONSTANTS.STATUS) var self_status
-export(Array, CONSTANTS.STATUS) var target_status
+@export var self_status: Array[CONSTANTS.STATUS]
+@export var target_status: Array[CONSTANTS.STATUS]
 
-export(Array, CONSTANTS.CONDITIONS) var self_conditions
-export(Array, CONSTANTS.CONDITIONS) var target_conditions
+@export var self_conditions: Array[CONSTANTS.CONDITIONS]
+@export var target_conditions: Array[CONSTANTS.CONDITIONS]
 
 func apply_effect(self_unit: Unit, target_unit: Unit) -> void:
 	for ss in self_status:

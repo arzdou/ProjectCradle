@@ -6,7 +6,7 @@ var _astar := AStar2D.new()
 var _directions: Array
 
 
-func _init(walkable_cells: Array) -> void:
+func _init(walkable_cells: Array):
 	_directions = GlobalGrid.DIRECTIONS
 	
 	var _cell_mappings := {}
@@ -15,7 +15,7 @@ func _init(walkable_cells: Array) -> void:
 	_add_and_connect_points(_cell_mappings)
 
 
-func calculate_point_path(start_point: Vector2, end_point: Vector2) -> PoolVector2Array:
+func calculate_point_path(start_point: Vector2, end_point: Vector2) -> PackedVector2Array:
 	var start_index: int = GlobalGrid.as_index(start_point)
 	var end_index: int = GlobalGrid.as_index(end_point)
 	
@@ -23,7 +23,7 @@ func calculate_point_path(start_point: Vector2, end_point: Vector2) -> PoolVecto
 		# The AStar2D object then finds the best path between the two indices.
 		return _astar.get_point_path(start_index, end_index)
 	else:
-		return PoolVector2Array()
+		return PackedVector2Array()
 
 
 func _add_and_connect_points(_cell_mappings: Dictionary) -> void:

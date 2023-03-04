@@ -1,10 +1,10 @@
-extends YSort
+extends Node2D
 class_name LevelEditor
 
 var _cursor_in_menu := false
 
-onready var _game_map = $GameMap
-onready var _side_bar = $CanvasLayer/SideBar
+@onready var _game_map = $GameMap
+@onready var _side_bar = $CanvasLayer/SideBar
 
 func _ready():
 	_game_map.drawing_cells = true
@@ -14,7 +14,7 @@ func _process(delta):
 	# This need to be done manually because the engine is fucking shit and when the cursor enters
 	# a child node of a control node it counts also as exiting.
 
-	var mouse_is_inside = get_viewport().get_mouse_position().x > _side_bar.rect_position.x
+	var mouse_is_inside = get_viewport().get_mouse_position().x > _side_bar.position.x
 	if mouse_is_inside and not _cursor_in_menu:
 		_game_map._mouse_camera._cursor_in_menu = true
 		_game_map.cursor.set_is_active(false)
@@ -31,7 +31,8 @@ func _on_SideBar_id_pressed(id):
 
 
 func _on_HScrollBar_value_changed(value):
-	$CanvasLayer/SideBar/VBoxContainer/Label.text = "Map Size: x" + String(value)
+	print(value)
+	$CanvasLayer/SideBar/VBoxContainer/Label.text = "Map Size: x"
 	_game_map.set_scale(Vector2(value, value))
 
 

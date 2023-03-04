@@ -70,7 +70,7 @@ var glitched_letter := ""
 var glitched_letter_index := 0
 
 func _ready() -> void:
-	rect_min_size = MIN_SIZE
+	custom_minimum_size = MIN_SIZE
 	alignment = 2
 
 

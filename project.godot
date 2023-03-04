@@ -6,183 +6,12 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "VBoxContainer",
-"class": "ActionContainer",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitHUD/ActionContainer.gd"
-}, {
-"base": "Node",
-"class": "ActionProcessor",
-"language": "GDScript",
-"path": "res://Scripts/ActionProcessor.gd"
-}, {
-"base": "Control",
-"class": "BarHUD",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitHUD/BarHUD.gd"
-}, {
-"base": "Resource",
-"class": "BaseAction",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Actions/BaseAction.gd"
-}, {
-"base": "Button",
-"class": "BaseUIButton",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitHUD/BaseUIButton.gd"
-}, {
-"base": "Resource",
-"class": "CONSTANTS",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Constants.gd"
-}, {
-"base": "Node2D",
-"class": "Cursor",
-"language": "GDScript",
-"path": "res://Scripts/GameMap/Cursor.gd"
-}, {
-"base": "Resource",
-"class": "DamageResource",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Actions/DamageResource.gd"
-}, {
-"base": "Resource",
-"class": "EffectResource",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Actions/EffectResource.gd"
-}, {
-"base": "YSort",
-"class": "GameBoard",
-"language": "GDScript",
-"path": "res://Scripts/GameBoard.gd"
-}, {
-"base": "TileMap",
-"class": "GameMap",
-"language": "GDScript",
-"path": "res://Scripts/GameMap/GameMap.gd"
-}, {
-"base": "",
-"class": "GitAPI",
-"language": "NativeScript",
-"path": "res://addons/godot-git-plugin/git_api.gdns"
-}, {
-"base": "YSort",
-"class": "LevelEditor",
-"language": "GDScript",
-"path": "res://Scripts/LevelEditor.gd"
-}, {
-"base": "Resource",
-"class": "Map",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Map.gd"
-}, {
-"base": "Resource",
-"class": "Mech",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Mech.gd"
-}, {
-"base": "Position2D",
-"class": "MouseCamera",
-"language": "GDScript",
-"path": "res://Scripts/GameMap/MouseCamera.gd"
-}, {
-"base": "Resource",
-"class": "PathFinder",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/PathFinder.gd"
-}, {
-"base": "Resource",
-"class": "PilotStats",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/PilotStats.gd"
-}, {
-"base": "Resource",
-"class": "RangeResource",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Actions/RangeResource.gd"
-}, {
-"base": "ColorRect",
-"class": "SideBar",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitHUD/SideBar.gd"
-}, {
-"base": "ViewportContainer",
-"class": "SideMenu",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitHUD/SideMenu.gd"
-}, {
-"base": "HBoxContainer",
-"class": "StatusContainer",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitHUD/StatusContainer.gd"
-}, {
-"base": "Path2D",
-"class": "Unit",
-"language": "GDScript",
-"path": "res://Scripts/Unit/Unit.gd"
-}, {
-"base": "Node",
-"class": "UnitManager",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitManager.gd"
-}, {
-"base": "TileMap",
-"class": "UnitOverlay",
-"language": "GDScript",
-"path": "res://Scripts/GameMap/UnitOverlay.gd"
-}, {
-"base": "TileMap",
-"class": "UnitPath",
-"language": "GDScript",
-"path": "res://Scripts/GameMap/UnitPath.gd"
-}, {
-"base": "Node",
-"class": "UnitStats",
-"language": "GDScript",
-"path": "res://Scripts/Unit/UnitStats.gd"
-}, {
-"base": "BaseAction",
-"class": "WeaponAction",
-"language": "GDScript",
-"path": "res://Scripts/ResourceGenerators/Actions/WeaponAction.gd"
-} ]
-_global_script_class_icons={
-"ActionContainer": "",
-"ActionProcessor": "",
-"BarHUD": "",
-"BaseAction": "",
-"BaseUIButton": "",
-"CONSTANTS": "",
-"Cursor": "",
-"DamageResource": "",
-"EffectResource": "",
-"GameBoard": "",
-"GameMap": "",
-"GitAPI": "",
-"LevelEditor": "",
-"Map": "",
-"Mech": "",
-"MouseCamera": "",
-"PathFinder": "",
-"PilotStats": "",
-"RangeResource": "",
-"SideBar": "",
-"SideMenu": "",
-"StatusContainer": "",
-"Unit": "",
-"UnitManager": "",
-"UnitOverlay": "",
-"UnitPath": "",
-"UnitStats": "",
-"WeaponAction": ""
-}
+config_version=5
 
 [application]
 
 config/name="LANCER"
+config/features=PackedStringArray("4.0")
 
 [autoload]
 
@@ -192,10 +21,11 @@ LogRepeater="*res://Scripts/UI/LogRepeater.gd"
 [display]
 
 window/stretch/mode="2d"
-window/stretch/aspect="keep"
 
 [editor]
 
+version_control/plugin_name="GitPlugin"
+version_control/autoload_on_startup=true
 version_control_autoload_on_startup=true
 version_control_plugin_name="GitAPI"
 
@@ -212,18 +42,18 @@ common/drop_mouse_on_gui_input_disabled=true
 
 click={
 "deadzone": 0.5,
-"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
- ]
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"pressed":false,"double_click":false,"script":null)
+]
 }
 mouse_up={
 "deadzone": 0.5,
-"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":4,"pressed":false,"doubleclick":false,"script":null)
- ]
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":4,"pressed":false,"double_click":false,"script":null)
+]
 }
 mouse_down={
 "deadzone": 0.5,
-"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":5,"pressed":false,"doubleclick":false,"script":null)
- ]
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":5,"pressed":false,"double_click":false,"script":null)
+]
 }
 
 [physics]
@@ -232,4 +62,4 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
-environment/default_environment="res://default_env.tres"
+environment/defaults/default_environment="res://default_env.tres"

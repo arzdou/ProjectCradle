@@ -1,22 +1,22 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://bxwpcxp5wg0u8"]
 
-[ext_resource path="res://Scripts/GameMap/Cursor.gd" type="Script" id=1]
-[ext_resource path="res://Media/HUD/menu_selection_arrow.png" type="Texture" id=2]
-[ext_resource path="res://Media/HUD/CursorHighlight.png" type="Texture" id=3]
+[ext_resource type="Script" path="res://Scripts/GameMap/Cursor.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://chpttclnnmlkw" path="res://Media/HUD/menu_selection_arrow.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://ob048b2wmh55" path="res://Media/HUD/CursorHighlight.png" id="3"]
 
 [node name="Cursor" type="Node2D"]
 visible = false
-script = ExtResource( 1 )
+script = ExtResource("1")
 mode = 1
 
-[node name="Arrow" type="Sprite" parent="."]
-position = Vector2( -150.555, 65.1191 )
+[node name="Arrow" type="Sprite2D" parent="."]
+position = Vector2(-150.555, 65.1191)
 rotation = -0.785398
-scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 2 )
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2")
 
-[node name="Highlight" type="Sprite" parent="."]
-texture = ExtResource( 3 )
+[node name="Highlight" type="Sprite2D" parent="."]
+texture = ExtResource("3")
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1

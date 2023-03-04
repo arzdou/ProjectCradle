@@ -1,10 +1,10 @@
 extends Resource
 class_name DamageResource
 
-export(CONSTANTS.DAMAGE_TYPES) var type
-export var number_of_dices: int = 1
-export var dice_faces: int = 6
-export var constant_damage: int = 0
+@export var type: CONSTANTS.DAMAGE_TYPES
+@export var number_of_dices: int = 1
+@export var dice_faces: int = 6
+@export var constant_damage: int = 0
 
 
 func roll_damage(accuracy: int = 0) -> int:
