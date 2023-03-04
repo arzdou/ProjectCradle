@@ -32,7 +32,7 @@ layout_mode = 2
 text = "Load Image"
 
 [node name="FileDialog" type="FileDialog" parent="CanvasLayer/SideBar/VBoxContainer/Button"]
-title = "Load Image"
+title = "Open a File"
 size = Vector2i(655, 419)
 ok_button_text = "Open"
 file_mode = 0

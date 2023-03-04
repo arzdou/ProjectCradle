@@ -12,6 +12,8 @@ class_name BarHUD
 @export var structure: int : get = get_structure, set = set_structure
 @export var stress: int : get = get_stress, set = set_stress
 
+@export var actions: int : set = set_actions
+
 
 func initialize(max_hp: int, heat_cap: int) -> void:
 	_hp_bar.max_value = max_hp
@@ -23,6 +25,8 @@ func initialize(max_hp: int, heat_cap: int) -> void:
 	heat = heat_cap
 	structure = 4
 	stress = 4
+	
+	set_actions(2)
 
 func set_hp(new_hp: int) -> void:
 	_hp_bar.value = new_hp
@@ -47,3 +51,26 @@ func get_structure() -> int:
 
 func get_stress() -> int:
 	return _stress_bar.value
+
+# Hide and show the corresponding ui elements
+func set_actions(value: int) -> void:
+	match value:
+		0:
+			$HBoxContainer/action1.hide()
+			$HBoxContainer/action2.hide()
+			$HBoxContainer/action3.hide()
+		1:
+			$HBoxContainer/action1.show()
+			$HBoxContainer/action2.hide()
+			$HBoxContainer/action3.hide()
+		2:
+			$HBoxContainer/action1.show()
+			$HBoxContainer/action2.show()
+			$HBoxContainer/action3.hide()
+		3:
+			$HBoxContainer/action1.show()
+			$HBoxContainer/action2.show()
+			$HBoxContainer/action3.show()
+		_:
+			return
+	actions = value

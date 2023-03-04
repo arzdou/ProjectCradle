@@ -59,7 +59,7 @@ var is_selecting_action := false : set = set_is_selecting_action
 var is_boosting := false
 var used_move_range := 0
 
-var actions_left := 2
+var actions_left := 2 : set = set_actions_left
 var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STATUS, and values bool. Except engaged will be an Array of the engaged units
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
 
@@ -222,6 +222,11 @@ func set_condition_time(condition_key: int, value: int) -> void:
 		return
 	
 	conditions[condition_key] = value
+
+
+func set_actions_left(value: int) -> void:
+	actions_left = value
+	_bar_hud.actions = value
 
 func set_skin(value: Texture2D) -> void:
 	skin = value

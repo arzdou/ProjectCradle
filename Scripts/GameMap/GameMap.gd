@@ -38,7 +38,7 @@ func initialize(texture: Texture2D = null) -> void:
 		GlobalGrid.size = (map_size / GlobalGrid.cell_size).ceil() - Vector2.ONE
 	else:
 		map_size = _mouse_camera.get_camera_size() 
-		GlobalGrid.size = (map_size / GlobalGrid.cell_size).ceil() + Vector2.ONE*500
+		GlobalGrid.size = (map_size / GlobalGrid.cell_size).ceil() + Vector2.ONE
 		
 	_sprite.position = map_size/2
 	_mouse_camera.update_camera_limits()
@@ -84,8 +84,10 @@ func _on_Cursor_accept_pressed(cell):
 	if not drawing_cells:
 		return
 		
-	if selected_terrain_id != CONSTANTS.EOVERLAY_CELLS.NONE:
-		terrain_tiles[selected_terrain_id].push_back(cell)
+	if selected_terrain_id != 0:
+		if terrain_tiles[selected_terrain_id-1].has(cell):
+			return
+		terrain_tiles[selected_terrain_id-1].push_back(cell)
 		_set_terrain_tiles(terrain_tiles)
 	else:
 		for terrain in terrain_tiles:

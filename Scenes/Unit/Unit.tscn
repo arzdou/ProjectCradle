@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dooyva0gi0a8v" path="res://Media/Player.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://depdjcvukqf5m" path="res://Media/unit_shadow.svg" id="3"]
 [ext_resource type="Script" path="res://Scripts/Unit/UnitStats.gd" id="5"]
-[ext_resource type="PackedScene" path="res://Scenes/Unit/UnitHUD/BarHud.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://ddk7lnfg0eape" path="res://Scenes/Unit/UnitHUD/BarHud.tscn" id="6"]
 [ext_resource type="Script" path="res://Scripts/Unit/UnitHUD/SideMenu.gd" id="7"]
 [ext_resource type="PackedScene" path="res://Scenes/Unit/UnitHUD/ActionContainer.tscn" id="8"]
 [ext_resource type="Script" path="res://Scripts/Unit/UnitHUD/StatusHUD.gd" id="9"]
@@ -93,7 +93,6 @@ mouse_filter = 2
 script = ExtResource("9")
 
 [node name="Bars" parent="PathFollow2D/HUD" instance=ExtResource("6")]
-anchors_preset = 0
 offset_left = -18.0
 offset_top = -101.0
 offset_right = -18.0
