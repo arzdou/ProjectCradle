@@ -84,7 +84,9 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	# Before moving break the engagement from the previous location
 	for old_engagned_unit in active_unit.status[CONSTANTS.STATUS.ENGAGED]:
 		old_engagned_unit.status[CONSTANTS.STATUS.ENGAGED].erase(active_unit)
-	active_unit.status[CONSTANTS.STATUS.ENGAGED].clear()
+	if active_unit.status[CONSTANTS.STATUS.ENGAGED]:
+		active_unit.status[CONSTANTS.STATUS.ENGAGED].clear()
+		LogRepeater.create_prompt("- ENGAGED", active_unit.position)
 	
 	active_unit.walk_along(path)
 	await active_unit.walk_finished
@@ -93,7 +95,9 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	for engaged_unit in GlobalGrid.get_neighbours(path[-1]):
 		active_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(engaged_unit)
 		engaged_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(active_unit)
-		
+	if active_unit.status[CONSTANTS.STATUS.ENGAGED]:
+		LogRepeater.create_prompt("+ ENGAGED", active_unit.position)
+	
 	return true
 
 

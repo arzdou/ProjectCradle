@@ -76,7 +76,6 @@ func show_menu() -> void:
 		self, "modulate", Color(1, 1, 1, 1), HIDE_SPEED
 	).from(Color(1, 1, 1, 0))
 
-	print(position)
 	is_hidden = false
 
 func reset_position() -> void:

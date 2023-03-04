@@ -19,7 +19,7 @@ func _ready():
 	update_camera_limits()
 
 
-func _process(delta):
+func _process(_delta):
 	if _cursor_in_menu:
 		return
 	
@@ -124,7 +124,7 @@ func move_camera_based_on_cursor(cursor_position: Vector2, mode: String) -> void
 	set_camera_position(position.x + delta_x, position.y + delta_y, mode)
 
 
-func _on_Cursor_moved(cursor_mode, cursor_position):
+func _on_Cursor_moved(_cursor_mode, cursor_position):
 	if not camera_2d: # During the first frames the camera node is not ready
 		await $Camera2D.ready
 	move_camera_based_on_cursor(cursor_position, 'cursor')

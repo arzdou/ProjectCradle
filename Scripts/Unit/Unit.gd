@@ -212,8 +212,10 @@ func set_status(status_key: int, value) -> void:
 		print("Status not recognized")
 		return
 	
-	status[status_key] = value
-	LogRepeater.write("%s's %s is set to %d"%[mech_name, CONSTANTS.STATUS.keys()[status_key], int(value)])
+	status[status_key] = value 
+	var status_name: String = CONSTANTS.STATUS.keys()[status_key]
+	LogRepeater.create_prompt(status_name, GlobalGrid.map_to_local(cell) - GlobalGrid.size/2)
+	LogRepeater.write("%s's %s is set to %d"%[mech_name, status_name, int(value)])
 
 # Maybe unnecesary, too verbose
 func set_condition_time(condition_key: int, value: int) -> void:
@@ -222,7 +224,9 @@ func set_condition_time(condition_key: int, value: int) -> void:
 		return
 	
 	conditions[condition_key] = value
-
+	var condition_name: String = CONSTANTS.CONDITIONS.keys()[condition_key]
+	LogRepeater.create_prompt(condition_name, GlobalGrid.map_to_local(cell) - GlobalGrid.size/2)
+	LogRepeater.write("%s's %s is set to %d"%[mech_name, condition_name, int(value)])
 
 func set_actions_left(value: int) -> void:
 	actions_left = value

@@ -30,7 +30,7 @@ func draw(start_cell: Vector2, end_cell: Vector2) -> void:
 		for engaged_unit in engaged_units:
 			if engaged_unit == unit_manager.active_unit:
 				continue
-			elif engaged_unit._mech.size >= unit_manager.active_unit._mech.size:
+			elif engaged_unit._mech.size > unit_manager.active_unit._mech.size:
 				stop_path = true 
 			
 		if stop_path:

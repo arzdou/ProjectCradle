@@ -30,12 +30,10 @@ func _ready():
 	set_is_active(is_active)
 
 
-func _process(delta):
+func _process(_delta):
 	if not is_active:
 		return
-		
-
-
+	
 	var current_mouse_position: Vector2 = get_global_mouse_position()
 
 	mode = CURSOR_MODE.MOUSE
@@ -125,9 +123,8 @@ func set_cell(value: Vector2) -> void:
 	timer.start()
 
 
-func _on_BoardCamera_camera_moved(camera_mode, cell_movement):
+func _on_BoardCamera_camera_moved(camera_mode, _cell_movement):
 	if camera_mode == "mouse":
 		_arrow.position = get_global_mouse_position() - MOUSE_OFFSET
 		set_cell(cell)
-
 		

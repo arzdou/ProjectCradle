@@ -95,6 +95,7 @@ func attack_roll(target_unit: Unit, range_type: int) -> bool:
 	var out: bool = roll + active_unit._stats.grit >= target_unit._stats.evasion
 	
 	if not out:
+		LogRepeater.create_prompt("MISS", target_unit.position)
 		LogRepeater.write("%s's attack misses the target!" % active_unit.mech_name)
 		
 	return out
@@ -126,8 +127,10 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 	for damage_resource in damage_array:
 		var damage_dealt = damage_resource.roll_damage()
 		target_unit.take_damage(damage_dealt, damage_resource.type)
+		var damage_type = CONSTANTS.DAMAGE_TYPES.keys()[damage_resource.type]
+		LogRepeater.create_damage_prompt(damage_dealt, damage_resource.type, target_unit.position)
 		LogRepeater.write(
-			damage_string %[active_unit.mech_name, damage_dealt, CONSTANTS.DAMAGE_TYPES.keys()[damage_resource.type], target_unit.mech_name]
+			damage_string %[active_unit.mech_name, damage_dealt, damage_type, target_unit.mech_name]
 		)
 	
 	return true
