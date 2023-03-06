@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://kk268qrv5kcg"]
+[gd_scene load_steps=15 format=3 uid="uid://kk268qrv5kcg"]
 
 [ext_resource type="Script" path="res://Scripts/GameMap/UnitOverlay.gd" id="1"]
 [ext_resource type="TileSet" uid="uid://fnds8pbh7eqe" path="res://Resources/board_overlay_tileset.tres" id="2"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://77drwuudhqla" path="res://Scenes/GameMap/GameMap.tscn" id="10"]
 [ext_resource type="FontFile" uid="uid://c4pne64vm3jju" path="res://Media/fonts/Helvetica-Bold.otf" id="10_6n4y7"]
 [ext_resource type="Script" path="res://Scripts/UI/PromptLabelManager.gd" id="10_qtsa5"]
+[ext_resource type="Script" path="res://Scripts/UI/UnitMenuManager.gd" id="12_aubds"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ywts2"]
 
@@ -71,6 +72,7 @@ offset_bottom = 454.0
 color = Color(0.792157, 0.196078, 0, 1)
 
 [node name="CombatLog" type="ScrollContainer" parent="HUD"]
+visible = false
 custom_minimum_size = Vector2(300, 100)
 offset_left = 781.0
 offset_top = 450.0
@@ -93,5 +95,66 @@ layout_mode = 3
 anchors_preset = 0
 theme = SubResource("Theme_ikwum")
 script = ExtResource("10_qtsa5")
+
+[node name="UnitMenuManager" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+script = ExtResource("12_aubds")
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD/UnitMenuManager"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="MainMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+alignment = 1
+
+[node name="AttackMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+alignment = 1
+
+[node name="TechMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+alignment = 1
+
+[node name="SystemMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+alignment = 1
+
+[node name="ReactionMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+alignment = 1
+
+[node name="ProtocolMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+alignment = 1
 
 [connection signal="move_unit" from="GameBoard/ActionProcessor" to="GameBoard" method="_on_ActionProcessor_move_unit"]

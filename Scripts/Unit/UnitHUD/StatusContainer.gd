@@ -71,7 +71,7 @@ var glitched_letter_index := 0
 
 func _ready() -> void:
 	custom_minimum_size = MIN_SIZE
-	alignment = 2
+	alignment = BoxContainer.ALIGNMENT_END
 
 
 func initialize(type: String, index: int) -> void:

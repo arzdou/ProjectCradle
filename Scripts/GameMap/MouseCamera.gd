@@ -114,11 +114,11 @@ func move_camera_based_on_cursor(cursor_position: Vector2, mode: String) -> void
 	var delta_pos = (cursor_position - camera_center)
 	
 	var delta_x := 0.0
-	if abs(delta_pos.x) > 0.8 * get_camera_size().x / 2:
+	if abs(delta_pos.x) > 0.99 * get_camera_size().x / 2:
 		delta_x = sign(delta_pos.x) * GlobalGrid.cell_size.x
 
 	var delta_y := 0.0
-	if abs(delta_pos.y) > 0.8 * get_camera_size().y / 2:
+	if abs(delta_pos.y) > 0.99 * get_camera_size().y / 2:
 		delta_y = sign(delta_pos.y) * GlobalGrid.cell_size.y
 	
 	set_camera_position(position.x + delta_x, position.y + delta_y, mode)
