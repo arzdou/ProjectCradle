@@ -1,7 +1,7 @@
 extends Node
 class_name ActionProcessor
 
-signal move_unit(new_cell, new_state)
+signal move_unit(new_cell)
 
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
@@ -16,6 +16,8 @@ var damage_cells := [] # Indicates the damage area
 var move_cells := []   # Indicates movement
 var draw_arrows := false
 
+var active := false
+
 @onready var _unit_manager = $"../UnitManager"
 
 var damage_string: String = "%s dealt %d %s damage to %s"
@@ -28,7 +30,16 @@ func initialize(action, action_mode: int, cover: Dictionary):
 	_performing_action = action
 	_action_mode = action_mode
 	_cover = cover
+	
+	active = true
 
+func clear():
+	_units = []
+	active_unit = null
+	_performing_action = null
+	_action_mode = 0
+	_cover = {}
+	active = false
 
 func stop():
 	_units = null
@@ -221,8 +232,8 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 			
 			if execute and move_cells.has(target_cell):
 				draw_arrows = false
-				emit_signal("move_unit", target_cell, CONSTANTS.BOARD_STATE.SELECTING)
-				return false
+				emit_signal("move_unit", target_cell)
+				return true
 
 	
 	return false

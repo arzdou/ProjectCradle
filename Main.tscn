@@ -67,19 +67,18 @@ offset_right = 1048.0
 offset_bottom = 282.0
 
 [node name="ColorRect" type="ColorRect" parent="HUD"]
-offset_left = 785.0
-offset_top = 454.0
-offset_right = 785.0
-offset_bottom = 454.0
+offset_left = 779.0
+offset_top = 6.0
+offset_right = 779.0
+offset_bottom = 6.0
 color = Color(0.792157, 0.196078, 0, 1)
 
 [node name="CombatLog" type="ScrollContainer" parent="HUD"]
-visible = false
 custom_minimum_size = Vector2(300, 100)
-offset_left = 781.0
-offset_top = 450.0
-offset_right = 1153.0
-offset_bottom = 648.0
+offset_left = 775.0
+offset_top = 2.0
+offset_right = 1147.0
+offset_bottom = 200.0
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
 theme = ExtResource("5")
@@ -122,7 +121,6 @@ grow_vertical = 0
 theme_override_constants/margin_bottom = 10
 
 [node name="ActivateMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
-visible = false
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
@@ -167,6 +165,8 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
 
+[connection signal="unit_cleared" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_cleared"]
 [connection signal="unit_selected" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_selected"]
-[connection signal="move_unit" from="GameBoard/ActionProcessor" to="GameBoard" method="_on_ActionProcessor_move_unit"]
-[connection signal="pressed" from="HUD/UnitMenuManager/MarginContainer/ActivateMenu/ActivateButton" to="HUD/UnitMenuManager" method="_on_activate_button_pressed"]
+[connection signal="move_unit" from="GameBoard/ActionProcessor" to="GameBoard" method="_move_active_unit"]
+[connection signal="action_button_pressed" from="HUD/UnitMenuManager" to="GameBoard" method="_on_action_selected"]
+[connection signal="unit_activated" from="HUD/UnitMenuManager" to="GameBoard" method="_on_unit_activated"]

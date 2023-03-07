@@ -144,6 +144,8 @@ var main_menu_buttons : Dictionary = {
 
 
 signal action_button_pressed(action)
+signal unit_activated
+
 const ActionMenuButton: PackedScene = preload("res://Scenes/UI/ActionMenuButton.tscn")
 
 @onready var activate_menu = $MarginContainer/ActivateMenu
@@ -153,12 +155,17 @@ const ActionMenuButton: PackedScene = preload("res://Scenes/UI/ActionMenuButton.
 @onready var system_menu = $MarginContainer/SystemMenu
 @onready var reaction_menu = $MarginContainer/ReactionMenu
 @onready var protocol_menu = $MarginContainer/ProtocolMenu
+@onready var activate_button = $MarginContainer/ActivateMenu/ActivateButton
 
-@onready var active_menu = null : set = set_active_menu
+@onready var active_menu = activate_menu : set = set_active_menu
+
+var is_hidden: bool : set = set_is_hidden
 
 func _ready():
-	$MarginContainer/ActivateMenu/ActivateButton.initialize("Activate", null)
+	is_hidden = true
 	
+	activate_button.initialize("Activate", null)
+	activate_button.pressed.connect(activate_unit)
 	
 	var mode = 0
 	for button_name in main_menu_buttons:
@@ -201,8 +208,29 @@ func _ready():
 		create_action_button(button_name, protocol_menu_buttons[button_name], protocol_menu, "ProtocolButton")
 
 
-func _on_activate_button_pressed():
+# The hide mechanic on the menu acts as a sort of clean
+func set_is_hidden(value: bool):
+	var tween = create_tween().set_trans(Tween.TRANS_CIRC).set_parallel(true)
+	is_hidden = value
+	
+	# If not hidden just show the menu, which has been already set to activate menu and has 
+	# been built on the function called by the signal
+	if not is_hidden:
+		show()
+		tween.tween_property(self, "modulate", Color(1,1,1,1), 0.3).from(Color(1,1,1,0))
+		return
+		
+	# If not hide the menu and reset the actions and active menu
+	tween.tween_property(self, "modulate", Color(1,1,1,0), 0.3).from(Color(1,1,1,1))
+	await tween.finished
+	hide()
+	set_active_menu(activate_menu)
+	# Delete all actions specific to the unit
+
+
+func activate_unit():
 	set_active_menu(main_menu)
+	emit_signal("unit_activated")
 
 
 func create_action_button(button_name: String, button_dict: Dictionary, menu: HBoxContainer, variation: String = ""):
@@ -218,9 +246,7 @@ func create_action_button(button_name: String, button_dict: Dictionary, menu: HB
 		button.disabled = true
 
 func on_action_button_pressed(action: BaseAction):
-	print(action)
 	emit_signal("action_button_pressed", action)
-
 
 
 func create_menu_button(button_name: String, button_dict: Dictionary, menu: HBoxContainer, variation: String = ""):
@@ -234,7 +260,6 @@ func create_menu_button(button_name: String, button_dict: Dictionary, menu: HBox
 	button.pressed.connect(on_menu_button_pressed.bind(get_node("MarginContainer/"+menu_name))) # Its a bit choppy but it works
 
 func on_menu_button_pressed(new_menu: HBoxContainer):
-	print(new_menu)
 	set_active_menu(new_menu)
 
 
@@ -246,18 +271,29 @@ func create_separator(menu: HBoxContainer):
 
 
 func set_active_menu(new_menu):
+	if new_menu == active_menu:
+		return
+	
 	var tween = create_tween().set_trans(Tween.TRANS_CIRC).set_parallel(true)
 	
 	tween.tween_property(new_menu, "modulate", Color(1,1,1,1), 0.3).from(Color(1,1,1,0))
 	new_menu.show()
 	
-	if active_menu:
-		tween.tween_property(active_menu, "modulate", Color(1,1,1,0), 0.3).from(Color(1,1,1,1))
-		await tween.finished
-		active_menu.hide()
+	tween.tween_property(active_menu, "modulate", Color(1,1,1,0), 0.3).from(Color(1,1,1,1))
+	await tween.finished
+	active_menu.hide()
 	
 	active_menu = new_menu
 
 
-func _on_game_board_unit_selected(active_unit):
-	set_active_menu(activate_menu)
+func _on_game_board_unit_selected(active_unit: Unit):
+	# Build the specific actions of the menu
+	if not is_hidden:
+		set_is_hidden(true)
+		await get_tree().create_timer(0.3).timeout
+	set_is_hidden(false)
+
+
+func _on_game_board_unit_cleared():
+	print(1)
+	set_is_hidden(true)

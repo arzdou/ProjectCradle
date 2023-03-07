@@ -29,37 +29,6 @@ func initialize(units_data: Array) -> void:
 		unit.connect("action_selected",Callable(get_parent(),"_on_Unit_action_selected"))
 
 
-func get_occupied_cells() -> Array:
-	# Returns all positions of the units
-	var out := []
-	for unit in _unit_list:
-		out.push_back(unit.cell)
-	return out
-
-
-func in_cell(cell: Vector2) -> Unit:
-	# Returns the unit located at 'cell'
-	for unit in _unit_list:
-		if unit.cell == cell:
-			return unit
-	return null
-
-
-func try_selecting_unit(cell: Vector2, active_team) -> bool:
-	
-	var possible_unit: Unit = in_cell(cell)
-	
-	if not possible_unit:
-		return false
-	
-	if not possible_unit.team == active_team:
-		return false
-
-	active_unit = possible_unit
-	active_unit.is_selected = true
-	return true
-
-
 func deselect_unit() -> void:
 	if not active_unit:
 		return
@@ -78,7 +47,7 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 		# If the new_cell is the same one as the previous one the movement is directly completed
 		return true
 	
-	if get_occupied_cells().has(new_cell):
+	if GlobalGrid.get_occupied_cells().has(new_cell):
 		return false
 	
 	# Before moving break the engagement from the previous location
@@ -121,3 +90,4 @@ func show_side_menu(value: bool) -> void:
 
 func finish_turn() -> void:
 	active_unit.finish_turn()
+	deselect_unit()

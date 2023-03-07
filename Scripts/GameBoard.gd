@@ -1,7 +1,8 @@
 class_name GameBoard
 extends Node2D
 
-signal unit_selected(active_unit)
+signal unit_selected(unit)
+signal unit_cleared
 
 const CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 @export var map_res: Resource = preload("res://Resources/Maps/test.tres")
@@ -29,15 +30,18 @@ var _unit_data := [
 var teams := []
 var team_turn_index = 0
 
-var _board_state: int = CONSTANTS.BOARD_STATE.FREE : set = change_state
+# Holds the unit selected before activation of its turn. When a unit is selected 
+# the menu is built and an activation button is created
+var selected_unit: Unit
 
-@onready var _game_map = $GameMap
-@onready var _action_processor = $ActionProcessor
-@onready var _unit_manager = $UnitManager
-@onready var _unit_path = $GameMap/UnitPath
-@onready var _unit_overlay = $GameMap/UnitOverlay
 
-func _ready() -> void:
+@onready var _game_map: GameMap = $GameMap
+@onready var _action_processor: ActionProcessor = $ActionProcessor
+@onready var _unit_manager: UnitManager = $UnitManager
+@onready var _unit_path: UnitPath = $GameMap/UnitPath
+@onready var _unit_overlay: UnitOverlay = $GameMap/UnitOverlay
+
+func _ready():
 	if not _game_map:
 		await _game_map.ready
 	_game_map.cursor.connect("accept_pressed",Callable(self,"_on_Cursor_accept_pressed"))
@@ -46,13 +50,12 @@ func _ready() -> void:
 	_reinitialize()
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent):
 	if event.is_action_pressed("ui_cancel"): # It handles well all states
-		change_state(CONSTANTS.BOARD_STATE.FREE)
+		pass
 
 
-func _reinitialize() -> void:
-	change_state(CONSTANTS.BOARD_STATE.FREE)
+func _reinitialize():
 	_game_map.initialize(map_res.image)
 	_game_map.terrain_tiles = map_res.terrain_tiles
 	_unit_manager.initialize(_unit_data)
@@ -72,115 +75,90 @@ func get_walkable_cells() -> Array:
 	return GlobalGrid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.remaining_move_range)
 
 
-func _select_unit(cell: Vector2) -> void:
-	var was_unit_selected: bool = _unit_manager.try_selecting_unit(cell, teams[team_turn_index])
+# When a unit is selected the menu related to this unit appears.
+# The unit can only be selected if there is no active unit in the field
+func _select_unit(cell: Vector2):
+	selected_unit = GlobalGrid.in_cell(cell)
 	
-	if not was_unit_selected:
+	if not selected_unit:
+		emit_signal("unit_cleared")
 		return
 	
-	if _unit_manager.active_unit.remaining_move_range == 0:
-		change_state(CONSTANTS.BOARD_STATE.SELECTING)
-		return
 	
-	change_state(CONSTANTS.BOARD_STATE.MOVEMENT)
-	emit_signal("unit_selected", _unit_manager.active_unit)
-	
+	emit_signal("unit_selected", selected_unit)
 
 
-func _move_active_unit(new_cell: Vector2) -> void:
+func _move_active_unit(new_cell: Vector2):
 	_unit_manager.move_active_unit(new_cell, _unit_path.current_path)
 	if _unit_manager.active_unit._is_walking:
 		await _unit_manager.active_unit.walk_finished
 	
 	LogRepeater.write(_unit_manager.active_unit.mech_name + ' moved')
-	change_state(CONSTANTS.BOARD_STATE.SELECTING)
 
 
-# Maybe I could implement a state machine since I have already separated the code...
-func change_state(new_state: int) -> void:
-	match new_state:
-		CONSTANTS.BOARD_STATE.FREE:
-			_game_map.cursor.is_active = true
-			_unit_overlay.clear()
-			_unit_path.stop()
-			
-			_unit_manager.deselect_unit()
-			
-		CONSTANTS.BOARD_STATE.MOVEMENT:
-			_game_map.cursor.is_active = true
-			var walkable_cells = get_walkable_cells()
-			_unit_overlay.draw_array(walkable_cells, CONSTANTS.UOVERLAY_CELLS.MOVEMENT)
-			_unit_path.initialize(walkable_cells)
-			
-			_unit_manager.show_side_menu(false)
-			
-		CONSTANTS.BOARD_STATE.SELECTING:
-			_game_map.cursor.is_active = false
-			_unit_overlay.clear()
-			_unit_path.stop()
-			_unit_manager.show_side_menu(true) # Toggles the menu and animations of active unit
-			
-		CONSTANTS.BOARD_STATE.ACTING:
-			_game_map.cursor.is_active = true
-			_unit_overlay.clear()
-			_unit_path.stop()
-			_unit_manager.show_side_menu(false)
-			
-		_:
-			print('The state you are entering does not exist, the program will probably crash soon')
-	
-	_board_state = new_state
+func finish_turn():
+	_unit_manager.finish_turn()
+	team_turn_index = (team_turn_index+1) % teams.size()
+	LogRepeater.write("%s turn"%teams[team_turn_index])
+	emit_signal("unit_cleared")
+	selected_unit = null
 
 
-func _on_Cursor_moved(_mode: String, new_pos: Vector2) -> void:
+
+func _on_Cursor_moved(_mode: String, new_pos: Vector2):
 	var new_cell = GlobalGrid.local_to_map(new_pos)
-	if _board_state == CONSTANTS.BOARD_STATE.MOVEMENT:
-		# Show the arrows
-		_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
-		
-	elif _board_state == CONSTANTS.BOARD_STATE.ACTING:
+	_unit_manager.update_hud(new_cell)
+	
+	if _action_processor.active:
 		# This updates the unit overlay when the user is selecting an action
 		_action_processor.process_action_targeted(new_cell, false)
 		_unit_overlay.draw(_action_processor.get_overlay_cells())
 		if _action_processor.draw_arrows:
 			_unit_path.initialize(_action_processor.move_cells)
 			_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
-	
-	if _unit_manager:
-		_unit_manager.update_hud(new_cell)
 
-func _on_Cursor_accept_pressed(cell: Vector2) -> void:
-	if _board_state == CONSTANTS.BOARD_STATE.FREE:
+
+func _on_Cursor_accept_pressed(cell: Vector2):
+	# No active unit, then select or deselect unit
+	if not _unit_manager.active_unit:
 		_select_unit(cell)
-		
-	elif _board_state == CONSTANTS.BOARD_STATE.MOVEMENT:
-		_move_active_unit(cell)
-		
-	elif _board_state == CONSTANTS.BOARD_STATE.ACTING:
 	
-		var finish_turn_after_action: bool = _action_processor.process_action_targeted(cell, true)
-		
-		# Deduct the cost from the unit action pool and if no more actions left then finish the turn
-		if finish_turn_after_action:
-			_unit_manager.active_unit.actions_left -= _action_processor._performing_action.cost
-			if _unit_manager.active_unit.actions_left == 0:
-				_unit_manager.finish_turn()
-				team_turn_index = (team_turn_index+1) % teams.size()
-				LogRepeater.write("%s turn"%teams[team_turn_index])
-			change_state(CONSTANTS.BOARD_STATE.FREE)
-
-func _on_Unit_action_selected(action, mode) -> void:
-	if not action:
-		LogRepeater.write("Not enough actions left!")
-		change_state(CONSTANTS.BOARD_STATE.FREE)
+	# If active unit, then we are waiting for the action to be selected
+	if not _action_processor.active:
 		return
 	
-	change_state(CONSTANTS.BOARD_STATE.ACTING)
+	# Try to perform the action at the hovered cell
+	var action_processed_correctly: bool = _action_processor.process_action_targeted(cell, true)
+	
+	if not action_processed_correctly:
+		return
+	
+	# Deduct the cost from the unit action pool and if no more actions left then finish the turn
+	_unit_manager.active_unit.actions_left -= _action_processor._performing_action.cost
+	_action_processor.clear()
+	_unit_overlay.clear()
+	_unit_path.clear()
+	if _unit_manager.active_unit.actions_left <= 0:
+		finish_turn()
+
+
+func _on_Unit_action_selected(action, mode):
+	if not action:
+		LogRepeater.write("Not enough actions left!")
+		#change_state(CONSTANTS.BOARD_STATE.FREE)
+		return
+	
+	#change_state(CONSTANTS.BOARD_STATE.ACTING)
 	_action_processor.initialize(action, mode, _game_map.get_cover())
 	var pos = GlobalGrid.map_to_local(_game_map.cursor.cell)
 	_on_Cursor_moved('', pos)
 
 
-func _on_ActionProcessor_move_unit(new_cell: Vector2, new_state: int):
-	_move_active_unit(new_cell)
-	change_state(new_state)
+func _on_unit_activated():
+	_unit_manager.active_unit = selected_unit
+
+
+func _on_action_selected(action):
+	_action_processor.initialize(action, 0, _game_map.get_cover())
+	_action_processor.process_action_targeted(_game_map.cursor.cell, false)
+	_unit_overlay.draw(_action_processor.get_overlay_cells())
