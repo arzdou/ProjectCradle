@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://kk268qrv5kcg"]
+[gd_scene load_steps=17 format=3 uid="uid://kk268qrv5kcg"]
 
 [ext_resource type="Script" path="res://Scripts/GameMap/UnitOverlay.gd" id="1"]
 [ext_resource type="TileSet" uid="uid://fnds8pbh7eqe" path="res://Resources/board_overlay_tileset.tres" id="2"]
@@ -12,6 +12,8 @@
 [ext_resource type="FontFile" uid="uid://c4pne64vm3jju" path="res://Media/fonts/Helvetica-Bold.otf" id="10_6n4y7"]
 [ext_resource type="Script" path="res://Scripts/UI/PromptLabelManager.gd" id="10_qtsa5"]
 [ext_resource type="Script" path="res://Scripts/UI/UnitMenuManager.gd" id="12_aubds"]
+[ext_resource type="PackedScene" uid="uid://4suk5snx5aow" path="res://Scenes/UI/ActionMenuButton.tscn" id="13_mg4nv"]
+[ext_resource type="Texture2D" uid="uid://cct81ltfsmocd" path="res://Media/icons/menu/mount.svg" id="14_d644b"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ywts2"]
 
@@ -114,47 +116,57 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -10.0
+offset_top = -55.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
+theme_override_constants/margin_bottom = 10
+
+[node name="ActivateMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+alignment = 1
+
+[node name="ActivateButton" parent="HUD/UnitMenuManager/MarginContainer/ActivateMenu" instance=ExtResource("13_mg4nv")]
+layout_mode = 2
+icon = ExtResource("14_d644b")
 
 [node name="MainMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
-custom_minimum_size = Vector2(0, 60)
+visible = false
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
 
 [node name="AttackMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
 visible = false
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
 
 [node name="TechMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
 visible = false
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
 
 [node name="SystemMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
 visible = false
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
 
 [node name="ReactionMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
 visible = false
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
 
 [node name="ProtocolMenu" type="HBoxContainer" parent="HUD/UnitMenuManager/MarginContainer"]
 visible = false
-custom_minimum_size = Vector2(0, 60)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 alignment = 1
 
+[connection signal="unit_selected" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_selected"]
 [connection signal="move_unit" from="GameBoard/ActionProcessor" to="GameBoard" method="_on_ActionProcessor_move_unit"]
+[connection signal="pressed" from="HUD/UnitMenuManager/MarginContainer/ActivateMenu/ActivateButton" to="HUD/UnitMenuManager" method="_on_activate_button_pressed"]

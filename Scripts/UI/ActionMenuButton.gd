@@ -13,7 +13,6 @@ func initialize(button_name: String, button_texture: Texture):
 	if button_name:
 		name = button_name
 		label.text = button_name
-		label.position.x = -label.size.x/2 + size.x/2
 	
 	if button_texture:
 		icon = button_texture
@@ -30,3 +29,8 @@ func _on_mouse_exited():
 	tween.tween_property(label, "modulate", Color(1,1,1,0), 0.1).from(Color(1,1,1,1))
 	await tween.finished
 	label.hide()
+
+
+func _on_label_resized():
+	if label.position.x != -label.size.x/2 + size.x/2:
+		label.position.x = -label.size.x/2 + size.x/2

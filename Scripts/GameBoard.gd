@@ -1,8 +1,12 @@
 class_name GameBoard
 extends Node2D
 
+signal unit_selected(active_unit)
+
 const CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 @export var map_res: Resource = preload("res://Resources/Maps/test.tres")
+
+
 
 var _unit_data := [
 	{
@@ -79,6 +83,8 @@ func _select_unit(cell: Vector2) -> void:
 		return
 	
 	change_state(CONSTANTS.BOARD_STATE.MOVEMENT)
+	emit_signal("unit_selected", _unit_manager.active_unit)
+	
 
 
 func _move_active_unit(new_cell: Vector2) -> void:
