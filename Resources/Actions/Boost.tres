@@ -1,20 +1,24 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" script_class="MoveAction" load_steps=2 format=3 uid="uid://due53jiwnant3"]
 
-[ext_resource path="res://Scripts/ResourceGenerators/Actions/BaseAction.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MoveAction.gd" id="1_5l25i"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1_5l25i")
+is_voluntary = true
+move_range = 0
+move_range_value = 0
 id = "base_boost"
-name = "BOOST"
+name = "Boost"
 action_type = 2
-terse = "Additional movement"
+terse = ""
 detail = ""
 cost = 1
-activation_type = [ 2 ]
+activation_type = Array[int]([])
 pilot = true
 mech = true
-synergy = [  ]
-confirm = [  ]
+synergies = []
+no_synergy = false
+confirm = Array[String]([])
 log_str = ""
 ignore_used = false
 heat_cost = false

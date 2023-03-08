@@ -32,7 +32,7 @@ var team_turn_index = 0
 
 # Holds the unit selected before activation of its turn. When a unit is selected 
 # the menu is built and an activation button is created
-var selected_unit: Unit
+var selected_unit: Unit : set = set_selected_unit
 
 
 @onready var _game_map: GameMap = $GameMap
@@ -52,7 +52,17 @@ func _ready():
 
 func _unhandled_input(event: InputEvent):
 	if event.is_action_pressed("ui_cancel"): # It handles well all states
-		pass
+		if not selected_unit:
+			return
+			
+		if not _unit_manager.active_unit:
+			set_selected_unit(null)
+			return
+			
+		if _action_processor.active:
+			_action_processor.stop()
+			_unit_overlay.clear()
+			_unit_path.clear()
 
 
 func _reinitialize():
@@ -75,16 +85,12 @@ func get_walkable_cells() -> Array:
 	return GlobalGrid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.remaining_move_range)
 
 
-# When a unit is selected the menu related to this unit appears.
-# The unit can only be selected if there is no active unit in the field
-func _select_unit(cell: Vector2):
-	selected_unit = GlobalGrid.in_cell(cell)
-	
+func set_selected_unit(value: Unit):
+	selected_unit = value
 	if not selected_unit:
+		
 		emit_signal("unit_cleared")
 		return
-	
-	
 	emit_signal("unit_selected", selected_unit)
 
 
@@ -100,8 +106,7 @@ func finish_turn():
 	_unit_manager.finish_turn()
 	team_turn_index = (team_turn_index+1) % teams.size()
 	LogRepeater.write("%s turn"%teams[team_turn_index])
-	emit_signal("unit_cleared")
-	selected_unit = null
+	set_selected_unit(null)
 
 
 
@@ -121,7 +126,10 @@ func _on_Cursor_moved(_mode: String, new_pos: Vector2):
 func _on_Cursor_accept_pressed(cell: Vector2):
 	# No active unit, then select or deselect unit
 	if not _unit_manager.active_unit:
-		_select_unit(cell)
+		# When a unit is selected the menu related to this unit appears.
+		# The unit can only be selected if there is no active unit in the field
+		print()
+		set_selected_unit(GlobalGrid.in_cell(cell))
 	
 	# If active unit, then we are waiting for the action to be selected
 	if not _action_processor.active:
@@ -135,7 +143,7 @@ func _on_Cursor_accept_pressed(cell: Vector2):
 	
 	# Deduct the cost from the unit action pool and if no more actions left then finish the turn
 	_unit_manager.active_unit.actions_left -= _action_processor._performing_action.cost
-	_action_processor.clear()
+	_action_processor.stop()
 	_unit_overlay.clear()
 	_unit_path.clear()
 	if _unit_manager.active_unit.actions_left <= 0:

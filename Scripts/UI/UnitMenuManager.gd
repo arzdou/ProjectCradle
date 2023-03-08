@@ -65,7 +65,7 @@ var back_button : Dictionary = {
 
 var main_menu_buttons : Dictionary = {
 	"Move": {
-		"action": null, 
+		"action": preload("res://Resources/Actions/standard_move.tres"), 
 		"icon": preload("res://Media/icons/menu/move.svg")
 		},
 	"Stabilize": {
@@ -160,6 +160,10 @@ const ActionMenuButton: PackedScene = preload("res://Scenes/UI/ActionMenuButton.
 @onready var active_menu = activate_menu : set = set_active_menu
 
 var is_hidden: bool : set = set_is_hidden
+# This array will contain all the button elements related to the unit which 
+# will be deleted when the menu is cleared
+var extra_elements: Array[ActionMenuButton]
+
 
 func _ready():
 	is_hidden = true
@@ -225,7 +229,10 @@ func set_is_hidden(value: bool):
 	await tween.finished
 	hide()
 	set_active_menu(activate_menu)
+	
 	# Delete all actions specific to the unit
+	for button in extra_elements:
+		button.queue_free()
 
 
 func activate_unit():
@@ -287,7 +294,9 @@ func set_active_menu(new_menu):
 
 
 func _on_game_board_unit_selected(active_unit: Unit):
-	# Build the specific actions of the menu
+	for weapon in active_unit._mech.weapons:
+		var wdict = {"icon": null, "action": weapon}
+		create_action_button(weapon.name, wdict, attack_menu, "AttackButton")
 	if not is_hidden:
 		set_is_hidden(true)
 		await get_tree().create_timer(0.3).timeout
@@ -295,5 +304,4 @@ func _on_game_board_unit_selected(active_unit: Unit):
 
 
 func _on_game_board_unit_cleared():
-	print(1)
 	set_is_hidden(true)

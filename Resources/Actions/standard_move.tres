@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="MoveAction" load_steps=2 format=3 uid="uid://bsbqwdqal1i0h"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MoveAction.gd" id="1_32k84"]
+
+[resource]
+script = ExtResource("1_32k84")
+is_voluntary = true
+move_range = 1
+move_range_value = 0
+id = "base_std_move"
+name = "Standard Move"
+action_type = 2
+terse = ""
+detail = ""
+cost = 0
+activation_type = Array[int]([])
+pilot = true
+mech = true
+synergies = []
+no_synergy = false
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

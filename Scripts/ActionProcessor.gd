@@ -33,18 +33,18 @@ func initialize(action, action_mode: int, cover: Dictionary):
 	
 	active = true
 
-func clear():
+func stop():
 	_units = []
 	active_unit = null
 	_performing_action = null
 	_action_mode = 0
 	_cover = {}
+	
+	marked_cells.clear()
+	damage_cells.clear()
+	move_cells.clear()
+				
 	active = false
-
-func stop():
-	_units = null
-	_performing_action = null
-	active_unit = null
 
 
 func get_overlay_cells() -> Dictionary:
@@ -222,18 +222,27 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 				move_cells.clear()
 				if execute and marked_cells.has(target_cell):
 					return try_to_apply_damage(target_cell, damage_array, range_type)
-					
+	
 	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MOVEMENT:
-		if _performing_action.name == "BOOST":
-			draw_arrows = true
-			marked_cells.clear()
-			move_cells.clear()
-			move_cells = GlobalGrid.flood_fill(active_unit.cell, active_unit.move_range)
-			
-			if execute and move_cells.has(target_cell):
-				draw_arrows = false
-				emit_signal("move_unit", target_cell)
-				return true
+		var move_range_value: int
+		match _performing_action.move_range:
+			CONSTANTS.MOVE_RANGE_TYPES.MAX:
+				move_range_value = active_unit.move_range
+			CONSTANTS.MOVE_RANGE_TYPES.REMAINING:
+				print(active_unit.used_move_range)
+				move_range_value = active_unit.remaining_move_range
+			CONSTANTS.MOVE_RANGE_TYPES.VALUE:
+				move_range_value = _performing_action.move_range_value
+		
+		draw_arrows = true
+		marked_cells.clear()
+		move_cells.clear()
+		move_cells = GlobalGrid.flood_fill(active_unit.cell, move_range_value)
+		
+		if execute and move_cells.has(target_cell):
+			draw_arrows = false
+			emit_signal("move_unit", target_cell)
+			return true
 
 	
 	return false
