@@ -12,7 +12,7 @@
 [ext_resource type="FontFile" uid="uid://c4pne64vm3jju" path="res://Media/fonts/Helvetica-Bold.otf" id="10_6n4y7"]
 [ext_resource type="Script" path="res://Scripts/UI/PromptLabelManager.gd" id="10_qtsa5"]
 [ext_resource type="Script" path="res://Scripts/UI/UnitMenuManager.gd" id="12_aubds"]
-[ext_resource type="PackedScene" uid="uid://4suk5snx5aow" path="res://Scenes/UI/ActionMenuButton.tscn" id="13_mg4nv"]
+[ext_resource type="PackedScene" path="res://Scenes/UI/ActionMenuButton.tscn" id="13_mg4nv"]
 [ext_resource type="Texture2D" uid="uid://cct81ltfsmocd" path="res://Media/icons/menu/mount.svg" id="14_d644b"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ywts2"]

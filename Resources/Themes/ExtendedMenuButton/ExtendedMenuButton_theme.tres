@@ -1,0 +1,15 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://ci8ova63ign7o"]
+
+[ext_resource type="FontFile" uid="uid://ctguu332c6jks" path="res://Media/fonts/Helvetica-Black.otf" id="1_ca2uv"]
+
+[resource]
+default_font = ExtResource("1_ca2uv")
+Label/colors/font_color = Color(1, 1, 1, 1)
+Label/colors/font_outline_color = Color(1, 1, 1, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0)
+Label/constants/line_spacing = 2
+Label/constants/outline_size = 0
+Label/font_sizes/font_size = 9
+TagLabel/base_type = &"Label"
+TagLabel/colors/font_color = Color(0.882353, 0.882353, 0.882353, 1)
+TagLabel/font_sizes/font_size = 7

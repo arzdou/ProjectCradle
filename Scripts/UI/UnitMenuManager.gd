@@ -1,21 +1,10 @@
 extends Control
 class_name UnitMenuManager
 
-var attack_menu_buttons : Dictionary = {
-	"Ram": {
-		"action": preload("res://Resources/Actions/ram/ram.tres"),
-		"icon": null
-		},
-	"Grapple": {
-		"action": null, 
-		"icon": null
-		},
-	"Improvised Attack": {
-		"action": null, 
-		"icon": null
-		}
-	# WEAPONS
-}
+var attack_menu_buttons : Array = [
+	preload("res://Resources/Actions/ram/ram.tres"),
+	preload("res://Resources/Actions/improvised_attack/improvised_attack.tres")
+]
 
 var tech_menu_buttons : Dictionary = {
 	"Bolster": {
@@ -147,6 +136,7 @@ signal action_button_pressed(action)
 signal unit_activated
 
 const ActionMenuButton: PackedScene = preload("res://Scenes/UI/ActionMenuButton.tscn")
+const ExtendedMenuButton: PackedScene = preload("res://Scenes/UI/ExtendedMenuButton.tscn")
 
 @onready var activate_menu = $MarginContainer/ActivateMenu
 @onready var main_menu = $MarginContainer/MainMenu
@@ -188,9 +178,13 @@ func _ready():
 	
 	create_menu_button("Return", back_button, attack_menu, "AttackButton")
 	create_separator(attack_menu)
-	for button_name in attack_menu_buttons:
-		create_action_button(button_name, attack_menu_buttons[button_name], attack_menu, "AttackButton")
-	
+	for weapon in attack_menu_buttons:
+		var button = ExtendedMenuButton.instantiate()
+		button.theme_type_variation = "AttackButton"
+		attack_menu.add_child(button)
+		button.initialize(weapon)
+		button.pressed.connect(on_action_button_pressed.bind(weapon))
+		
 	create_menu_button("Return", back_button, tech_menu, "TechButton")
 	create_separator(tech_menu)
 	for button_name in tech_menu_buttons:
@@ -294,12 +288,22 @@ func set_active_menu(new_menu):
 
 
 func _on_game_board_unit_selected(active_unit: Unit):
-	for weapon in active_unit._mech.weapons:
-		var wdict = {"icon": null, "action": weapon}
-		create_action_button(weapon.name, wdict, attack_menu, "AttackButton")
+
+	# If the menu is not hidden it means that a different unit has been selected
+	# First hide said unit and wait the tween timer
 	if not is_hidden:
 		set_is_hidden(true)
 		await get_tree().create_timer(0.3).timeout
+	
+	# Create the menu for the new unit 
+	for weapon in active_unit._mech.weapons:
+		var button = ExtendedMenuButton.instantiate()
+		button.theme_type_variation = "AttackButton"
+		attack_menu.add_child(button)
+		button.initialize(weapon)
+		button.pressed.connect(on_action_button_pressed.bind(weapon))
+		
+	# Play the start animation
 	set_is_hidden(false)
 
 
