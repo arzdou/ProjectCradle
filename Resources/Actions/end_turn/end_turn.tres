@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="BaseAction" load_steps=2 format=3 uid="uid://dnmhmsk48upj7"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/BaseAction.gd" id="1_j5lyl"]
+
+[resource]
+script = ExtResource("1_j5lyl")
+id = ""
+name = ""
+action_type = 0
+terse = ""
+detail = ""
+cost = 1
+activation_type = Array[int]([])
+pilot = false
+mech = true
+synergies = []
+no_synergy = false
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

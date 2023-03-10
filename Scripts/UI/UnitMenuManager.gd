@@ -128,7 +128,11 @@ var main_menu_buttons : Dictionary = {
 	"Self-Destruct": {
 		"action": null, 
 		"icon": preload("res://Media/icons/menu/self-destruct.svg")
-		}
+		},
+	"End Turn": {
+		"action": preload("res://Resources/Actions/end_turn/end_turn.tres"), 
+		"icon": null
+	}
 }
 
 
@@ -226,8 +230,8 @@ func set_is_hidden(value: bool):
 	
 	# Delete all actions specific to the unit
 	for button in extra_elements:
-		if not button.is_queued_for_deletion():
-			button.queue_free()
+		button.queue_free()
+	extra_elements.clear()
 
 
 func activate_unit():

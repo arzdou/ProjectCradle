@@ -141,8 +141,11 @@ func _on_Cursor_accept_pressed(cell: Vector2):
 	
 	if not action_processed_correctly:
 		return
-	
-	# Deduct the cost from the unit action pool and if no more actions left then finish the turn
+		
+	end_action()
+
+# Deduct the cost from the unit action pool and if no more actions left then finish the turn
+func end_action():
 	_unit_manager.active_unit.actions_left -= _action_processor._performing_action.cost
 	_action_processor.stop()
 	_unit_overlay.clear()
@@ -171,8 +174,6 @@ func _on_action_selected(action):
 	_action_processor.initialize(action, 0, _game_map.get_cover())
 	var action_processed = _action_processor.process_action_targeted(_game_map.cursor.cell, false)
 	if action_processed:
-		_action_processor.stop()
-		_unit_overlay.clear()
-		_unit_path.clear()
+		end_action()
 	else:
 		_unit_overlay.draw(_action_processor.get_overlay_cells())
