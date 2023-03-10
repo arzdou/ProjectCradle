@@ -10,6 +10,8 @@ class_name EffectResource
 @export var self_conditions: Array[CONSTANTS.CONDITIONS]
 @export var target_conditions: Array[CONSTANTS.CONDITIONS]
 
+@export var overcharge: bool
+
 func apply_effect(self_unit: Unit, target_unit: Unit) -> void:
 	for ss in self_status:
 		self_unit.set_status(ss, true)
@@ -22,4 +24,7 @@ func apply_effect(self_unit: Unit, target_unit: Unit) -> void:
 
 	for tc in target_conditions:
 		target_unit.set_condition_time(tc, 1)
+	
+	if overcharge:
+		self_unit.overcharge()
 	

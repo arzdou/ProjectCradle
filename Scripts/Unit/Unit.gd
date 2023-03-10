@@ -60,6 +60,7 @@ var is_boosting := false
 var used_move_range := 0
 
 var actions_left := 2 : set = set_actions_left
+var overcharge_charges = 0
 var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STATUS, and values bool. Except engaged will be an Array of the engaged units
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
 
@@ -184,6 +185,15 @@ func finish_turn() -> void:
 
 func take_damage(damage: int, damage_type: int) -> void:
 	show_hud()
+	
+	var pos_relative_to_camera =  get_global_transform_with_canvas().get_origin()
+	
+	if damage == 0:
+		LogRepeater.create_prompt("MISS", pos_relative_to_camera)
+		return
+		
+	LogRepeater.create_damage_prompt(damage, damage_type, pos_relative_to_camera)
+	
 	if damage_type == CONSTANTS.DAMAGE_TYPES.HEAT:
 		take_heat(damage)
 		return
@@ -205,6 +215,23 @@ func take_stress(stress: int) -> void:
 	_stats.stress -= stress
 	_bar_hud.stress = _stats.stress
 
+
+func overcharge():
+	if actions_left >= 3:
+		return
+		
+	self.actions_left += 1 # self. to trigger the setter
+	overcharge_charges += 1
+	
+	match overcharge_charges:
+		1:
+			take_heat(1)
+		2:
+			take_heat(randi()%3+1)
+		3:
+			take_heat(randi()%6+1)
+		_:
+			take_heat(randi()%6+1 + 4)
 
 # Maybe unnecesary, too verbose
 func set_status(status_key: int, value) -> void:

@@ -43,6 +43,10 @@ func get_active_move_range() -> int:
 
 func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	
+	# It is necessary to create a reference to the acting unit since it can be deactivated somewhere 
+	# when the function is awaiting the movement end
+	var moving_unit = active_unit
+	
 	if new_cell == active_unit.cell:
 		# If the new_cell is the same one as the previous one the movement is directly completed
 		return true
@@ -51,10 +55,10 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 		return false
 	
 	# Before moving break the engagement from the previous location
-	for old_engagned_unit in active_unit.status[CONSTANTS.STATUS.ENGAGED]:
+	for old_engagned_unit in moving_unit.status[CONSTANTS.STATUS.ENGAGED]:
 		old_engagned_unit.status[CONSTANTS.STATUS.ENGAGED].erase(active_unit)
-	if active_unit.status[CONSTANTS.STATUS.ENGAGED]:
-		active_unit.status[CONSTANTS.STATUS.ENGAGED].clear()
+	if moving_unit.status[CONSTANTS.STATUS.ENGAGED]:
+		moving_unit.status[CONSTANTS.STATUS.ENGAGED].clear()
 		LogRepeater.create_prompt("- ENGAGED", active_unit.position)
 	
 	active_unit.walk_along(path)
@@ -62,10 +66,10 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	
 	# After moving to the correct position, engage the units with one another
 	for engaged_unit in GlobalGrid.get_neighbours(path[-1]):
-		active_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(engaged_unit)
+		moving_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(engaged_unit)
 		engaged_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(active_unit)
-	if active_unit.status[CONSTANTS.STATUS.ENGAGED]:
-		LogRepeater.create_prompt("+ ENGAGED", active_unit.position)
+	if moving_unit.status[CONSTANTS.STATUS.ENGAGED]:
+		LogRepeater.create_prompt("+ ENGAGED", moving_unit.position)
 	
 	return true
 

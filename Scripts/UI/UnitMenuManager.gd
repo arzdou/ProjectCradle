@@ -66,7 +66,7 @@ var main_menu_buttons : Dictionary = {
 		"icon": preload("res://Media/icons/menu/disengage.svg")
 		},
 	"Overcharge": {
-		"action": null, 
+		"action": preload("res://Resources/Actions/overcharge/overcharge.tres"), 
 		"icon": preload("res://Media/icons/menu/overcharge.svg")
 		},
 		
@@ -152,7 +152,7 @@ const ExtendedMenuButton: PackedScene = preload("res://Scenes/UI/ExtendedMenuBut
 var is_hidden: bool : set = set_is_hidden
 # This array will contain all the button elements related to the unit which 
 # will be deleted when the menu is cleared
-var extra_elements: Array[ActionMenuButton]
+var extra_elements: Array[Button]
 
 
 func _ready():
@@ -302,7 +302,7 @@ func _on_game_board_unit_selected(active_unit: Unit):
 		attack_menu.add_child(button)
 		button.initialize(weapon)
 		button.pressed.connect(on_action_button_pressed.bind(weapon))
-		
+		extra_elements.push_back(button)
 	# Play the start animation
 	set_is_hidden(false)
 

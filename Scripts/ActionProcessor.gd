@@ -103,13 +103,7 @@ func attack_roll(target_unit: Unit, range_type: int) -> bool:
 	var shift: int = accuracy if accuracy>0 else 0 # Shift the array to get the highest or lowest values
 	var roll = GlobalGrid.sum_int_array(roll_array.slice(shift, 1 + shift))
 	
-	var out: bool = roll + active_unit._stats.grit >= target_unit._stats.evasion
-	
-	if not out:
-		LogRepeater.create_prompt("MISS", target_unit.position)
-		LogRepeater.write("%s's attack misses the target!" % active_unit.mech_name)
-		
-	return out
+	return roll + active_unit._stats.grit >= target_unit._stats.evasion
 
 
 func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:int) -> bool:
@@ -130,6 +124,7 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 	
 	# Roll to see if the attack connects
 	if not attack_roll(target_unit, range_type):
+		target_unit.take_damage(0, 0)
 		return true
 	
 	if _performing_action.is_on_hit:
@@ -138,11 +133,6 @@ func try_to_apply_damage(target_cell: Vector2, damage_array: Array, range_type:i
 	for damage_resource in damage_array:
 		var damage_dealt = damage_resource.roll_damage()
 		target_unit.take_damage(damage_dealt, damage_resource.type)
-		var damage_type = CONSTANTS.DAMAGE_TYPES.keys()[damage_resource.type]
-		LogRepeater.create_damage_prompt(damage_dealt, damage_resource.type, target_unit.position)
-		LogRepeater.write(
-			damage_string %[active_unit.mech_name, damage_dealt, damage_type, target_unit.mech_name]
-		)
 	
 	return true
 
@@ -243,7 +233,10 @@ func process_action_targeted(target_cell: Vector2, execute: bool = false) -> boo
 			draw_arrows = false
 			emit_signal("move_unit", target_cell)
 			return true
-
+	
+	if _performing_action.action_type == CONSTANTS.ACTION_TYPES.MISC:
+		_performing_action.effect.apply_effect(active_unit, null)
+		return true
 	
 	return false
 

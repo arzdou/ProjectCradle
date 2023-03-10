@@ -87,20 +87,18 @@ func get_walkable_cells() -> Array:
 
 func set_selected_unit(value: Unit):
 	selected_unit = value
+	
 	if not selected_unit:
-		
 		emit_signal("unit_cleared")
 		return
+		
 	emit_signal("unit_selected", selected_unit)
 
 
 func _move_active_unit(new_cell: Vector2):
 	_unit_manager.move_active_unit(new_cell, _unit_path.current_path)
-	if _unit_manager.active_unit._is_walking:
-		await _unit_manager.active_unit.walk_finished
-	
 	LogRepeater.write(_unit_manager.active_unit.mech_name + ' moved')
-
+	
 
 func finish_turn():
 	_unit_manager.finish_turn()
@@ -128,7 +126,6 @@ func _on_Cursor_accept_pressed(cell: Vector2):
 	if not _unit_manager.active_unit:
 		# When a unit is selected the menu related to this unit appears.
 		# The unit can only be selected if there is no active unit in the field
-		print()
 		set_selected_unit(GlobalGrid.in_cell(cell))
 	
 	# If active unit, then we are waiting for the action to be selected
@@ -168,5 +165,10 @@ func _on_unit_activated():
 
 func _on_action_selected(action):
 	_action_processor.initialize(action, 0, _game_map.get_cover())
-	_action_processor.process_action_targeted(_game_map.cursor.cell, false)
-	_unit_overlay.draw(_action_processor.get_overlay_cells())
+	var action_processed = _action_processor.process_action_targeted(_game_map.cursor.cell, false)
+	if action_processed:
+		_action_processor.stop()
+		_unit_overlay.clear()
+		_unit_path.clear()
+	else:
+		_unit_overlay.draw(_action_processor.get_overlay_cells())

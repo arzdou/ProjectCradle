@@ -53,7 +53,7 @@ var heat_cap: int : get = _get_heat_cap
 var heat: int : set = _set_heat
 
 var structure := 4
-var stress := 0
+var stress := 4
 
 var mech_weapons: Array
 var mech_systems: Array
