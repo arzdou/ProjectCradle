@@ -11,6 +11,7 @@ class_name EffectResource
 @export var target_conditions: Array[CONSTANTS.CONDITIONS]
 
 @export var overcharge: bool
+@export var disengage: bool
 
 func apply_effect(self_unit: Unit, target_unit: Unit) -> void:
 	for ss in self_status:
@@ -28,3 +29,5 @@ func apply_effect(self_unit: Unit, target_unit: Unit) -> void:
 	if overcharge:
 		self_unit.overcharge()
 	
+	if disengage:
+		self_unit.is_disengaging = true

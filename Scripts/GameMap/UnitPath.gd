@@ -25,7 +25,7 @@ func draw(start_cell: Vector2, end_cell: Vector2) -> void:
 	# Check for any larger adjacent enemy in the path and stop the movement
 	for i in range(full_path.size()):
 		var stop_path := false
-		var engaged_units = GlobalGrid.get_neighbours(full_path[i])
+		var engaged_units = unit_manager.get_neighbours(full_path[i])
 		current_path.push_back(full_path[i])
 		for engaged_unit in engaged_units:
 			if engaged_unit == unit_manager.active_unit:

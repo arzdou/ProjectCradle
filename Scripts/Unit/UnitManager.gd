@@ -33,7 +33,6 @@ func deselect_unit() -> void:
 	if not active_unit:
 		return
 	active_unit.is_selected = false
-	active_unit.is_selecting_action = false
 	active_unit = null
 
 
@@ -54,22 +53,9 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	if GlobalGrid.get_occupied_cells().has(new_cell):
 		return false
 	
-	# Before moving break the engagement from the previous location
-	for old_engagned_unit in moving_unit.status[CONSTANTS.STATUS.ENGAGED]:
-		old_engagned_unit.status[CONSTANTS.STATUS.ENGAGED].erase(active_unit)
-	if moving_unit.status[CONSTANTS.STATUS.ENGAGED]:
-		moving_unit.status[CONSTANTS.STATUS.ENGAGED].clear()
-		LogRepeater.create_prompt("- ENGAGED", active_unit.position)
-	
-	active_unit.walk_along(path)
-	await active_unit.walk_finished
-	
-	# After moving to the correct position, engage the units with one another
-	for engaged_unit in GlobalGrid.get_neighbours(path[-1]):
-		moving_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(engaged_unit)
-		engaged_unit.status[CONSTANTS.STATUS.ENGAGED].push_back(active_unit)
-	if moving_unit.status[CONSTANTS.STATUS.ENGAGED]:
-		LogRepeater.create_prompt("+ ENGAGED", moving_unit.position)
+	moving_unit.walk_along(path)
+	await moving_unit.walk_finished
+	update_engagement()
 	
 	return true
 
@@ -85,11 +71,23 @@ func update_hud(cursor_cell: Vector2) -> void:
 			unit.hide_hud()
 
 
-func show_side_menu(value: bool) -> void:
-	if not active_unit:
-		return
-		
-	active_unit.is_selecting_action = value
+# Returns all the units contiguous to a given cell
+func get_neighbours(cell: Vector2) -> Array[Unit]:
+	var neighbours: Array[Unit] = []
+	for direction in GlobalGrid.DIRECTIONS:
+		var unit = GlobalGrid.in_cell(cell + direction)
+		if unit:
+			neighbours.push_back(unit)
+	return neighbours
+
+
+# Updates the engagement of all units in the field.
+# TODO: Ignores disengaged units
+func update_engagement():
+	for unit in _unit_list:
+		# Ignore disengagement here
+		var neighbours = get_neighbours(unit.cell)
+		unit.engaged_units = neighbours
 
 
 func finish_turn() -> void:

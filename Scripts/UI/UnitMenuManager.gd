@@ -62,7 +62,7 @@ var main_menu_buttons : Dictionary = {
 		"icon": preload("res://Media/icons/menu/stabilize.svg")
 		},
 	"Disengage": {
-		"action": null, 
+		"action": preload("res://Resources/Actions/disengage/disengage.tres"), 
 		"icon": preload("res://Media/icons/menu/disengage.svg")
 		},
 	"Overcharge": {

@@ -6,26 +6,6 @@
 class_name Unit
 extends Path2D
 
-var _base_actions : Dictionary = {
-	"QUICK": {
-		"SKIRMISH": [],
-		"TECH": [],
-		"BOOST": null,
-		"RAM": null,
-		"GRAPPLE": null,
-		"HIDE": null,
-		"SEARCH": null,
-	},
-	"FULL" : {
-		"BARRAGE": [],
-		"TECH": [],
-		"IMPROVISED ATTACK": null,
-		"STABILIZE": null,
-		"DISENGAGE": null
-	},
-	"OVERCHARGE": null
-}
-
 signal action_selected(action, mode)
 signal walk_finished
 
@@ -54,15 +34,15 @@ var remaining_move_range: int = move_range : get = _get_remaining_move_range
 # Cell where the unit is located
 var cell := Vector2.ZERO : set = set_cell
 var is_selected := false : set = set_is_selected
-var is_selecting_action := false : set = set_is_selecting_action
 
-var is_boosting := false
+var is_disengaging := false : set = set_is_disengaging
 var used_move_range := 0
 
 var actions_left := 2 : set = set_actions_left
 var overcharge_charges = 0
-var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STATUS, and values bool. Except engaged will be an Array of the engaged units
+var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STATUS, and values bool.
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
+var engaged_units: Array[Unit] : set = set_engaged_units
 
 # Preload all components
 @onready var _stats = $UnitStats
@@ -70,7 +50,6 @@ var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTA
 @onready var _path_follow: PathFollow2D = $PathFollow2D
 @onready var _anim_player: AnimationPlayer = $AnimationPlayer
 
-@onready var _side_menu = $PathFollow2D/HUD/SideMenu
 @onready var _bar_hud = $PathFollow2D/HUD/Bars
 @onready var _status_hud = $PathFollow2D/HUD/StatusHUD
 
@@ -104,7 +83,6 @@ func initialize(unit_data: Dictionary):
 	mech_name = _mech.frame_name
 	_stats.initialize(_pilot, _mech)
 	_bar_hud.initialize(_stats.max_hp, _stats.heat_cap)
-	_side_menu.initialize(_get_menu_layout())
 	move_range = _stats.speed
 	
 	actions_left = 2
@@ -112,7 +90,6 @@ func initialize(unit_data: Dictionary):
 	# Reset status and conditions
 	for i in CONSTANTS.STATUS.values():
 		status[i] = false
-	status[CONSTANTS.STATUS.ENGAGED] = []
 	
 	for i in CONSTANTS.CONDITIONS.values():
 		conditions[i] = 0
@@ -149,34 +126,9 @@ func walk_along(path: PackedVector2Array) -> void:
 	# Inmediately set the position to the last point
 	_set_is_walking(true)
 	used_move_range = min(used_move_range + path.size() - 1, move_range)
-	if is_boosting:
-		used_move_range = move_range
-		is_boosting = false
+
 	set_cell(path[-1])
 	
-
-
-func _get_menu_layout() -> Dictionary:
-	var layout := {
-		'FULL ACTIONS': {},
-		'QUICK ACTIONS': {}
-	}
-	
-	var barrage := []
-	var skirmish := []
-	for weapon in _mech.weapons:
-		if weapon.barrage:
-			barrage.push_back(weapon)
-		if weapon.skirmish:
-			skirmish.push_back(weapon)
-	
-	layout['FULL ACTIONS']['BARRAGE'] = barrage
-	layout['FULL ACTIONS']['IMPROVISED ATTACK'] = load("res://Resources/Actions/improvised_attack/improvised_attack.tres")
-	layout['QUICK ACTIONS']['SKIRMISH'] = skirmish
-	layout['QUICK ACTIONS']['BOOST'] = load("res://Resources/Actions/boost.tres")
-	layout['QUICK ACTIONS']['RAM'] = load("res://Resources/Actions/ram/ram.tres")
-	return layout 
-
 
 func finish_turn() -> void:
 	used_move_range = 0
@@ -186,13 +138,11 @@ func finish_turn() -> void:
 func take_damage(damage: int, damage_type: int) -> void:
 	show_hud()
 	
-	var pos_relative_to_camera =  get_global_transform_with_canvas().get_origin()
-	
 	if damage == 0:
-		LogRepeater.create_prompt("MISS", pos_relative_to_camera)
+		LogRepeater.create_prompt("MISS", get_relative_pos())
 		return
 		
-	LogRepeater.create_damage_prompt(damage, damage_type, pos_relative_to_camera)
+	LogRepeater.create_damage_prompt(damage, damage_type, get_relative_pos())
 	
 	if damage_type == CONSTANTS.DAMAGE_TYPES.HEAT:
 		take_heat(damage)
@@ -233,18 +183,45 @@ func overcharge():
 		_:
 			take_heat(randi()%6+1 + 4)
 
+func get_relative_pos() -> Vector2:
+	return get_global_transform_with_canvas().get_origin()
+
 # Maybe unnecesary, too verbose
-func set_status(status_key: int, value) -> void:
+func set_status(status_key: int, value: bool) -> void:
+	if value == status[status_key]:
+		return
+		
 	if not CONSTANTS.STATUS.values().has(status_key):
 		print("Status not recognized")
 		return
 	
 	status[status_key] = value 
+	var p_or_m = "+ " if value else "- "
 	var status_name: String = CONSTANTS.STATUS.keys()[status_key]
-	LogRepeater.create_prompt(status_name, GlobalGrid.map_to_local(cell) - GlobalGrid.size/2)
-	LogRepeater.write("%s's %s is set to %d"%[mech_name, status_name, int(value)])
+	LogRepeater.create_prompt(p_or_m+status_name, get_relative_pos())
 
-# Maybe unnecesary, too verbose
+
+func set_engaged_units(value: Array[Unit]):
+	if value.is_empty() or is_disengaging:
+		engaged_units.clear()
+		set_status(CONSTANTS.STATUS.ENGAGED, false)
+		return
+	
+	engaged_units = value
+	set_status(CONSTANTS.STATUS.ENGAGED, true)
+
+func set_is_disengaging(value: bool):
+	is_disengaging = value
+	if is_disengaging and not engaged_units.is_empty():
+		for e_unit in engaged_units:
+			var e_e_units = e_unit.engaged_units
+			e_e_units.erase(self)
+			e_unit.engaged_units = e_e_units
+		
+		engaged_units.clear()
+		set_status(CONSTANTS.STATUS.ENGAGED, false)
+
+
 func set_condition_time(condition_key: int, value: int) -> void:
 	if not CONSTANTS.CONDITIONS.values().has(condition_key):
 		print("Status not recognized")
@@ -252,8 +229,8 @@ func set_condition_time(condition_key: int, value: int) -> void:
 	
 	conditions[condition_key] = value
 	var condition_name: String = CONSTANTS.CONDITIONS.keys()[condition_key]
-	LogRepeater.create_prompt(condition_name, GlobalGrid.map_to_local(cell) - GlobalGrid.size/2)
-	LogRepeater.write("%s's %s is set to %d"%[mech_name, condition_name, int(value)])
+	LogRepeater.create_prompt(condition_name, get_relative_pos())
+
 
 func set_actions_left(value: int) -> void:
 	actions_left = value
@@ -290,18 +267,6 @@ func set_is_selected(val: bool) -> void:
 		_anim_player.play("idle") # idle animations reset the 'selected' animation
 		hide_hud()
 
-func set_is_selecting_action(val: bool) -> void:
-	if is_selecting_action == val:
-		return
-		
-	is_selecting_action = val
-	if is_selecting_action:
-		z_index = 1
-		_side_menu.show_menu()
-	else:
-		z_index = 0
-		_side_menu.hide_menu()
-
 func _set_is_walking(val: bool) -> void:
 	_is_walking = val
 	set_process(_is_walking)
@@ -316,20 +281,4 @@ func show_hud() -> void:
 func hide_hud() -> void:
 	_bar_hud.hide()
 	_status_hud.clear()
-
-
-func _on_SideMenu_action_selected(action, mode):
-	# Here should be all the action preprocessing
-	if action.cost <= actions_left:
-		emit_signal("action_selected", action, mode)
-	else:
-		emit_signal("action_selected", null, -1)
-
-
-func _on_UnitStats_structure_reduced(new_structure):
-	_bar_hud.structure = new_structure
-
-
-func _on_UnitStats_stress_raised(new_stress):
-	_bar_hud.stress = new_stress
 

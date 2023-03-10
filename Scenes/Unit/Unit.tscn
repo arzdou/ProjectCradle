@@ -1,12 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://by75o8aagq7lb"]
+[gd_scene load_steps=10 format=3 uid="uid://by75o8aagq7lb"]
 
 [ext_resource type="Script" path="res://Scripts/Unit/Unit.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://dooyva0gi0a8v" path="res://Media/Player.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://depdjcvukqf5m" path="res://Media/unit_shadow.svg" id="3"]
 [ext_resource type="Script" path="res://Scripts/Unit/UnitStats.gd" id="5"]
 [ext_resource type="PackedScene" uid="uid://ddk7lnfg0eape" path="res://Scenes/Unit/UnitHUD/BarHud.tscn" id="6"]
-[ext_resource type="Script" path="res://Scripts/Unit/UnitHUD/SideMenu.gd" id="7"]
-[ext_resource type="PackedScene" path="res://Scenes/Unit/UnitHUD/ActionContainer.tscn" id="8"]
 [ext_resource type="Script" path="res://Scripts/Unit/UnitHUD/StatusHUD.gd" id="9"]
 
 [sub_resource type="Animation" id="3"]
@@ -71,17 +69,6 @@ texture = ExtResource("2")
 layout_mode = 3
 anchors_preset = 0
 
-[node name="SideMenu" type="CenterContainer" parent="PathFollow2D/HUD"]
-layout_mode = 0
-offset_left = 48.0
-offset_top = -58.0
-offset_right = 67.0
-offset_bottom = -43.0
-script = ExtResource("7")
-
-[node name="MainContainer" parent="PathFollow2D/HUD/SideMenu" instance=ExtResource("8")]
-layout_mode = 2
-
 [node name="StatusHUD" type="VBoxContainer" parent="PathFollow2D/HUD"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 0
@@ -105,4 +92,3 @@ libraries = {
 
 [connection signal="stress_raised" from="UnitStats" to="." method="_on_UnitStats_stress_raised"]
 [connection signal="structure_reduced" from="UnitStats" to="." method="_on_UnitStats_structure_reduced"]
-[connection signal="action_selected" from="PathFollow2D/HUD/SideMenu" to="." method="_on_SideMenu_action_selected"]

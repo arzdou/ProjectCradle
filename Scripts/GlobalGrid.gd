@@ -67,15 +67,6 @@ func in_cell(cell: Vector2) -> Unit:
 	return null
 
 
-# Returns all the units contiguous to a given cell
-func get_neighbours(cell: Vector2) -> Array:
-	var neighbours := []
-	for direction in DIRECTIONS:
-		var unit = in_cell(cell + direction)
-		if unit:
-			neighbours.push_back(unit)
-	return neighbours
-
 
 # Flood fill algorithm to calculate vision and movement
 func flood_fill(cell: Vector2, move_range: int) -> Array:
