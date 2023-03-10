@@ -226,7 +226,8 @@ func set_is_hidden(value: bool):
 	
 	# Delete all actions specific to the unit
 	for button in extra_elements:
-		button.queue_free()
+		if not button.is_queued_for_deletion():
+			button.queue_free()
 
 
 func activate_unit():

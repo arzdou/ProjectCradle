@@ -90,5 +90,5 @@ libraries = {
 "": SubResource("AnimationLibrary_dw5mb")
 }
 
-[connection signal="stress_raised" from="UnitStats" to="." method="_on_UnitStats_stress_raised"]
-[connection signal="structure_reduced" from="UnitStats" to="." method="_on_UnitStats_structure_reduced"]
+[connection signal="stress_raised" from="UnitStats" to="PathFollow2D/HUD/Bars" method="_on_unit_stats_stress_raised"]
+[connection signal="structure_reduced" from="UnitStats" to="PathFollow2D/HUD/Bars" method="_on_unit_stats_structure_reduced"]

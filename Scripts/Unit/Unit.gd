@@ -1,7 +1,6 @@
 # Represents a unit in the game board
-# The board manages the Unit's position inside the game grid.
-# The unit itself is only a visual representation that moves smoothly in the game world.
-# We use the tool mode so the `skin` and `skin_offset` below update in the editor.
+# The unit manager takes care of instancing the units and controlling them
+
 @tool 
 class_name Unit
 extends Path2D
@@ -133,6 +132,7 @@ func walk_along(path: PackedVector2Array) -> void:
 func finish_turn() -> void:
 	used_move_range = 0
 	actions_left = 2
+	is_disengaging = false
 
 
 func take_damage(damage: int, damage_type: int) -> void:
@@ -200,8 +200,11 @@ func set_status(status_key: int, value: bool) -> void:
 	var status_name: String = CONSTANTS.STATUS.keys()[status_key]
 	LogRepeater.create_prompt(p_or_m+status_name, get_relative_pos())
 
-
 func set_engaged_units(value: Array[Unit]):
+	for e_unit in value:
+		if e_unit.is_disengaging:
+			value.erase(e_unit)
+	
 	if value.is_empty() or is_disengaging:
 		engaged_units.clear()
 		set_status(CONSTANTS.STATUS.ENGAGED, false)
@@ -210,10 +213,13 @@ func set_engaged_units(value: Array[Unit]):
 	engaged_units = value
 	set_status(CONSTANTS.STATUS.ENGAGED, true)
 
+# If disengaging is true and there are engaged units then each of the engaged units sees removed 
+# the reference of this unit from their engaged units
 func set_is_disengaging(value: bool):
 	is_disengaging = value
 	if is_disengaging and not engaged_units.is_empty():
-		for e_unit in engaged_units:
+		
+		for e_unit in engaged_units: # Very horrible but it works
 			var e_e_units = e_unit.engaged_units
 			e_e_units.erase(self)
 			e_unit.engaged_units = e_e_units

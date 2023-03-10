@@ -92,4 +92,5 @@ func update_engagement():
 
 func finish_turn() -> void:
 	active_unit.finish_turn()
+	update_engagement()
 	deselect_unit()

@@ -86,12 +86,16 @@ func get_walkable_cells() -> Array:
 
 
 func set_selected_unit(value: Unit):
-	selected_unit = value
 	
-	if not selected_unit:
+	if not value:
+		selected_unit = null
 		emit_signal("unit_cleared")
 		return
 		
+	if value == selected_unit:
+		return
+		
+	selected_unit = value
 	emit_signal("unit_selected", selected_unit)
 
 

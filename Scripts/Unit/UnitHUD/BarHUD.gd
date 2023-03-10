@@ -74,3 +74,10 @@ func set_actions(value: int) -> void:
 		_:
 			return
 	actions = value
+
+
+func _on_unit_stats_stress_raised(new_stress):
+	set_stress(new_stress)
+
+func _on_unit_stats_structure_reduced(new_structure):
+	set_structure(new_structure)
