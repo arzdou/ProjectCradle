@@ -56,3 +56,87 @@ func get_display_name(mode: int = 0) -> Array:
 	var text = "%s - %d" % [name, ranges[mode].range_value]
 	var icon = load(range_type_dict[ranges[mode].type])
 	return [text, icon]
+
+
+# Just a wrapper around the resource function taking into account the different range modes
+func get_cells_in_range(origin_cell: Vector2, target_cell: Vector2, mode: int) -> Dictionary:
+	return ranges[mode].get_cells_in_range(origin_cell, target_cell)
+
+
+# Returns true if the WeaponAction managed to hit (or miss) an attack
+func try_to_apply_damage_in_area(active_unit: Unit, area: Array, range_mode) -> bool:
+	var damage_applied := false
+	for target_cell in area:
+		# If *any* damage was done consider this action complete
+		damage_applied = damage_applied or try_to_apply_damage(active_unit, target_cell, range_mode)
+		
+	return damage_applied
+
+
+func try_to_apply_damage(active_unit: Unit, target_cell: Vector2, range_mode: int) -> bool:
+	# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
+	# return false and if the damage was applied it will return true
+	
+	# There are two conditions to apply damage:
+	# 1. The cell has a unit
+	# 2. You cannot be the target
+	
+	var target_unit: Unit = GlobalGrid.in_cell(target_cell)
+	
+	if not target_unit:
+		return false
+		
+	if target_unit == active_unit:
+		return false
+	
+	if is_on_attack:
+		on_attack.apply_effect(active_unit, target_unit)
+	
+	# Roll to see if the attack connects
+	if not attack_roll(active_unit, target_unit, range_mode):
+		target_unit.take_damage(0, 0)
+		return true
+	
+	if is_on_hit:
+		on_hit.apply_effect(active_unit, target_unit)
+	
+	# Apply all damages
+	for damage_resource in damage:
+		var damage_dealt = damage_resource.roll_damage()
+		target_unit.take_damage(damage_dealt, damage_resource.type)
+	
+	return true
+
+
+# Perform an attack roll against a character
+func attack_roll(active_unit: Unit, target_unit: Unit, range_mode: int) -> bool:
+		
+	# Attacks to invisible characters miss half of the time
+	if target_unit.status[CONSTANTS.STATUS.INVISIBLE]:
+		var coin_toss = randi()%2
+		if coin_toss:
+			return true
+	
+	# Accuracy aids on the roll by giving extra d20's and then taking the best (or worst)
+	# Accuracy is given by the enemy being prone and exposed
+	# Accuracy is taken when the unit is impared or attacking with a ranged weapon when engaged
+	# Hard cover gives -2 accuracy and soft cover gives -1
+	var accuracy: int = (
+		int(target_unit.status[CONSTANTS.STATUS.PRONE]) +
+		int(target_unit.status[CONSTANTS.STATUS.EXPOSED]) + 
+		-1*int(active_unit.conditions[CONSTANTS.CONDITIONS.IMPAIRED]) +
+		-1*int(active_unit.status[CONSTANTS.STATUS.ENGAGED] and ranges[range_mode].type != CONSTANTS.WEAPON_RANGE_TYPES.THREAT) +
+		GlobalGrid.find_cover_from_attack(active_unit.cell, target_unit.cell)
+	)
+	
+	var roll_array := []
+	for _i in range(1 + accuracy):
+		roll_array.push_back(randi() % 20 + 1)
+	roll_array.sort()
+	
+	var shift: int = accuracy if accuracy>0 else 0 # Shift the array to get the highest or lowest values
+	var roll = GlobalGrid.sum_int_array(roll_array.slice(shift, 1 + shift))
+	
+	return roll + active_unit._stats.grit >= target_unit._stats.evasion 
+
+

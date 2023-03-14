@@ -280,6 +280,17 @@ func _set_is_walking(val: bool) -> void:
 func _get_remaining_move_range() -> int:
 	return move_range - used_move_range
 
+# Get a dictionary of the weapons that have a threat and the affected cells
+func get_threat() -> Array[WeaponAction]:
+	var out : Array[WeaponAction] = []
+	
+	for weapon in _mech.weapons:
+		for range_res in weapon.ranges:
+			if range_res.type == CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
+				out.push_back(weapon)
+	
+	return out
+
 func show_hud() -> void:
 	_bar_hud.show()
 	_status_hud.set_from_dict(status, conditions)

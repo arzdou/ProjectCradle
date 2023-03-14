@@ -6,12 +6,9 @@ class_name GameMap
 @onready var _sprite = $Sprite2D
 @onready var _overlay = $TerrainOverlay
 
-
 var selected_terrain_id := 0
 var drawing_cells := false
 var terrain_tiles := {} : set = _set_terrain_tiles
-
-
 
 var map_size: Vector2
 var ui_timer := 0.1 # seconds
@@ -71,14 +68,6 @@ func _set_terrain_tiles(value: Dictionary) -> void:
 	# TODO: Add a check for the structure of the Dict, add an enum in CONSTANTS
 	terrain_tiles = value
 	_overlay.draw(terrain_tiles) # The draw function already handles clearing
-
-
-func get_cover() -> Dictionary:
-	var cover = {
-		"hard": terrain_tiles[CONSTANTS.EOVERLAY_CELLS.HARD_COVER], 
-		"soft": terrain_tiles[CONSTANTS.EOVERLAY_CELLS.SOFT_COVER]
-		}
-	return cover
 
 func _on_Cursor_accept_pressed(cell):
 	if not drawing_cells:

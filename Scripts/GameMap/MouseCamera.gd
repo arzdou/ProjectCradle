@@ -7,7 +7,6 @@ var zoom_min := 1.0
 var zoom_max: float
 
 var _cursor_in_menu := false
-var _is_menu_hidden
 
 @onready var camera_2d = $Camera2D
 @onready var timer = $Timer

@@ -1,0 +1,60 @@
+[gd_scene load_steps=5 format=3 uid="uid://dvu2rtccvkfmj"]
+
+[ext_resource type="Theme" uid="uid://c0v57cmw6v8id" path="res://Resources/Themes/PromptMenu/PromptMenu_theme.tres" id="1_1td31"]
+[ext_resource type="Script" path="res://Scripts/UI/PromptMenu.gd" id="1_ayate"]
+[ext_resource type="Theme" uid="uid://dgun6mrtmm8wo" path="res://Resources/Themes/ActionMenuButton/NormalMenuTheme.tres" id="3_ed0ik"]
+[ext_resource type="Texture2D" uid="uid://dbucqs5s1mxid" path="res://Media/icons/menu/boost.svg" id="4_lt7nh"]
+
+[node name="PromptMenu" type="AspectRatioContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -150.0
+offset_right = 300.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+ratio = 2.0
+script = ExtResource("1_ayate")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ColorRect"]
+layout_mode = 0
+offset_left = 119.0
+offset_top = 31.0
+offset_right = 463.0
+offset_bottom = 141.0
+theme = ExtResource("1_1td31")
+text = "Sample text"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="ColorRect"]
+custom_minimum_size = Vector2(2.08165e-12, 50)
+layout_mode = 0
+offset_left = 300.0
+offset_top = 200.0
+offset_right = 300.0
+offset_bottom = 250.0
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ReturnButton" type="Button" parent="ColorRect"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 63.0
+offset_right = 120.0
+offset_bottom = 113.0
+rotation = 3.14159
+theme = ExtResource("3_ed0ik")
+icon = ExtResource("4_lt7nh")
+expand_icon = true
+
+[connection signal="pressed" from="ColorRect/ReturnButton" to="." method="_on_return_button_pressed"]

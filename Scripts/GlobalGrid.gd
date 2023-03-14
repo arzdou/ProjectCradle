@@ -160,6 +160,29 @@ func cone_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 	return out
 
 
+# Returns an integer value that represents the type of cover a unit in cell 2 has from a unit in cell 1
+# 0: no cover, 1: soft cover, 2: hard cover
+func find_cover_from_attack(cell_1: Vector2, cell_2: Vector2) -> int:
+	var angle: float = cell_1.angle_to_point(cell_2)
+	var distance = cell_1.distance_to(cell_2)
+	var line_of_sight = ray_cast_from_cell(cell_1, angle, distance)
+	
+	var hard_cover = terrain_dict[CONSTANTS.EOVERLAY_CELLS.HARD_COVER]
+	var soft_cover = terrain_dict[CONSTANTS.EOVERLAY_CELLS.SOFT_COVER]
+	
+	if hard_cover.has(line_of_sight[-2]):
+		return 2
+	
+	if soft_cover.has(line_of_sight[-2]):
+		return 1
+		
+	for cell in line_of_sight:
+		if hard_cover.has(cell):
+			return 1
+			
+	return 0
+
+
 func sum_int_array(arr: Array) -> int:
 	var out: int = 0
 	for i in arr:

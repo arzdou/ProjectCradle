@@ -1,41 +1,51 @@
-[gd_resource type="Resource" load_steps=4 format=2]
+[gd_resource type="Resource" script_class="WeaponAction" load_steps=4 format=3 uid="uid://df83txjb4vn0v"]
 
-[ext_resource path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" type="Script" id=1]
-[ext_resource path="res://Resources/Actions/ram/range/1_threat.tres" type="Resource" id=2]
-[ext_resource path="res://Resources/Actions/ram/effects/on_hit_prone.tres" type="Resource" id=3]
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" id="1"]
+[ext_resource type="Resource" path="res://Resources/Actions/ram/range/1_threat.tres" id="2"]
+[ext_resource type="Resource" path="res://Resources/Actions/ram/effects/on_hit_prone.tres" id="3"]
 
 [resource]
-script = ExtResource( 1 )
-id = "action_ram"
-name = "RAM"
+script = ExtResource("1")
 source = "BASE"
 licence = "BASE"
 license_id = ""
 license_level = 0
 mount = 1
 weapon_type = 1
-cost = 1
 barrage = false
 skirmish = false
 no_attack = true
 no_mods = false
 no_core_bonus = false
-damage = [  ]
-ranges = [ ExtResource( 2 ) ]
-tag = [  ]
+damage = Array[Resource("res://Scripts/ResourceGenerators/Actions/DamageResource.gd")]([])
+ranges = Array[Resource("res://Scripts/ResourceGenerators/Actions/RangeResource.gd")]([ExtResource("2")])
+tag = Array[Resource]([])
 sp = 0
 description = ""
-actions = [  ]
-bonuses = [  ]
+actions = []
+bonuses = []
 no_bonus = false
 is_effect = false
 is_on_attack = false
 is_on_hit = true
-on_hit = ExtResource( 3 )
+on_hit = ExtResource("3")
 is_on_crit = false
-synergies = [  ]
+deployable = []
+counters = []
+integrated = []
+special_equipment = []
+id = "action_ram"
+name = "RAM"
+action_type = 0
+terse = ""
+detail = ""
+cost = 1
+activation_type = 2
+pilot = false
+mech = true
+synergies = []
 no_synergy = true
-deployable = [  ]
-counters = [  ]
-integrated = [  ]
-special_equipment = [  ]
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

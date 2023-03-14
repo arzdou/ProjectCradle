@@ -1,0 +1,10 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://c0v57cmw6v8id"]
+
+[ext_resource type="FontFile" uid="uid://ctguu332c6jks" path="res://Media/fonts/Helvetica-Black.otf" id="1_w84l4"]
+
+[resource]
+default_font = ExtResource("1_w84l4")
+Label/colors/font_color = Color(0, 0, 0, 1)
+Label/colors/font_outline_color = Color(1, 1, 1, 1)
+Label/font_sizes/font_size = 30
+Label/fonts/font = ExtResource("1_w84l4")

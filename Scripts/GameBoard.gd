@@ -44,14 +44,14 @@ var selected_unit: Unit : set = set_selected_unit
 func _ready():
 	if not _game_map:
 		await _game_map.ready
-	_game_map.cursor.connect("accept_pressed",Callable(self,"_on_Cursor_accept_pressed"))
-	_game_map.cursor.connect("moved",Callable(self,"_on_Cursor_moved"))
+	_game_map.cursor.connect("accept_pressed", _on_Cursor_accept_pressed)
+	_game_map.cursor.connect("moved", _on_Cursor_moved)
 
 	_reinitialize()
 
 
 func _unhandled_input(event: InputEvent):
-	if event.is_action_pressed("ui_cancel"): # It handles well all states
+	if event.is_action_pressed("ui_cancel"):
 		if not selected_unit:
 			return
 			
@@ -146,7 +146,7 @@ func _on_Cursor_accept_pressed(cell: Vector2):
 
 # Deduct the cost from the unit action pool and if no more actions left then finish the turn
 func end_action():
-	_unit_manager.active_unit.actions_left -= _action_processor._performing_action.cost
+	_unit_manager.active_unit.actions_left -= _action_processor.action.cost
 	_action_processor.stop()
 	_unit_overlay.clear()
 	_unit_path.clear()
@@ -154,24 +154,12 @@ func end_action():
 		finish_turn()
 
 
-func _on_Unit_action_selected(action, mode):
-	if not action:
-		LogRepeater.write("Not enough actions left!")
-		#change_state(CONSTANTS.BOARD_STATE.FREE)
-		return
-	
-	#change_state(CONSTANTS.BOARD_STATE.ACTING)
-	_action_processor.initialize(action, mode, _game_map.get_cover())
-	var pos = GlobalGrid.map_to_local(_game_map.cursor.cell)
-	_on_Cursor_moved('', pos)
-
-
 func _on_unit_activated():
 	_unit_manager.active_unit = selected_unit
 
 
 func _on_action_selected(action):
-	_action_processor.initialize(action, 0, _game_map.get_cover())
+	_action_processor.initialize(_unit_manager.active_unit, action, 0)
 	var action_processed = _action_processor.process_action_targeted(_game_map.cursor.cell, false)
 	if action_processed:
 		end_action()

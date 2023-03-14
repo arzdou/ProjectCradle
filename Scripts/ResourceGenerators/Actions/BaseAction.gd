@@ -13,7 +13,7 @@ class_name BaseAction
 @export var cost: int = 1
 
 # NO IDEA, NEED TO CHECK
-@export var activation_type: Array[CONSTANTS.ACTIVATION_TYPE]
+@export var activation_type: CONSTANTS.ACTIVATION_TYPE
 
 # When is the action executable
 @export var pilot: bool
@@ -30,7 +30,6 @@ class_name BaseAction
 @export var ignore_used: bool
 @export var heat_cost: bool
 
-
 # Returns an array with the ordered elements of the name: strings and icons
-func get_display_name(mode: int = 0) -> Array:
+func get_display_name(_mode: int = 0) -> Array:
 	return [name]

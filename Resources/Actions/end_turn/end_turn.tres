@@ -1,17 +1,19 @@
-[gd_resource type="Resource" script_class="BaseAction" load_steps=2 format=3 uid="uid://dnmhmsk48upj7"]
+[gd_resource type="Resource" script_class="MiscAction" load_steps=3 format=3 uid="uid://b7a82etcqasw"]
 
-[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/BaseAction.gd" id="1_j5lyl"]
+[ext_resource type="Resource" uid="uid://df6dtfndug6rs" path="res://Resources/Actions/end_turn/effect.tres" id="1_aarrs"]
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MiscAction.gd" id="1_gm3pf"]
 
 [resource]
-script = ExtResource("1_j5lyl")
-id = ""
-name = ""
-action_type = 0
+script = ExtResource("1_gm3pf")
+effect = ExtResource("1_aarrs")
+id = "base_end_turn"
+name = "End Turn"
+action_type = 3
 terse = ""
 detail = ""
-cost = 1
-activation_type = Array[int]([])
-pilot = false
+cost = 5
+activation_type = 8
+pilot = true
 mech = true
 synergies = []
 no_synergy = false
