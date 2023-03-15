@@ -7,6 +7,7 @@ class_name UnitManager
 
 signal overwatch_triggered(weapon, active_unit, target_unit)
 signal overwatch_finished
+signal prompt_created(prompt_menu, text, arr)
 
 const Unit: PackedScene = preload("res://Scenes/Unit/Unit.tscn")
 const PromptMenu: PackedScene = preload("res://Scenes/UI/PromptMenu.tscn")
@@ -46,9 +47,7 @@ func get_active_move_range() -> int:
 
 func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	
-	check_overwatch()
-	await "overwatch_finished"
-	print(2)
+	await check_overwatch()
 	
 	# It is necessary to create a reference to the acting unit since it can be deactivated somewhere 
 	# when the function is awaiting the movement end
@@ -98,7 +97,7 @@ func update_engagement():
 		unit.engaged_units = neighbours
 
 
-func check_overwatch():
+func check_overwatch() -> bool:
 	for unit in _unit_list:
 		if unit == active_unit:
 			continue
@@ -117,18 +116,17 @@ func check_overwatch():
 		if active_threat_weapons.is_empty():
 			continue
 		
-		var contextual_menu = PromptMenu.instantiate()
-		add_child(contextual_menu) # Should be added in hud
-		contextual_menu.initialize(
-			"OVERWATCH TRIGGERED! Choose weapon:", active_threat_weapons
-		)
+		var prompt_menu = PromptMenu.instantiate()
+		var prompt_text = "OVERWATCH TRIGGERED! Choose weapon:"
+		emit_signal("prompt_created", prompt_menu, prompt_text, active_threat_weapons)
 		
-		var selected_weapon = await contextual_menu.action_selected
+		var selected_weapon = await prompt_menu.action_selected
 		
 		emit_signal("overwatch_triggered", selected_weapon, 0, unit, active_unit)
-		contextual_menu.queue_free()
+		prompt_menu.queue_free()
 	
 	emit_signal("overwatch_finished")
+	return true
 
 func finish_turn() -> void:
 	active_unit.finish_turn()

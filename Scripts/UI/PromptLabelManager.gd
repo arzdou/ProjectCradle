@@ -75,3 +75,11 @@ func create_damage_prompt(value: int, type: int, label_position: Vector2):
 	
 	label.queue_free()
 
+
+# Add prompts to the tree under this node. Maybe there should be a dedicated PromptMenuManager...
+func _on_prompt_menu_created(prompt_menu: PromptMenu, text: String, arr: Array):
+	add_child(prompt_menu)
+	prompt_menu.initialize(
+		text, arr
+	)
+	prompt_menu.position = Vector2(276, 174) # This should not be hardcoded

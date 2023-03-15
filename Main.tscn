@@ -168,6 +168,7 @@ alignment = 1
 [connection signal="unit_cleared" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_cleared"]
 [connection signal="unit_selected" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_selected"]
 [connection signal="overwatch_triggered" from="GameBoard/UnitManager" to="GameBoard/ActionProcessor" method="_on_unit_manager_overwatch_triggered"]
+[connection signal="prompt_created" from="GameBoard/UnitManager" to="HUD/PromptLabelManager" method="_on_prompt_menu_created"]
 [connection signal="move_unit" from="GameBoard/ActionProcessor" to="GameBoard" method="_move_active_unit"]
 [connection signal="action_button_pressed" from="HUD/UnitMenuManager" to="GameBoard" method="_on_action_selected"]
 [connection signal="unit_activated" from="HUD/UnitMenuManager" to="GameBoard" method="_on_unit_activated"]
