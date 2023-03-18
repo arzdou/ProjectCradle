@@ -1,10 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://2up0rft8paac"]
+[gd_scene load_steps=14 format=3 uid="uid://2up0rft8paac"]
 
 [ext_resource type="Script" path="res://Scripts/UI/CombatLog.gd" id="3"]
 [ext_resource type="Script" path="res://Scripts/GameBoard.gd" id="4"]
 [ext_resource type="Theme" uid="uid://c2wr1np5wv2m5" path="res://Resources/Themes/CombatLog/CombatLog_theme.tres" id="5"]
 [ext_resource type="PackedScene" uid="uid://d3knbosr6ygv4" path="res://Scenes/GameMap/Overlay.tscn" id="5_6en6x"]
-[ext_resource type="Script" path="res://Scripts/ActionProcessor.gd" id="7"]
 [ext_resource type="Script" path="res://Scripts/Unit/UnitManager.gd" id="8"]
 [ext_resource type="PackedScene" uid="uid://77drwuudhqla" path="res://Scenes/GameMap/GameMap.tscn" id="10"]
 [ext_resource type="FontFile" uid="uid://c4pne64vm3jju" path="res://Media/fonts/Helvetica-Bold.otf" id="10_6n4y7"]
@@ -35,9 +34,6 @@ script = ExtResource("4")
 
 [node name="UnitManager" type="Node" parent="GameBoard"]
 script = ExtResource("8")
-
-[node name="ActionProcessor" type="Node" parent="GameBoard"]
-script = ExtResource("7")
 
 [node name="GameMap" parent="GameBoard" instance=ExtResource("10")]
 
@@ -163,7 +159,6 @@ alignment = 1
 
 [connection signal="unit_cleared" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_cleared"]
 [connection signal="unit_selected" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_selected"]
-[connection signal="about_to_act" from="GameBoard/ActionProcessor" to="GameBoard/UnitManager" method="_on_action_processor_about_to_act"]
-[connection signal="move_unit" from="GameBoard/ActionProcessor" to="GameBoard" method="_move_active_unit"]
+[connection signal="prompt_created" from="GameBoard/UnitManager" to="HUD/PromptLabelManager" method="_on_unit_manager_prompt_created"]
 [connection signal="action_button_pressed" from="HUD/UnitMenuManager" to="GameBoard" method="_on_action_selected"]
 [connection signal="unit_activated" from="HUD/UnitMenuManager" to="GameBoard" method="_on_unit_activated"]

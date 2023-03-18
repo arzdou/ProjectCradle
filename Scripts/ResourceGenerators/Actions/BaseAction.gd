@@ -1,8 +1,6 @@
 extends Resource
 class_name BaseAction
 
-signal action_finished
-
 # Structure based on the one used for json data for COMP/CON
 
 # Basic information of the action

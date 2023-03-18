@@ -5,8 +5,6 @@
 class_name Unit
 extends Path2D
 
-signal action_selected(action, mode)
-signal walk_finished
 
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
@@ -112,8 +110,6 @@ func _process(delta):
 		position = GlobalGrid.map_to_local(self.cell)
 		_path_follow.progress = 0.01
 		curve.clear_points()
-		# Finally, we emit a signal. We'll use this one with the game board.
-		emit_signal("walk_finished")
 
 
 func walk_along(path: PackedVector2Array) -> void:

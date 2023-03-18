@@ -73,11 +73,11 @@ func get_cells_in_range(active_unit: Unit, target_cell: Vector2) -> Dictionary:
 # and the action will be considered complete
 func try_to_act(active_unit: Unit, target_cell: Vector2) -> bool:
 	var damage_cells = get_cells_in_range(active_unit, target_cell)[CONSTANTS.UOVERLAY_CELLS.DAMAGE]
-	var is_finished = try_to_apply_damage_in_area(active_unit, damage_cells)
+	var has_acted = try_to_apply_damage_in_area(active_unit, damage_cells)
 	
-	if not is_finished:
+	
+	if not has_acted:
 		return false
-	emit_signal("action_finished")
 	return true
 
 

@@ -24,20 +24,22 @@ func get_cells_in_range(active_unit: Unit, target_cell: Vector2) -> Dictionary:
 
 
 func try_to_act(active_unit: Unit, target_cell: Vector2) -> bool:
-	var path = get_cells_in_range(active_unit, target_cell)[CONSTANTS.UOVERLAY_CELLS.ARROW]
+	var path : PackedVector2Array = get_cells_in_range(active_unit, target_cell)[CONSTANTS.UOVERLAY_CELLS.ARROW]
+	
+	if path.is_empty():
+		return false
+	
 	var new_cell = path[-1]
 	
 	# If the new_cell is the same one as the previous one the movement is directly completed
 	if new_cell == active_unit.cell:
-		emit_signal("action_finished")
 		return true
 	
 	if GlobalGrid.in_cell(new_cell):
 		return false
 	
-	active_unit.walk_along(path)
-	await active_unit.walk_finished
-	emit_signal("action_finished")
+	
+	await active_unit.walk_along(path)
 	return true
 
 

@@ -8,5 +8,4 @@ class_name MiscAction
 # and false if it failed to do it (do not confuse with missing or mechanically failing)
 func try_to_act(active_unit: Unit, _target_cell: Vector2) -> bool:
 	effect.apply_effect(active_unit, null)
-	emit_signal("action_finished")
 	return true

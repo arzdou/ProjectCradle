@@ -5,8 +5,8 @@
 extends Node
 class_name UnitManager
 
-signal overwatch_triggered(weapon, active_unit, target_unit)
 signal prompt_created(prompt_menu, text, arr)
+signal reactions_processed
 
 const Unit: PackedScene = preload("res://Scenes/Unit/Unit.tscn")
 const PromptMenu: PackedScene = preload("res://Scenes/UI/PromptMenu.tscn")
@@ -15,6 +15,7 @@ var active_unit: Unit = null
 var unit_list: Array[Unit] = []
 var _teams: Array[String] = []
 
+@onready var action_processor = $ActionProcessor
 
 func initialize(units_data: Array) -> void:
 	# Create the different units based on the input data
@@ -121,14 +122,24 @@ func finish_turn() -> void:
 	deselect_unit()
 
 
-func _on_action_processor_about_to_act(action):
-	for unit in unit_list:
-		if unit.reaction_charges <= 0:
+func process_reactions(action):
+	for reacting_unit in unit_list:
+		if reacting_unit.reaction_charges <= 0:
 			continue
-		for reaction in unit._stats.reactions:
-			var is_active = reaction.check_activation(
-				action, unit, active_unit
-			)
-			if not is_active:
+		for reaction in reacting_unit._stats.reactions:
+			var possible_actions = reaction.get_possible_reactions(action, reacting_unit, active_unit)
+			print(possible_actions)
+			if possible_actions.is_empty():
 				continue
-			#await reaction.act()
+				
+			var prompt_menu = PromptMenu.instantiate()
+			emit_signal("prompt_created", prompt_menu, reaction.prompt_text, possible_actions)
+			var selected_action: BaseAction = await prompt_menu.action_selected
+			
+			if not selected_action:
+				continue
+			
+			selected_action.try_to_act(reacting_unit, active_unit.cell)
+			prompt_menu.queue_free()
+	
+	emit_signal("reactions_processed")

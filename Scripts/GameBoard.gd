@@ -34,9 +34,10 @@ var team_turn_index = 0
 # the menu is built and an activation button is created
 var selected_unit: Unit : set = set_selected_unit
 
+# Holds the selected action that is being processed at the moment
+var action_processing: BaseAction
 
 @onready var _game_map = $GameMap
-@onready var _action_processor = $ActionProcessor
 @onready var _unit_manager = $UnitManager
 @onready var _unit_overlay = $GameMap/UnitOverlay
 
@@ -58,8 +59,8 @@ func _unhandled_input(event: InputEvent):
 			set_selected_unit(null)
 			return
 			
-		if _action_processor.active:
-			_action_processor.stop()
+		if action_processing:
+			action_processing = null
 			_unit_overlay.clear()
 
 
@@ -90,6 +91,19 @@ func set_selected_unit(value: Unit):
 	emit_signal("unit_selected", selected_unit)
 
 
+# Deduct the cost from the unit action pool and if no more actions left then finish the turn
+func end_action():
+	selected_unit.actions_left -= action_processing.cost
+	action_processing = null
+	_unit_overlay.clear()
+	if selected_unit.actions_left <= 0:
+		finish_turn()
+
+
+func action_failed():
+	pass
+
+
 func finish_turn():
 	_unit_manager.finish_turn()
 	team_turn_index = (team_turn_index+1) % teams.size()
@@ -97,14 +111,13 @@ func finish_turn():
 	set_selected_unit(null)
 
 
-
 func _on_Cursor_moved(_mode: String, new_pos: Vector2):
 	var new_cell = GlobalGrid.local_to_map(new_pos)
 	_unit_manager.update_hud(new_cell)
 	
-	if _action_processor.active:
+	if action_processing:
 		# This updates the unit overlay when the user is selecting an action
-		var overlay_cells = _action_processor.get_overlay_cells(new_cell)
+		var overlay_cells = action_processing.get_cells_in_range(selected_unit, new_cell)
 		_unit_overlay.draw(overlay_cells)
 
 
@@ -116,32 +129,26 @@ func _on_Cursor_accept_pressed(cell: Vector2):
 		set_selected_unit(GlobalGrid.in_cell(cell))
 	
 	# If active unit, then we are waiting for the action to be selected
-	if not _action_processor.active:
+	if not action_processing:
 		return
 	
+	await _unit_manager.process_reactions(action_processing)
 	# Try to perform the action at the hovered cell
-	var has_acted: bool = await _action_processor.try_to_act(cell)
+	var has_acted = await action_processing.try_to_act(selected_unit, cell)
 	
 	if not has_acted:
 		return
 		
 	end_action()
 
-# Deduct the cost from the unit action pool and if no more actions left then finish the turn
-func end_action():
-	_unit_manager.active_unit.actions_left -= _action_processor.action.cost
-	_action_processor.stop()
-	_unit_overlay.clear()
-	if _unit_manager.active_unit.actions_left <= 0:
-		finish_turn()
-
-
 func _on_unit_activated():
 	_unit_manager.active_unit = selected_unit
 
 
 func _on_action_selected(action):
-	_action_processor.initialize(_unit_manager.active_unit, action, 0)
-	var overlay_cells = _action_processor.get_overlay_cells(_game_map.cursor.cell)
+	action_processing = action
+	var overlay_cells = action_processing.get_cells_in_range(
+		_unit_manager.active_unit, _game_map.cursor.cell
+	)
 	_unit_overlay.draw(overlay_cells)
 
