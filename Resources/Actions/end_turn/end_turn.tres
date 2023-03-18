@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="MiscAction" load_steps=3 format=3 uid="uid://b7a82etcqasw"]
+[gd_resource type="Resource" script_class="MiscAction" load_steps=3 format=3 uid="uid://bcbb0tqnaeeap"]
 
-[ext_resource type="Resource" uid="uid://df6dtfndug6rs" path="res://Resources/Actions/end_turn/effect.tres" id="1_aarrs"]
+[ext_resource type="Resource" path="res://Resources/Actions/end_turn/effect.tres" id="1_aarrs"]
 [ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MiscAction.gd" id="1_gm3pf"]
 
 [resource]
@@ -12,8 +12,8 @@ action_type = 3
 terse = ""
 detail = ""
 cost = 5
-activation_type = 8
-pilot = true
+activation_type = 0
+pilot = false
 mech = true
 synergies = []
 no_synergy = false

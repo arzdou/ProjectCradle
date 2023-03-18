@@ -1,47 +1,23 @@
-[gd_resource type="TileSet" load_steps=2 format=2]
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://b83ao0apvpf2b"]
 
-[ext_resource path="res://Media/maps/select_tile.png" type="Texture2D" id=1]
+[ext_resource type="Texture2D" uid="uid://cp7m3dku63w51" path="res://Media/maps/select_tile.png" id="1"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gg0ro"]
+texture = ExtResource("1")
+texture_region_size = Vector2i(64, 64)
+0:0/next_alternative_id = 11
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_h = true
+0:0/1/modulate = Color(0, 0, 0, 0.392157)
+0:0/2 = 2
+0:0/2/flip_v = true
+0:0/2/modulate = Color(0.156863, 0.392157, 1, 0.392157)
+0:0/3 = 3
+0:0/3/flip_h = true
+0:0/3/transpose = true
+0:0/3/modulate = Color(0.14902, 0, 0.647059, 0.392157)
 
 [resource]
-0/name = "blocked"
-0/texture = ExtResource( 1 )
-0/tex_offset = Vector2( 0, 0 )
-0/modulate = Color( 0, 0, 0, 0.392157 )
-0/region = Rect2( 0, 0, 64, 64 )
-0/tile_mode = 0
-0/occluder_offset = Vector2( 0, 0 )
-0/navigation_offset = Vector2( 0, 0 )
-0/shape_offset = Vector2( 0, 0 )
-0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-0/shape_one_way = false
-0/shape_one_way_margin = 0.0
-0/shapes = [  ]
-0/z_index = 0
-1/name = "cover"
-1/texture = ExtResource( 1 )
-1/tex_offset = Vector2( 0, 0 )
-1/modulate = Color( 0.436387, 0.1564, 0.92, 0.392157 )
-1/region = Rect2( 0, 0, 64, 64 )
-1/tile_mode = 0
-1/occluder_offset = Vector2( 0, 0 )
-1/navigation_offset = Vector2( 0, 0 )
-1/shape_offset = Vector2( 0, 0 )
-1/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-1/shape_one_way = false
-1/shape_one_way_margin = 0.0
-1/shapes = [  ]
-1/z_index = 0
-2/name = "dangerous"
-2/texture = ExtResource( 1 )
-2/tex_offset = Vector2( 0, 0 )
-2/modulate = Color( 1, 0.3, 0.3, 0.392157 )
-2/region = Rect2( 0, 0, 64, 64 )
-2/tile_mode = 0
-2/occluder_offset = Vector2( 0, 0 )
-2/navigation_offset = Vector2( 0, 0 )
-2/shape_offset = Vector2( 0, 0 )
-2/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-2/shape_one_way = false
-2/shape_one_way_margin = 0.0
-2/shapes = [  ]
-2/z_index = 0
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_gg0ro")

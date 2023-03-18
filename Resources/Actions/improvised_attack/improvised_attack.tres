@@ -1,24 +1,24 @@
-[gd_resource type="Resource" script_class="WeaponAction" load_steps=4 format=3 uid="uid://bn5jlrufspim3"]
+[gd_resource type="Resource" script_class="WeaponAction" load_steps=4 format=3 uid="uid://hvi0ib7anbpn"]
 
-[ext_resource type="Resource" uid="uid://cbymbtjbru2tn" path="res://Resources/Actions/improvised_attack/damage/1d6K.tres" id="1_4uyle"]
+[ext_resource type="Resource" path="res://Resources/Actions/improvised_attack/damage/1d6K.tres" id="1_4uyle"]
 [ext_resource type="Resource" path="res://Resources/Actions/improvised_attack/range/1_threat.tres" id="2_1mb54"]
 [ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/WeaponAction.gd" id="3_iw4q1"]
 
 [resource]
 script = ExtResource("3_iw4q1")
-source = "BASE"
-licence = "BASE"
+source = "GMS"
+licence = "GMS"
 license_id = ""
 license_level = 0
 mount = 1
 weapon_type = 1
 barrage = false
-skirmish = false
+skirmish = true
 no_attack = false
 no_mods = false
 no_core_bonus = false
-damage = Array[Resource("res://Scripts/ResourceGenerators/Actions/DamageResource.gd")]([ExtResource("1_4uyle")])
-ranges = Array[Resource("res://Scripts/ResourceGenerators/Actions/RangeResource.gd")]([ExtResource("2_1mb54")])
+damage = Array[Resource("res://Scripts/ResourceGenerators/Actions/Components/DamageResource.gd")]([ExtResource("1_4uyle")])
+ranges = Array[Resource("res://Scripts/ResourceGenerators/Actions/Components/RangeResource.gd")]([ExtResource("2_1mb54")])
 tag = Array[Resource]([])
 sp = 0
 description = ""
@@ -33,17 +33,17 @@ deployable = []
 counters = []
 integrated = []
 special_equipment = []
-id = "action_improvised_attack"
-name = "IMPR ATTACK"
+id = "base_improvised_attack"
+name = "IMP. ATTACK"
 action_type = 0
 terse = ""
 detail = ""
 cost = 2
 activation_type = 3
-pilot = false
+pilot = true
 mech = true
 synergies = []
-no_synergy = true
+no_synergy = false
 confirm = Array[String]([])
 log_str = ""
 ignore_used = false

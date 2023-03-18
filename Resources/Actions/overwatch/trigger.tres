@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TriggerResource" load_steps=2 format=3 uid="uid://caul4ryk06hw0"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/Components/TriggerResource.gd" id="1_pq814"]
+
+[resource]
+script = ExtResource("1_pq814")
+is_overwatch = true
+trigger_logic = 0

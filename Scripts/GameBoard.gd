@@ -35,11 +35,10 @@ var team_turn_index = 0
 var selected_unit: Unit : set = set_selected_unit
 
 
-@onready var _game_map: GameMap = $GameMap
-@onready var _action_processor: ActionProcessor = $ActionProcessor
-@onready var _unit_manager: UnitManager = $UnitManager
-@onready var _unit_path: UnitPath = $GameMap/UnitPath
-@onready var _unit_overlay: UnitOverlay = $GameMap/UnitOverlay
+@onready var _game_map = $GameMap
+@onready var _action_processor = $ActionProcessor
+@onready var _unit_manager = $UnitManager
+@onready var _unit_overlay = $GameMap/UnitOverlay
 
 func _ready():
 	if not _game_map:
@@ -62,7 +61,6 @@ func _unhandled_input(event: InputEvent):
 		if _action_processor.active:
 			_action_processor.stop()
 			_unit_overlay.clear()
-			_unit_path.clear()
 
 
 func _reinitialize():
@@ -71,18 +69,11 @@ func _reinitialize():
 	_unit_manager.initialize(_unit_data)
 	_unit_manager.update_hud(Vector2(-1,-1))
 	
-	for unit in _unit_manager._unit_list:
+	for unit in _unit_manager.unit_list:
 		if not teams.has(unit.team):
 			teams.push_back(unit.team)
 	
-	GlobalGrid.initialize(map_res, _unit_manager._unit_list)
-
-
-func get_blocked_cells() -> Array:
-	return _unit_manager.get_occupied_cells() + _game_map.terrain_tiles[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
-
-func get_walkable_cells() -> Array:
-	return GlobalGrid.flood_fill(_unit_manager.active_unit.cell, _unit_manager.active_unit.remaining_move_range)
+	GlobalGrid.initialize(map_res, _unit_manager.unit_list)
 
 
 func set_selected_unit(value: Unit):
@@ -99,11 +90,6 @@ func set_selected_unit(value: Unit):
 	emit_signal("unit_selected", selected_unit)
 
 
-func _move_active_unit(new_cell: Vector2):
-	_unit_manager.move_active_unit(new_cell, _unit_path.current_path)
-	LogRepeater.write(_unit_manager.active_unit.mech_name + ' moved')
-	
-
 func finish_turn():
 	_unit_manager.finish_turn()
 	team_turn_index = (team_turn_index+1) % teams.size()
@@ -118,11 +104,8 @@ func _on_Cursor_moved(_mode: String, new_pos: Vector2):
 	
 	if _action_processor.active:
 		# This updates the unit overlay when the user is selecting an action
-		_action_processor.process_action_targeted(new_cell, false)
-		_unit_overlay.draw(_action_processor.get_overlay_cells())
-		if _action_processor.draw_arrows:
-			_unit_path.initialize(_action_processor.move_cells)
-			_unit_path.draw(_unit_manager.active_unit.cell, new_cell)
+		var overlay_cells = _action_processor.get_overlay_cells(new_cell)
+		_unit_overlay.draw(overlay_cells)
 
 
 func _on_Cursor_accept_pressed(cell: Vector2):
@@ -137,9 +120,9 @@ func _on_Cursor_accept_pressed(cell: Vector2):
 		return
 	
 	# Try to perform the action at the hovered cell
-	var action_processed_correctly: bool = _action_processor.process_action_targeted(cell, true)
+	var has_acted: bool = await _action_processor.try_to_act(cell)
 	
-	if not action_processed_correctly:
+	if not has_acted:
 		return
 		
 	end_action()
@@ -149,7 +132,6 @@ func end_action():
 	_unit_manager.active_unit.actions_left -= _action_processor.action.cost
 	_action_processor.stop()
 	_unit_overlay.clear()
-	_unit_path.clear()
 	if _unit_manager.active_unit.actions_left <= 0:
 		finish_turn()
 
@@ -160,8 +142,6 @@ func _on_unit_activated():
 
 func _on_action_selected(action):
 	_action_processor.initialize(_unit_manager.active_unit, action, 0)
-	var action_processed = _action_processor.process_action_targeted(_game_map.cursor.cell, false)
-	if action_processed:
-		end_action()
-	else:
-		_unit_overlay.draw(_action_processor.get_overlay_cells())
+	var overlay_cells = _action_processor.get_overlay_cells(_game_map.cursor.cell)
+	_unit_overlay.draw(overlay_cells)
+

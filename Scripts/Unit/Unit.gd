@@ -22,25 +22,28 @@ var mech_name: String = 'MECH'
 # Texture2D representing the unit.
 @export var skin: Texture2D : set = set_skin
 @export var skin_offset := Vector2.ZERO : set = set_skin_offset
+@export var move_speed := 600.0 # The unit's move speed in pixels, when it's moving along a path.
 
 # Through its setter function, the `_is_walking` property toggles processing for this unit.
 # See `_set_is_walking()` at the bottom of this code snippet.
 var _is_walking := false : set = _set_is_walking
-@export var move_range: int # Distance to which the unit can walk in cells.
-@export var move_speed := 600.0 # The unit's move speed in pixels, when it's moving along a path.
+
+var move_range: int # Distance to which the unit can walk in cells.
 var remaining_move_range: int = move_range : get = _get_remaining_move_range
+var used_move_range := 0
 
 # Cell where the unit is located
 var cell := Vector2.ZERO : set = set_cell
 var is_selected := false : set = set_is_selected
 
-var is_disengaging := false : set = set_is_disengaging
-var used_move_range := 0
-
 var actions_left := 2 : set = set_actions_left
-var overcharge_charges = 0
+var overcharge_charges := 0
+var reaction_charges := 1
+
 var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STATUS, and values bool.
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
+
+var is_disengaging := false : set = set_is_disengaging
 var engaged_units: Array[Unit] : set = set_engaged_units
 
 # Preload all components
@@ -132,6 +135,7 @@ func walk_along(path: PackedVector2Array) -> void:
 func finish_turn() -> void:
 	used_move_range = 0
 	actions_left = 2
+	reaction_charges = 1
 	is_disengaging = false
 
 
@@ -200,11 +204,14 @@ func set_status(status_key: int, value: bool) -> void:
 	var status_name: String = CONSTANTS.STATUS.keys()[status_key]
 	LogRepeater.create_prompt(p_or_m+status_name, get_relative_pos())
 
+# Given an array of neighbour units, update the engagement of the unit
 func set_engaged_units(value: Array[Unit]):
+	# Ignore disengaged units
 	for e_unit in value:
 		if e_unit.is_disengaging:
 			value.erase(e_unit)
 	
+	# If no possible engaged units or disengaging, clear the status
 	if value.is_empty() or is_disengaging:
 		engaged_units.clear()
 		set_status(CONSTANTS.STATUS.ENGAGED, false)
@@ -281,14 +288,15 @@ func _get_remaining_move_range() -> int:
 	return move_range - used_move_range
 
 # Get a dictionary of the weapons that have a threat and the affected cells
-func get_threat() -> Array[WeaponAction]:
-	var out : Array[WeaponAction] = []
+func get_threat() -> Dictionary:
+	var out: Dictionary = {}
 	
 	for weapon in _mech.weapons:
+		var mode = 0
 		for range_res in weapon.ranges:
 			if range_res.type == CONSTANTS.WEAPON_RANGE_TYPES.THREAT:
-				out.push_back(weapon)
-	
+				out[weapon] = mode
+			mode += 1
 	return out
 
 func show_hud() -> void:

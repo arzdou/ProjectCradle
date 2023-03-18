@@ -42,6 +42,11 @@ class_name WeaponAction
 @export var integrated: Array
 @export var special_equipment: Array
 
+# Maybe using this variable is not the best since resources are shared but I don't really 
+# want to be carrying arround the mode variable...
+var range_mode: int = 0 : set = set_range_mode
+func set_range_mode(value: int):
+	range_mode = clamp(value, 0, ranges.size())
 
 const range_type_dict = {
 	CONSTANTS.WEAPON_RANGE_TYPES.RANGE: "res://Media/icons/range/range.svg",
@@ -52,30 +57,49 @@ const range_type_dict = {
 	CONSTANTS.WEAPON_RANGE_TYPES.THREAT: "res://Media/icons/range/threat.svg",
 }
 
-func get_display_name(mode: int = 0) -> Array:
-	var text = "%s - %d" % [name, ranges[mode].range_value]
-	var icon = load(range_type_dict[ranges[mode].type])
+
+func get_display_name() -> Array:
+	var text = "%s - %d" % [name, ranges[range_mode].range_value]
+	var icon = load(range_type_dict[ranges[range_mode].type])
 	return [text, icon]
 
 
 # Just a wrapper around the resource function taking into account the different range modes
-func get_cells_in_range(origin_cell: Vector2, target_cell: Vector2, mode: int) -> Dictionary:
-	return ranges[mode].get_cells_in_range(origin_cell, target_cell)
+func get_cells_in_range(active_unit: Unit, target_cell: Vector2) -> Dictionary:
+	return ranges[range_mode].get_cells_in_range(active_unit.cell, target_cell)
+
+
+# Perform the weapon attack over an area. If the area contains an enemy it will return true 
+# and the action will be considered complete
+func try_to_act(active_unit: Unit, target_cell: Vector2) -> bool:
+	var damage_cells = get_cells_in_range(active_unit, target_cell)[CONSTANTS.UOVERLAY_CELLS.DAMAGE]
+	var is_finished = try_to_apply_damage_in_area(active_unit, damage_cells)
+	
+	if not is_finished:
+		return false
+	emit_signal("action_finished")
+	return true
+
+
+# Calculates the cells in range and checks if the target cell is cointained in "in_range"
+func is_in_range(origin_cell: Vector2, target_cell: Vector2) -> bool:
+	var cells_in_range = ranges[range_mode].get_cells_in_range(origin_cell, target_cell)
+	return cells_in_range[CONSTANTS.UOVERLAY_CELLS.MARKED].has(target_cell)
 
 
 # Returns true if the WeaponAction managed to hit (or miss) an attack
-func try_to_apply_damage_in_area(active_unit: Unit, area: Array, range_mode) -> bool:
+func try_to_apply_damage_in_area(active_unit: Unit, area: Array) -> bool:
 	var damage_applied := false
 	for target_cell in area:
 		# If *any* damage was done consider this action complete
-		damage_applied = damage_applied or try_to_apply_damage(active_unit, target_cell, range_mode)
+		damage_applied = damage_applied or try_to_apply_damage(active_unit, target_cell)
 		
 	return damage_applied
 
 
-func try_to_apply_damage(active_unit: Unit, target_cell: Vector2, range_mode: int) -> bool:
-	# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
-	# return false and if the damage was applied it will return true
+# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
+# return false and if the damage was applied it will return true
+func try_to_apply_damage(active_unit: Unit, target_cell: Vector2) -> bool:
 	
 	# There are two conditions to apply damage:
 	# 1. The cell has a unit
@@ -93,7 +117,7 @@ func try_to_apply_damage(active_unit: Unit, target_cell: Vector2, range_mode: in
 		on_attack.apply_effect(active_unit, target_unit)
 	
 	# Roll to see if the attack connects
-	if not attack_roll(active_unit, target_unit, range_mode):
+	if not attack_roll(active_unit, target_unit):
 		target_unit.take_damage(0, 0)
 		return true
 	
@@ -109,7 +133,7 @@ func try_to_apply_damage(active_unit: Unit, target_cell: Vector2, range_mode: in
 
 
 # Perform an attack roll against a character
-func attack_roll(active_unit: Unit, target_unit: Unit, range_mode: int) -> bool:
+func attack_roll(active_unit: Unit, target_unit: Unit) -> bool:
 		
 	# Attacks to invisible characters miss half of the time
 	if target_unit.status[CONSTANTS.STATUS.INVISIBLE]:

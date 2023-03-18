@@ -22,7 +22,7 @@ func _ready():
 		await $MouseCamera.ready
 	_mouse_camera.timer.wait_time = ui_timer
 	
-	for terrain in CONSTANTS.EOVERLAY_CELLS.values():
+	for terrain in CONSTANTS.TOVERLAY_CELLS.values():
 		terrain_tiles[terrain] = []
 	
 	initialize()

@@ -44,8 +44,8 @@ _data = {
 }
 
 [node name="Unit" type="Path2D"]
+z_index = 3
 script = ExtResource("1")
-move_range = 6
 
 [node name="UnitStats" type="Node" parent="."]
 script = ExtResource("5")
@@ -66,6 +66,7 @@ scale = Vector2(0.75, 0.75)
 texture = ExtResource("2")
 
 [node name="HUD" type="Control" parent="PathFollow2D"]
+z_index = 1
 layout_mode = 3
 anchors_preset = 0
 

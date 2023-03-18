@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="ReactionAction" load_steps=3 format=3 uid="uid://cph1h2ex86ola"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/ReactionAction.gd" id="1_ko5jg"]
+[ext_resource type="Resource" uid="uid://caul4ryk06hw0" path="res://Resources/Actions/overwatch/trigger.tres" id="2_alhoq"]
+
+[resource]
+script = ExtResource("1_ko5jg")
+active = true
+turn_limit = 1
+trigger = ExtResource("2_alhoq")
+id = "base_overwatch"
+name = "Overwatch"
+action_type = 0
+terse = ""
+detail = ""
+cost = 0
+activation_type = 7
+pilot = true
+mech = true
+synergies = []
+no_synergy = false
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

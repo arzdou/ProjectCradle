@@ -55,7 +55,8 @@ var heat: int : set = _set_heat
 var structure := 4
 var stress := 4
 
-var mech_weapons: Array
+var mech_weapons: Array[WeaponAction]
+var reactions: Array[ReactionAction]
 var mech_systems: Array
 var core_system: Resource
 
@@ -97,6 +98,9 @@ func initialize(pilot_stats: PilotStats, mech) -> void:
 	heat = heat_cap
 	
 	mech_weapons = mech.weapons
+	reactions = [
+		preload("res://Resources/Actions/overwatch/overwatch.tres")
+	]
 	mech_systems = mech.mech_systems
 	core_system = mech.core_system
 	

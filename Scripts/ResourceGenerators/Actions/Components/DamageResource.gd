@@ -7,10 +7,8 @@ class_name DamageResource
 @export var constant_damage: int = 0
 
 
+# Roll the damage described by the resource and apply accuracy or difficulty (accuracy < 0)
 func roll_damage(accuracy: int = 0) -> int:
-	
-	# Roll the damage described by the resource and apply accuracy or difficulty (accuracy < 0)
-	
 	var damage_array := []
 	for _i in range(number_of_dices + accuracy):
 		damage_array.push_back(randi() % dice_faces + 1)

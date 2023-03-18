@@ -67,11 +67,21 @@ func in_cell(cell: Vector2) -> Unit:
 	return null
 
 
+# Returns all the units contiguous to a given cell
+func get_neighbours(cell: Vector2) -> Array[Unit]:
+	var neighbours: Array[Unit] = []
+	for direction in DIRECTIONS:
+		var unit = in_cell(cell + direction)
+		if unit:
+			neighbours.push_back(unit)
+	return neighbours
+
+
 
 # Flood fill algorithm to calculate vision and movement
-func flood_fill(cell: Vector2, move_range: int) -> Array:
-	var out := []
-	var blocked_cells = terrain_dict[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
+func flood_fill(cell: Vector2, move_range: int) -> PackedVector2Array:
+	var out = PackedVector2Array()
+	var blocked_cells = terrain_dict[CONSTANTS.TOVERLAY_CELLS.BLOCKED]
 	# We use a stack of cells to process, when there are no more we exit
 	var stack := [cell]
 	
@@ -113,7 +123,7 @@ func flood_fill(cell: Vector2, move_range: int) -> Array:
 # Ray Casting algorithm from an initial cell and angle
 func ray_cast_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 	var out := []
-	var blocked_cells = terrain_dict[CONSTANTS.EOVERLAY_CELLS.BLOCKED]
+	var blocked_cells = terrain_dict[CONSTANTS.TOVERLAY_CELLS.BLOCKED]
 	var ray_cast: Vector2 = map_to_local(cell)
 	
 	while true:
@@ -165,22 +175,51 @@ func cone_from_cell(cell: Vector2, angle: float, view_range: int) -> Array:
 func find_cover_from_attack(cell_1: Vector2, cell_2: Vector2) -> int:
 	var angle: float = cell_1.angle_to_point(cell_2)
 	var distance = cell_1.distance_to(cell_2)
-	var line_of_sight = ray_cast_from_cell(cell_1, angle, distance)
+	var vision_line = ray_cast_from_cell(cell_1, angle, distance)
 	
-	var hard_cover = terrain_dict[CONSTANTS.EOVERLAY_CELLS.HARD_COVER]
-	var soft_cover = terrain_dict[CONSTANTS.EOVERLAY_CELLS.SOFT_COVER]
+	var hard_cover = terrain_dict[CONSTANTS.TOVERLAY_CELLS.HARD_COVER]
+	var soft_cover = terrain_dict[CONSTANTS.TOVERLAY_CELLS.SOFT_COVER]
 	
-	if hard_cover.has(line_of_sight[-2]):
+	if hard_cover.has(vision_line[-2]):
 		return 2
 	
-	if soft_cover.has(line_of_sight[-2]):
+	if soft_cover.has(vision_line[-2]):
 		return 1
 		
-	for cell in line_of_sight:
+	for cell in vision_line:
 		if hard_cover.has(cell):
 			return 1
 			
 	return 0
+
+
+# Given a set of walkable tiles, calculate the shortest path between each of them. 
+# If there is a unit on the starting cell, calculate if it will be stopped by surrounding enemies
+func get_cell_path(walkable_cells: PackedVector2Array, start_cell: Vector2, end_cell: Vector2) -> Dictionary:
+	var out = {"full_path": [], "current_path": []}
+	if start_cell == end_cell:
+		return out
+	
+	var pathfinder = PathFinder.new(walkable_cells)
+	out.full_path = pathfinder.calculate_point_path(start_cell, end_cell)
+	out.current_path = PackedVector2Array()
+		
+	# Check for any larger adjacent enemy in the path and stop the movement
+	var active_unit = in_cell(start_cell)
+	if not active_unit:
+		out.current_path = out.full_path
+		return out
+	
+	for i in range(out.full_path.size()):
+		out.current_path.push_back(out.full_path[i])
+		var engaged_units = get_neighbours(out.full_path[i])
+		# If any neighbouring unit is larger then cut the search and return the current path
+		for engaged_unit in engaged_units:
+			var stop_path = engaged_unit._mech.size > active_unit._mech.size
+			if stop_path:
+				return out
+	return out
+
 
 
 func sum_int_array(arr: Array) -> int:

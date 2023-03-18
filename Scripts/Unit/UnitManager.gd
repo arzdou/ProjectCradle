@@ -6,15 +6,14 @@ extends Node
 class_name UnitManager
 
 signal overwatch_triggered(weapon, active_unit, target_unit)
-signal overwatch_finished
 signal prompt_created(prompt_menu, text, arr)
 
 const Unit: PackedScene = preload("res://Scenes/Unit/Unit.tscn")
 const PromptMenu: PackedScene = preload("res://Scenes/UI/PromptMenu.tscn")
 
 var active_unit: Unit = null
-var _unit_list := []
-var _teams = []
+var unit_list: Array[Unit] = []
+var _teams: Array[String] = []
 
 
 func initialize(units_data: Array) -> void:
@@ -26,7 +25,7 @@ func initialize(units_data: Array) -> void:
 		unit.set_owner(self)
 		
 		unit.initialize(udata)
-		_unit_list.push_back(unit)
+		unit_list.push_back(unit)
 		
 		if not unit.team in _teams:
 			_teams.push_back(unit.team)
@@ -47,7 +46,7 @@ func get_active_move_range() -> int:
 
 func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 	
-	await check_overwatch()
+	#await check_overwatch()
 	
 	# It is necessary to create a reference to the acting unit since it can be deactivated somewhere 
 	# when the function is awaiting the movement end
@@ -69,7 +68,7 @@ func move_active_unit(new_cell: Vector2, path: Array) -> bool:
 
 func update_hud(cursor_cell: Vector2) -> void:
 	# Hide all huds except the active unit and the hovered unit
-	for unit in _unit_list:
+	for unit in unit_list:
 		if unit == active_unit:
 			pass
 		if unit.cell == cursor_cell:
@@ -78,39 +77,28 @@ func update_hud(cursor_cell: Vector2) -> void:
 			unit.hide_hud()
 
 
-# Returns all the units contiguous to a given cell
-func get_neighbours(cell: Vector2) -> Array[Unit]:
-	var neighbours: Array[Unit] = []
-	for direction in GlobalGrid.DIRECTIONS:
-		var unit = GlobalGrid.in_cell(cell + direction)
-		if unit:
-			neighbours.push_back(unit)
-	return neighbours
-
-
 # Updates the engagement of all units in the field.
-# TODO: Ignores disengaged units
 func update_engagement():
-	for unit in _unit_list:
-		# Ignore disengagement here
-		var neighbours = get_neighbours(unit.cell)
-		unit.engaged_units = neighbours
+	for unit in unit_list:
+		# Disengagement is taken into account on the engaged_units setter
+		unit.engaged_units = GlobalGrid.get_neighbours(unit.cell)
 
 
-func check_overwatch() -> bool:
-	for unit in _unit_list:
+func check_overwatch():
+	for unit in unit_list:
 		if unit == active_unit:
 			continue
+		
+		if unit.reaction_charges <= 0:
+			continue
+		
 		var threat_weapons = unit.get_threat()
 		
 		# Find which of the threat weapons are in range
 		var active_threat_weapons: Array[BaseAction] = []
 		for weapon in threat_weapons:
-			var range_res = weapon.ranges[0]
-			var weapon_range_tiles = GlobalGrid.flood_fill(
-				unit.cell, range_res.range_value
-			)
-			if active_unit.cell in weapon_range_tiles:
+			var cells_in_range = weapon.ranges[0].get_cells_in_range(unit.cell, Vector2(0,0))
+			if active_unit.cell in cells_in_range["in_range"]:
 				active_threat_weapons.push_back(weapon)
 		
 		if active_threat_weapons.is_empty():
@@ -122,13 +110,25 @@ func check_overwatch() -> bool:
 		
 		var selected_weapon = await prompt_menu.action_selected
 		
-		emit_signal("overwatch_triggered", selected_weapon, 0, unit, active_unit)
+		if selected_weapon:
+			emit_signal("overwatch_triggered", selected_weapon, 0, unit, active_unit)
 		prompt_menu.queue_free()
-	
-	emit_signal("overwatch_finished")
-	return true
+
 
 func finish_turn() -> void:
 	active_unit.finish_turn()
 	update_engagement()
 	deselect_unit()
+
+
+func _on_action_processor_about_to_act(action):
+	for unit in unit_list:
+		if unit.reaction_charges <= 0:
+			continue
+		for reaction in unit._stats.reactions:
+			var is_active = reaction.check_activation(
+				action, unit, active_unit
+			)
+			if not is_active:
+				continue
+			#await reaction.act()

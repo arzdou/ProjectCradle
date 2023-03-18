@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="EffectResource" load_steps=2 format=3 uid="uid://df6dtfndug6rs"]
+[gd_resource type="Resource" script_class="EffectResource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/EffectResource.gd" id="1_5gev6"]
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/Components/EffectResource.gd" id="1_5gev6"]
 
 [resource]
 script = ExtResource("1_5gev6")

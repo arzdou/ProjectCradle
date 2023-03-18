@@ -18,6 +18,7 @@ func initialize(text: String, actions: Array[BaseAction]):
 			on_extended_menu_button_pressed.bind(action)
 		)
 	
+	
 	await button_container.resized
 	button_container.position.x = self.size.x/2 - button_container.size.x/2 
 	button_container.show()

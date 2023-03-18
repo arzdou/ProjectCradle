@@ -1,11 +1,9 @@
-[gd_scene load_steps=17 format=3 uid="uid://kk268qrv5kcg"]
+[gd_scene load_steps=15 format=3 uid="uid://2up0rft8paac"]
 
-[ext_resource type="Script" path="res://Scripts/GameMap/UnitOverlay.gd" id="1"]
-[ext_resource type="TileSet" uid="uid://fnds8pbh7eqe" path="res://Resources/board_overlay_tileset.tres" id="2"]
 [ext_resource type="Script" path="res://Scripts/UI/CombatLog.gd" id="3"]
 [ext_resource type="Script" path="res://Scripts/GameBoard.gd" id="4"]
 [ext_resource type="Theme" uid="uid://c2wr1np5wv2m5" path="res://Resources/Themes/CombatLog/CombatLog_theme.tres" id="5"]
-[ext_resource type="PackedScene" uid="uid://bl11ufhaxo5u8" path="res://Scenes/Unit/UnitPath.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://d3knbosr6ygv4" path="res://Scenes/GameMap/Overlay.tscn" id="5_6en6x"]
 [ext_resource type="Script" path="res://Scripts/ActionProcessor.gd" id="7"]
 [ext_resource type="Script" path="res://Scripts/Unit/UnitManager.gd" id="8"]
 [ext_resource type="PackedScene" uid="uid://77drwuudhqla" path="res://Scenes/GameMap/GameMap.tscn" id="10"]
@@ -43,20 +41,18 @@ script = ExtResource("7")
 
 [node name="GameMap" parent="GameBoard" instance=ExtResource("10")]
 
-[node name="UnitOverlay" type="TileMap" parent="GameBoard/GameMap"]
-tile_set = ExtResource("2")
-format = 2
-layer_0/name = "Front"
-layer_1/name = "Back"
-layer_1/enabled = true
-layer_1/modulate = Color(1, 1, 1, 0.27451)
-layer_1/y_sort_enabled = false
-layer_1/y_sort_origin = 0
-layer_1/z_index = 0
-layer_1/tile_data = PackedInt32Array()
-script = ExtResource("1")
-
-[node name="UnitPath" parent="GameBoard/GameMap" instance=ExtResource("6")]
+[node name="UnitOverlay" parent="GameBoard/GameMap" instance=ExtResource("5_6en6x")]
+layer_0/name = "terrain"
+layer_0/z_index = 2
+layer_1/z_index = 1
+layer_2/z_index = 1
+layer_3/name = "base"
+layer_3/enabled = true
+layer_3/modulate = Color(1, 1, 1, 1)
+layer_3/y_sort_enabled = false
+layer_3/y_sort_origin = 0
+layer_3/z_index = 0
+layer_3/tile_data = PackedInt32Array()
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -167,8 +163,7 @@ alignment = 1
 
 [connection signal="unit_cleared" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_cleared"]
 [connection signal="unit_selected" from="GameBoard" to="HUD/UnitMenuManager" method="_on_game_board_unit_selected"]
-[connection signal="overwatch_triggered" from="GameBoard/UnitManager" to="GameBoard/ActionProcessor" method="_on_unit_manager_overwatch_triggered"]
-[connection signal="prompt_created" from="GameBoard/UnitManager" to="HUD/PromptLabelManager" method="_on_prompt_menu_created"]
+[connection signal="about_to_act" from="GameBoard/ActionProcessor" to="GameBoard/UnitManager" method="_on_action_processor_about_to_act"]
 [connection signal="move_unit" from="GameBoard/ActionProcessor" to="GameBoard" method="_move_active_unit"]
 [connection signal="action_button_pressed" from="HUD/UnitMenuManager" to="GameBoard" method="_on_action_selected"]
 [connection signal="unit_activated" from="HUD/UnitMenuManager" to="GameBoard" method="_on_unit_activated"]
