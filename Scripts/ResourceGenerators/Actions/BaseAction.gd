@@ -50,3 +50,7 @@ func get_cells_in_range(_active_unit: Unit, _target_cell: Vector2) -> Dictionary
 # and false if it failed to do it (do not confuse with missing or mechanically failing)
 func try_to_act(_active_unit: Unit, _target_cell: Vector2) -> bool:
 	return false
+
+
+func can_act(_active_unit: Unit, _target_cell: Vector2) -> bool:
+	return false

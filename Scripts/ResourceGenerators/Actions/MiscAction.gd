@@ -9,3 +9,7 @@ class_name MiscAction
 func try_to_act(active_unit: Unit, _target_cell: Vector2) -> bool:
 	effect.apply_effect(active_unit, null)
 	return true
+
+
+func can_act(_active_unit: Unit, _target_cell: Vector2) -> bool:
+	return true

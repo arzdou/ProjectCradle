@@ -5,6 +5,7 @@
 class_name Unit
 extends Path2D
 
+signal walk_finished
 
 var CONSTANTS: Resource = preload("res://Resources/CONSTANTS.tres")
 
@@ -93,8 +94,7 @@ func initialize(unit_data: Dictionary):
 	
 	for i in CONSTANTS.CONDITIONS.values():
 		conditions[i] = 0
-	conditions[CONSTANTS.CONDITIONS.LOCKED_ON] = 2
-	
+		
 	#In the future this should also set the skin
 	
 	# The following lines initialize the `cell` property and snap the unit to the cell's center on the map.
@@ -110,7 +110,7 @@ func _process(delta):
 		position = GlobalGrid.map_to_local(self.cell)
 		_path_follow.progress = 0.01
 		curve.clear_points()
-
+		emit_signal("walk_finished")
 
 func walk_along(path: PackedVector2Array) -> void:
 	# path is a set of points given as relative from the current position
@@ -121,7 +121,6 @@ func walk_along(path: PackedVector2Array) -> void:
 	for point in path:
 		curve.add_point(GlobalGrid.map_to_local(point) - position)
 	
-	# Inmediately set the position to the last point
 	_set_is_walking(true)
 	used_move_range = min(used_move_range + path.size() - 1, move_range)
 

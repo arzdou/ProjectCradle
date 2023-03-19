@@ -68,6 +68,11 @@ func get_display_name() -> Array:
 func get_cells_in_range(active_unit: Unit, target_cell: Vector2) -> Dictionary:
 	return ranges[range_mode].get_cells_in_range(active_unit.cell, target_cell)
 
+# Calculates the cells in range and checks if the target cell is cointained in "in_range"
+func is_in_range(origin_cell: Vector2, target_cell: Vector2) -> bool:
+	var cells_in_range = ranges[range_mode].get_cells_in_range(origin_cell, target_cell)
+	return cells_in_range[CONSTANTS.UOVERLAY_CELLS.MARKED].has(target_cell)
+
 
 # Perform the weapon attack over an area. If the area contains an enemy it will return true 
 # and the action will be considered complete
@@ -75,17 +80,21 @@ func try_to_act(active_unit: Unit, target_cell: Vector2) -> bool:
 	var damage_cells = get_cells_in_range(active_unit, target_cell)[CONSTANTS.UOVERLAY_CELLS.DAMAGE]
 	var has_acted = try_to_apply_damage_in_area(active_unit, damage_cells)
 	
-	
 	if not has_acted:
 		return false
 	return true
 
 
-# Calculates the cells in range and checks if the target cell is cointained in "in_range"
-func is_in_range(origin_cell: Vector2, target_cell: Vector2) -> bool:
-	var cells_in_range = ranges[range_mode].get_cells_in_range(origin_cell, target_cell)
-	return cells_in_range[CONSTANTS.UOVERLAY_CELLS.MARKED].has(target_cell)
-
+func can_act(active_unit: Unit, target_cell: Vector2) -> bool:
+	var cells_in_range = ranges[range_mode].get_cells_in_range(active_unit.cell, target_cell)
+	
+	# Try to find a unit different than self on the target area
+	for cell in cells_in_range[CONSTANTS.UOVERLAY_CELLS.DAMAGE]:
+		var target_unit: Unit = GlobalGrid.in_cell(cell)
+		if target_unit and target_unit != active_unit:
+			return true
+		
+	return false
 
 # Returns true if the WeaponAction managed to hit (or miss) an attack
 func try_to_apply_damage_in_area(active_unit: Unit, area: Array) -> bool:
@@ -139,7 +148,7 @@ func attack_roll(active_unit: Unit, target_unit: Unit) -> bool:
 	if target_unit.status[CONSTANTS.STATUS.INVISIBLE]:
 		var coin_toss = randi()%2
 		if coin_toss:
-			return true
+			return false
 	
 	# Accuracy aids on the roll by giving extra d20's and then taking the best (or worst)
 	# Accuracy is given by the enemy being prone and exposed

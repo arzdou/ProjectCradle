@@ -15,7 +15,6 @@ var active_unit: Unit = null
 var unit_list: Array[Unit] = []
 var _teams: Array[String] = []
 
-@onready var action_processor = $ActionProcessor
 
 func initialize(units_data: Array) -> void:
 	# Create the different units based on the input data
@@ -31,8 +30,6 @@ func initialize(units_data: Array) -> void:
 		if not unit.team in _teams:
 			_teams.push_back(unit.team)
 		
-		unit.connect("action_selected",Callable(get_parent(),"_on_Unit_action_selected"))
-
 
 func deselect_unit() -> void:
 	if not active_unit:
@@ -83,37 +80,6 @@ func update_engagement():
 	for unit in unit_list:
 		# Disengagement is taken into account on the engaged_units setter
 		unit.engaged_units = GlobalGrid.get_neighbours(unit.cell)
-
-
-func check_overwatch():
-	for unit in unit_list:
-		if unit == active_unit:
-			continue
-		
-		if unit.reaction_charges <= 0:
-			continue
-		
-		var threat_weapons = unit.get_threat()
-		
-		# Find which of the threat weapons are in range
-		var active_threat_weapons: Array[BaseAction] = []
-		for weapon in threat_weapons:
-			var cells_in_range = weapon.ranges[0].get_cells_in_range(unit.cell, Vector2(0,0))
-			if active_unit.cell in cells_in_range["in_range"]:
-				active_threat_weapons.push_back(weapon)
-		
-		if active_threat_weapons.is_empty():
-			continue
-		
-		var prompt_menu = PromptMenu.instantiate()
-		var prompt_text = "OVERWATCH TRIGGERED! Choose weapon:"
-		emit_signal("prompt_created", prompt_menu, prompt_text, active_threat_weapons)
-		
-		var selected_weapon = await prompt_menu.action_selected
-		
-		if selected_weapon:
-			emit_signal("overwatch_triggered", selected_weapon, 0, unit, active_unit)
-		prompt_menu.queue_free()
 
 
 func finish_turn() -> void:

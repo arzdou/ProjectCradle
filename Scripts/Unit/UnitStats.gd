@@ -56,7 +56,8 @@ var structure := 4
 var stress := 4
 
 var mech_weapons: Array[WeaponAction]
-var reactions: Array[ReactionAction]
+var reactions: Array[ReactionAction] 
+var is_reaction_active: Dictionary
 var mech_systems: Array
 var core_system: Resource
 
@@ -101,6 +102,8 @@ func initialize(pilot_stats: PilotStats, mech) -> void:
 	reactions = [
 		preload("res://Resources/Actions/overwatch/overwatch.tres")
 	]
+	for rctn in reactions:
+		is_reaction_active[rctn] = true
 	mech_systems = mech.mech_systems
 	core_system = mech.core_system
 	
