@@ -7,13 +7,14 @@ class_name TriggerResource
 enum TRIGGERS {OVERWATCH, BRACE}
 @export var trigger_type: TRIGGERS
 
+const brace_action: MiscAction = preload("res://Resources/Actions/brace/brace.tres")
 
 func get_triggered_actions(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
 	match trigger_type:
 		TRIGGERS.OVERWATCH:
 			return overwatch(action, reacting_unit, acting_unit)
 		TRIGGERS.BRACE:
-			return []
+			return brace(action, reacting_unit, acting_unit)
 		_:
 			return []
 
@@ -38,4 +39,20 @@ func overwatch(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Ar
 			active_threat_weapons.push_back(weapon)
 	
 	return active_threat_weapons
+
+
+func brace(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
+	var out: Array[BaseAction] = []
 	
+	if not action is WeaponAction:
+		return out
+	
+	if reacting_unit == acting_unit:
+		return out
+	
+	if not action.is_in_range(acting_unit.cell, reacting_unit.cell):
+		return out
+	
+	# This will fail since this method has no way of knowing which target has the action
+	out.push_back(brace_action)
+	return out

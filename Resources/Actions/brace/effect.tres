@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EffectResource" load_steps=2 format=3 uid="uid://6u0abq5611p6"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/Components/EffectResource.gd" id="1_1t0e8"]
+
+[resource]
+script = ExtResource("1_1t0e8")
+activation = 3
+self_status = Array[int]([])
+target_status = Array[int]([])
+self_conditions = Array[int]([])
+target_conditions = Array[int]([])
+overcharge = false
+disengage = false

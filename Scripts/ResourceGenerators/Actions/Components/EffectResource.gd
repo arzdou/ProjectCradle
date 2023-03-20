@@ -12,6 +12,7 @@ class_name EffectResource
 
 @export var overcharge: bool
 @export var disengage: bool
+@export var brace: bool
 
 func apply_effect(self_unit: Unit, target_unit: Unit) -> void:
 	for ss in self_status:
@@ -31,3 +32,6 @@ func apply_effect(self_unit: Unit, target_unit: Unit) -> void:
 	
 	if disengage:
 		self_unit.is_disengaging = true
+	
+	if brace:
+		self_unit.is_bracing = true

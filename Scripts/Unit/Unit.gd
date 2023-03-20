@@ -43,6 +43,7 @@ var status: Dictionary = {} # Keys will be the status, as given by CONSTANT.STAT
 var conditions: Dictionary = {} # Keys will be the condition, as given by CONSTANT.CONDITIONS, and key the number of remaining turns
 
 var is_disengaging := false : set = set_is_disengaging
+var is_bracing := false
 var engaged_units: Array[Unit] : set = set_engaged_units
 
 # Preload all components
@@ -136,6 +137,10 @@ func finish_turn() -> void:
 
 func take_damage(damage: int, damage_type: int) -> void:
 	show_hud()
+	
+	if is_bracing:
+		damage /= 2
+		is_bracing = false
 	
 	if damage == 0:
 		LogRepeater.create_prompt("MISS", get_relative_pos())

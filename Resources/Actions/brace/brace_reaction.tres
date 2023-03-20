@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ReactionAction" load_steps=3 format=3 uid="uid://cfh5o4lb4b2pt"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/ReactionAction.gd" id="1_pd8up"]
+[ext_resource type="Resource" uid="uid://gwqa5f62ybej" path="res://Resources/Actions/brace/trigger.tres" id="2_daddr"]
+
+[resource]
+script = ExtResource("1_pd8up")
+active = true
+turn_limit = 1
+prompt_text = "Reaction activated! Choose action:"
+trigger = ExtResource("2_daddr")
+id = "base_brace_reaction"
+name = "Brace"
+action_type = 3
+terse = ""
+detail = ""
+cost = 0
+activation_type = 7
+pilot = true
+mech = true
+synergies = []
+no_synergy = false
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

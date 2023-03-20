@@ -3,6 +3,7 @@ class_name PromptMenu
 
 signal action_selected(action)
 
+const ActionMenuButton: PackedScene = preload("res://Scenes/UI/ActionMenuButton.tscn")
 const ExtendedMenuButton: PackedScene = preload("res://Scenes/UI/ExtendedMenuButton.tscn")
 
 @onready var button_container = $ColorRect/ButtonContainer
@@ -11,9 +12,15 @@ const ExtendedMenuButton: PackedScene = preload("res://Scenes/UI/ExtendedMenuBut
 func initialize(text: String, actions: Array[BaseAction]):
 	label.text = text
 	for action in actions:
-		var button = ExtendedMenuButton.instantiate()
-		button_container.add_child(button)
-		button.initialize(action)
+		var button
+		if action is WeaponAction:
+			button = ExtendedMenuButton.instantiate()
+			button_container.add_child(button)
+			button.initialize(action)
+		else:
+			button = ActionMenuButton.instantiate()
+			button_container.add_child(button)
+			button.initialize(action.name, action.menu_icon)
 		button.pressed.connect(
 			on_extended_menu_button_pressed.bind(action)
 		)

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="MiscAction" load_steps=3 format=3 uid="uid://bylj51066p4p2"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MiscAction.gd" id="1_0f6oi"]
+[ext_resource type="Resource" uid="uid://6u0abq5611p6" path="res://Resources/Actions/brace/effect.tres" id="1_73jya"]
+
+[resource]
+script = ExtResource("1_0f6oi")
+effect = ExtResource("1_73jya")
+id = "base_brace"
+name = "Barce"
+action_type = 3
+terse = ""
+detail = ""
+cost = 0
+activation_type = 7
+pilot = true
+mech = true
+synergies = []
+no_synergy = false
+confirm = Array[String]([])
+log_str = ""
+ignore_used = false
+heat_cost = false

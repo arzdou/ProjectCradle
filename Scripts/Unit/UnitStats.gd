@@ -100,7 +100,8 @@ func initialize(pilot_stats: PilotStats, mech) -> void:
 	
 	mech_weapons = mech.weapons
 	reactions = [
-		preload("res://Resources/Actions/overwatch/overwatch.tres")
+		preload("res://Resources/Actions/overwatch/overwatch.tres"),
+		preload("res://Resources/Actions/brace/brace_reaction.tres")
 	]
 	for rctn in reactions:
 		is_reaction_active[rctn] = true

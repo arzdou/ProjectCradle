@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="TriggerResource" load_steps=2 format=3 uid="uid://gwqa5f62ybej"]
+
+[ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/Components/TriggerResource.gd" id="1_dwvj3"]
+
+[resource]
+script = ExtResource("1_dwvj3")
+trigger_type = 1
