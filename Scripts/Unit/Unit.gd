@@ -182,6 +182,13 @@ func overcharge():
 		_:
 			take_heat(randi()%6+1 + 4)
 
+
+func toggle_reaction(reaction: ReactionAction):
+	if not _stats.reactions.has(reaction):
+		print("Reaction not found, check for undefined behaviour")
+	_stats.is_reaction_active[reaction] = not _stats.is_reaction_active[reaction]
+
+
 func get_relative_pos() -> Vector2:
 	return get_global_transform_with_canvas().get_origin()
 

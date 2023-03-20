@@ -7,43 +7,11 @@ var attack_menu_buttons : Array = [
 ]
 
 var tech_menu_buttons : Dictionary = {
-	"Bolster": {
-		"action": null, 
-		"icon": null
-		},
-	"Scan": {
-		"action": null, 
-		"icon": null
-		},
-	"Lock On": {
-		"action": null, 
-		"icon": null
-		},
-	"Invade": {
-		"action": null, 
-		"icon": null
-		},
+	"Bolster": null,
+	"Scan": null,
+	"Lock On": null,
+	"Invade": null,
 	# TECH
-}
-
-var system_menu_buttons : Dictionary = {
-	# SYSTEMS
-}
-
-var reaction_menu_buttons : Dictionary = {
-	"Overwatch": {
-		"action": null, 
-		"icon": null
-		},
-	"Brace": {
-		"action": null, 
-		"icon": null
-		}
-	# REACTIONS
-}
-
-var protocol_menu_buttons : Dictionary = {
-	# PROTOCOL
 }
 
 var back_button : Dictionary = {
@@ -53,22 +21,10 @@ var back_button : Dictionary = {
 }
 
 var main_menu_buttons : Dictionary = {
-	"Move": {
-		"action": preload("res://Resources/Actions/standard_move.tres"), 
-		"icon": preload("res://Media/icons/menu/move.svg")
-		},
-	"Stabilize": {
-		"action": null, 
-		"icon": preload("res://Media/icons/menu/stabilize.svg")
-		},
-	"Disengage": {
-		"action": preload("res://Resources/Actions/disengage/disengage.tres"), 
-		"icon": preload("res://Media/icons/menu/disengage.svg")
-		},
-	"Overcharge": {
-		"action": preload("res://Resources/Actions/overcharge/overcharge.tres"), 
-		"icon": preload("res://Media/icons/menu/overcharge.svg")
-		},
+	"Move": preload("res://Resources/Actions/standard_move.tres"),
+	"Stabilize": null,
+	"Disengage": preload("res://Resources/Actions/disengage/disengage.tres"),
+	"Overcharge": preload("res://Resources/Actions/overcharge/overcharge.tres"),
 		
 	# Separator
 	
@@ -86,53 +42,32 @@ var main_menu_buttons : Dictionary = {
 	},
 	"System": {
 		"menu_name": "SystemMenu",
-		"base_buttons": system_menu_buttons,
+		"base_buttons": {},
 		"icon": preload("res://Media/icons/menu/system.svg"),
 		"theme": null
 	},
 	"Reaction": {
 		"menu_name": "ReactionMenu",
-		"base_buttons": reaction_menu_buttons,
+		"base_buttons": {},
 		"icon": preload("res://Media/icons/menu/reaction.svg"),
 		"theme": null
 	},
 	"Protocol": {
 		"menu_name": "ProtocolMenu",
-		"base_buttons": protocol_menu_buttons,
+		"base_buttons": {},
 		"icon": preload("res://Media/icons/menu/protocol.svg"),
 		"theme": null
 	},
 	
 	# Separator
 	
-	"Boost": {
-		"action": preload("res://Resources/Actions/boost.tres"), 
-		"icon": preload("res://Media/icons/menu/boost.svg")
-		},
-	"Hide": {
-		"action": null,
-		"icon": preload("res://Media/icons/menu/hide.svg")
-		},
-	"Search": {
-		"action": null, 
-		"icon": preload("res://Media/icons/menu/search.svg")
-		},
-	"Shutdown/Start": {
-		"action": null, 
-		"icon": preload("res://Media/icons/menu/shutdown.svg")
-		},
-	"Mount/Dismount": {
-		"action": null, 
-		"icon": preload("res://Media/icons/menu/mount.svg")
-		},
-	"Self-Destruct": {
-		"action": null, 
-		"icon": preload("res://Media/icons/menu/self-destruct.svg")
-		},
-	"End Turn": {
-		"action": preload("res://Resources/Actions/end_turn/end_turn.tres"), 
-		"icon": null
-	}
+	"Boost": preload("res://Resources/Actions/boost.tres"),
+	"Hide": null,
+	"Search": null,
+	"Shutdown/Start": null,
+	"Mount/Dismount": null,
+	"Self-Destruct": null,
+	"End Turn": preload("res://Resources/Actions/end_turn/end_turn.tres")
 }
 
 
@@ -168,7 +103,7 @@ func _ready():
 	var mode = 0
 	for button_name in main_menu_buttons:
 		if mode == 0:
-			create_action_button(button_name, main_menu_buttons[button_name], main_menu)
+			create_action_button(main_menu_buttons[button_name], main_menu)
 			if button_name == "Overcharge":
 				mode = 1
 				create_separator(main_menu)
@@ -192,23 +127,16 @@ func _ready():
 	create_menu_button("Return", back_button, tech_menu, "TechButton")
 	create_separator(tech_menu)
 	for button_name in tech_menu_buttons:
-		create_action_button(button_name, tech_menu_buttons[button_name], tech_menu, "TechButton")
+		create_action_button(tech_menu_buttons[button_name], tech_menu, "TechButton")
 	
 	create_menu_button("Return", back_button, system_menu, "SystemButton")
 	create_separator(system_menu)
-	for button_name in system_menu_buttons:
-		create_action_button(button_name, system_menu_buttons[button_name], system_menu, "SystemButton")
 	
 	create_menu_button("Return", back_button, reaction_menu, "ReactionButton")
 	create_separator(reaction_menu)
-	for button_name in reaction_menu_buttons:
-		create_action_button(button_name, reaction_menu_buttons[button_name], reaction_menu, "ReactionButton")
 	
 	create_menu_button("Return", back_button, protocol_menu, "ProtocolButton")
 	create_separator(protocol_menu)
-	for button_name in protocol_menu_buttons:
-		create_action_button(button_name, protocol_menu_buttons[button_name], protocol_menu, "ProtocolButton")
-
 
 # The hide mechanic on the menu acts as a sort of clean
 func set_is_hidden(value: bool):
@@ -239,20 +167,31 @@ func activate_unit():
 	emit_signal("unit_activated")
 
 
-func create_action_button(button_name: String, button_dict: Dictionary, menu: HBoxContainer, variation: String = ""):
-	var action = button_dict["action"]
-	var icon = button_dict["icon"]
-
+func create_action_button(action: BaseAction, menu: HBoxContainer, variation: String = "") -> ActionMenuButton:
 	var button = ActionMenuButton.instantiate()
 	button.theme_type_variation = variation
 	menu.add_child(button)
-	button.initialize(button_name, icon)
-	button.pressed.connect(on_action_button_pressed.bind(action))
-	if not action:
+	if action:
+		button.initialize(action.name, action.menu_icon)
+		button.pressed.connect(on_action_button_pressed.bind(action))
+	else:
 		button.disabled = true
+	return button
+
+func create_extended_action_button(action: BaseAction, menu: HBoxContainer, variation: String = "") -> ExtendedMenuButton:
+	var button = ExtendedMenuButton.instantiate()
+	button.theme_type_variation = variation
+	menu.add_child(button)
+	if action:
+		button.initialize(action)
+		button.pressed.connect(on_action_button_pressed.bind(action))
+	else:
+		button.disabled = true
+	return button
 
 func on_action_button_pressed(action: BaseAction):
 	emit_signal("action_button_pressed", action)
+
 
 
 func create_menu_button(button_name: String, button_dict: Dictionary, menu: HBoxContainer, variation: String = ""):
@@ -267,6 +206,7 @@ func create_menu_button(button_name: String, button_dict: Dictionary, menu: HBox
 
 func on_menu_button_pressed(new_menu: HBoxContainer):
 	set_active_menu(new_menu)
+
 
 
 func create_separator(menu: HBoxContainer):
@@ -300,14 +240,17 @@ func _on_game_board_unit_selected(active_unit: Unit):
 		set_is_hidden(true)
 		await get_tree().create_timer(0.3).timeout
 	
-	# Create the menu for the new unit 
-	for weapon in active_unit._mech.weapons:
-		var button = ExtendedMenuButton.instantiate()
-		button.theme_type_variation = "AttackButton"
-		attack_menu.add_child(button)
-		button.initialize(weapon)
-		button.pressed.connect(on_action_button_pressed.bind(weapon))
+	# Create the menu for the new unit
+	for weapon in active_unit._stats.mech_weapons:
+		var button = create_extended_action_button(weapon, attack_menu, "AttackButton")
 		extra_elements.push_back(button)
+		
+	for reaction in active_unit._stats.reactions:
+		var button = create_action_button(reaction, reaction_menu, "ReactionButton")
+		extra_elements.push_back(button)
+		button.set_toggle()
+		button.button_pressed = not active_unit._stats.is_reaction_active[reaction]
+	
 	# Play the start animation
 	set_is_hidden(false)
 

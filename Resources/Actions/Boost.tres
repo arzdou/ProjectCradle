@@ -1,15 +1,17 @@
-[gd_resource type="Resource" script_class="MoveAction" load_steps=2 format=3 uid="uid://due53jiwnant3"]
+[gd_resource type="Resource" script_class="MoveAction" load_steps=3 format=3 uid="uid://due53jiwnant3"]
 
 [ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MoveAction.gd" id="1_5l25i"]
+[ext_resource type="Texture2D" uid="uid://dbucqs5s1mxid" path="res://Media/icons/menu/boost.svg" id="1_qkjh4"]
 
 [resource]
 script = ExtResource("1_5l25i")
 is_voluntary = true
-move_range = 0
+move_range_type = 0
 move_range_value = 0
 id = "base_boost"
 name = "Boost"
 action_type = 2
+menu_icon = ExtResource("1_qkjh4")
 terse = ""
 detail = ""
 cost = 1

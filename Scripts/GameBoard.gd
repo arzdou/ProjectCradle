@@ -92,6 +92,20 @@ func set_selected_unit(value: Unit):
 	emit_signal("unit_selected", selected_unit)
 
 
+# Perform the action processing while targeting cell. 
+# If cell is (-1, -1) the action should be untargeted
+func process_action(cell: Vector2 = Vector2(-1,-1)):
+	if not action_processing.can_act(selected_unit, cell):
+		return
+	
+	set_draw_overlay(false)
+	await _unit_manager.process_reactions(action_processing)
+	# Try to perform the action at the hovered cell
+	var has_acted = await action_processing.try_to_act(selected_unit, cell)
+	
+	if has_acted:
+		end_action()
+
 # Deduct the cost from the unit action pool and if no more actions left then finish the turn
 func end_action():
 	selected_unit.actions_left -= action_processing.cost
@@ -101,17 +115,18 @@ func end_action():
 		finish_turn()
 
 
-func set_draw_overlay(value: bool):
-	draw_overlay = value
-	if not draw_overlay:
-		_unit_overlay.clear()
-
-
+# Clear the game board and ready it for a new turn
 func finish_turn():
 	_unit_manager.finish_turn()
 	team_turn_index = (team_turn_index+1) % teams.size()
 	LogRepeater.write("%s turn"%teams[team_turn_index])
 	set_selected_unit(null)
+
+
+func set_draw_overlay(value: bool):
+	draw_overlay = value
+	if not draw_overlay:
+		_unit_overlay.clear()
 
 
 func _on_Cursor_moved(_mode: String, new_pos: Vector2):
@@ -135,26 +150,26 @@ func _on_Cursor_accept_pressed(cell: Vector2):
 	if not action_processing:
 		return
 	
-	if not action_processing.can_act(selected_unit, cell):
-		return
-	
-	set_draw_overlay(false)
-	await _unit_manager.process_reactions(action_processing)
-	# Try to perform the action at the hovered cell
-	var has_acted = await action_processing.try_to_act(selected_unit, cell)
-	
-	if has_acted:
-		end_action()
+	process_action(cell)
+
 
 func _on_unit_activated():
 	_unit_manager.active_unit = selected_unit
 
 
 func _on_action_selected(action):
+	if action is ReactionAction:
+		selected_unit.toggle_reaction(action)
+		return
+	
 	action_processing = action
 	var overlay_cells = action_processing.get_cells_in_range(
 		_unit_manager.active_unit, _game_map.cursor.cell
 	)
-	set_draw_overlay(true)
-	_unit_overlay.draw(overlay_cells)
+	
+	if action_processing.action_type == CONSTANTS.ACTION_TYPES.MISC:
+		process_action()
+	else:
+		set_draw_overlay(true)
+		_unit_overlay.draw(overlay_cells)
 

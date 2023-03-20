@@ -17,6 +17,12 @@ func initialize(button_name: String, button_texture: Texture):
 	if button_texture:
 		icon = button_texture
 
+
+func set_toggle():
+	toggle_mode = true
+	button_pressed = true
+
+
 # Show the label with text on top
 func _on_mouse_entered():
 	var tween = create_tween().set_trans(Tween.TRANS_CIRC)

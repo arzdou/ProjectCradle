@@ -7,6 +7,8 @@ class_name BaseAction
 @export var id: String
 @export var name: String
 @export var action_type: CONSTANTS.ACTION_TYPES # (CONSTANTS.ACTION_TYPES)
+
+@export var menu_icon: Texture
 @export var terse: String
 @export var detail: String
 

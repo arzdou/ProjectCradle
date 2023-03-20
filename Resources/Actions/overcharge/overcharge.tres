@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="MiscAction" load_steps=3 format=3 uid="uid://dxxpfvdsqwxs7"]
+[gd_resource type="Resource" script_class="MiscAction" load_steps=4 format=3 uid="uid://dxxpfvdsqwxs7"]
 
 [ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MiscAction.gd" id="1_db1gr"]
 [ext_resource type="Resource" uid="uid://bwixa42peerw4" path="res://Resources/Actions/overcharge/effect.tres" id="1_jxaa8"]
+[ext_resource type="Texture2D" uid="uid://cgyyuhbwn342w" path="res://Media/icons/menu/overcharge.svg" id="2_j5c5o"]
 
 [resource]
 script = ExtResource("1_db1gr")
@@ -9,6 +10,7 @@ effect = ExtResource("1_jxaa8")
 id = "base_overcharge"
 name = "Overcharge"
 action_type = 3
+menu_icon = ExtResource("2_j5c5o")
 terse = ""
 detail = ""
 cost = 0

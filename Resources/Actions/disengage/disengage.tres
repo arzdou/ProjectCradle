@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="MiscAction" load_steps=3 format=3 uid="uid://cm6tcwnkvsvsk"]
+[gd_resource type="Resource" script_class="MiscAction" load_steps=4 format=3 uid="uid://cm6tcwnkvsvsk"]
 
 [ext_resource type="Script" path="res://Scripts/ResourceGenerators/Actions/MiscAction.gd" id="1_15vgi"]
 [ext_resource type="Resource" path="res://Resources/Actions/disengage/effect.tres" id="1_tvot7"]
+[ext_resource type="Texture2D" uid="uid://dye7ptaqqhj1y" path="res://Media/icons/menu/disengage.svg" id="2_nxj1o"]
 
 [resource]
 script = ExtResource("1_15vgi")
@@ -9,6 +10,7 @@ effect = ExtResource("1_tvot7")
 id = "base_disengage"
 name = "Disengage"
 action_type = 3
+menu_icon = ExtResource("2_nxj1o")
 terse = ""
 detail = ""
 cost = 1

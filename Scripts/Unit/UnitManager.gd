@@ -93,8 +93,11 @@ func process_reactions(action):
 		if reacting_unit.reaction_charges <= 0:
 			continue
 		for reaction in reacting_unit._stats.reactions:
+			
+			if not reacting_unit._stats.is_reaction_active[reaction]:
+				continue
+				
 			var possible_actions = reaction.get_possible_reactions(action, reacting_unit, active_unit)
-			print(possible_actions)
 			if possible_actions.is_empty():
 				continue
 				
