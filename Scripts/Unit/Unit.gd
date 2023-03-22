@@ -123,8 +123,6 @@ func walk_along(path: PackedVector2Array) -> void:
 		curve.add_point(GlobalGrid.map_to_local(point) - position)
 	
 	_set_is_walking(true)
-	used_move_range = min(used_move_range + path.size() - 1, move_range)
-
 	set_cell(path[-1])
 	
 

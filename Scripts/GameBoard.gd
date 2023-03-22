@@ -95,16 +95,13 @@ func set_selected_unit(value: Unit):
 # Perform the action processing while targeting cell. 
 # If cell is (-1, -1) the action should be untargeted
 func process_action(cell: Vector2 = Vector2(-1,-1)):
-	if not action_processing.can_act(selected_unit, cell):
-		return
-	
 	# Try to perform the action at the hovered cell
-	set_draw_overlay(false)
 	var resolved_action = action_processing.process(selected_unit, cell)
 	
-	# Maybe not necessary with the previous check?
 	if not resolved_action.has_actions:
 		return
+		
+	set_draw_overlay(false)
 	
 	await _unit_manager.process_reactions(resolved_action)
 	await resolved_action.do()

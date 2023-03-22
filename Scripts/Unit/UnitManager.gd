@@ -110,6 +110,7 @@ func process_reactions(resolved_action: ResolvedAction):
 			
 			var new_resolved_action = selected_action.process(reacting_unit, active_unit.cell)
 			await new_resolved_action.do()
+			reacting_unit.reaction_charges -= 1
 			prompt_menu.queue_free()
 	
 	emit_signal("reactions_processed")

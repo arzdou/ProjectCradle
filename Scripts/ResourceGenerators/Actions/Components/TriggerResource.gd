@@ -51,6 +51,7 @@ func brace(action_to_react: ResolvedAction, reacting_unit: Unit, acting_unit: Un
 	# 1. There is a damage order in the resolved action
 	# 2. The reacting unit is different than the acting unit
 	# 3. The reacting_unit is the same as the target_unit from the resolved_acton
+	# 4. The amount of damage is not 0
 	
 	if action_to_react.damages.is_empty():
 		return out
@@ -59,6 +60,9 @@ func brace(action_to_react: ResolvedAction, reacting_unit: Unit, acting_unit: Un
 		return out
 	
 	if not reacting_unit == action_to_react.damages[0].target_unit:
+		return out
+	
+	if action_to_react.damages[0].value == 0:
 		return out
 	
 	# This will fail since this method has no way of knowing which target has the action

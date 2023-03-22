@@ -33,6 +33,8 @@ func do():
 	for move in movement:
 		move.unit.walk_along(move.path)
 		await move.unit.walk_finished
+		move.unit.used_move_range += move.path.size() - 1
+
 	
 	for damage in damages:
 		damage.target_unit.take_damage(damage.value, damage.type)
@@ -53,11 +55,12 @@ func undo():
 	is_done = false
 
 
-func add_movement(unit: Unit, path: PackedVector2Array):
+func add_movement(unit: Unit, path: PackedVector2Array, type: CONSTANTS.MOVE_RANGE_TYPES):
 	movement.push_back(
 		{
 			"unit": unit,
 			"path": path,
+			"type": type
 		}
 	)
 	has_actions = true
