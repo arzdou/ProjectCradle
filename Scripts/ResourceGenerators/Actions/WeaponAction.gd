@@ -96,6 +96,7 @@ func can_act(active_unit: Unit, target_cell: Vector2) -> bool:
 		
 	return false
 
+
 # Returns true if the WeaponAction managed to hit (or miss) an attack
 func try_to_apply_damage_in_area(active_unit: Unit, area: Array) -> bool:
 	var damage_applied := false
@@ -139,6 +140,50 @@ func try_to_apply_damage(active_unit: Unit, target_cell: Vector2) -> bool:
 		target_unit.take_damage(damage_dealt, damage_resource.type)
 	
 	return true
+
+
+func process(active_unit: Unit, target_cell: Vector2) -> ResolvedAction:
+	var resolving_action = resolved_action.new(self, active_unit, target_cell)
+	var cells = get_cells_in_range(active_unit, target_cell)
+	
+	for cell in cells[CONSTANTS.UOVERLAY_CELLS.DAMAGE]:
+		process_damage_in_cell(resolving_action, active_unit, cell)
+	return resolving_action
+
+
+# This function tries to apply an array of damage on top of a cell, if the cell is empty it will 
+# return false and if the damage was applied it will return true
+func process_damage_in_cell(resolving_action: ResolvedAction, active_unit: Unit, target_cell: Vector2):
+	
+	# There are two conditions to apply damage:
+	# 1. The cell has a unit
+	# 2. You cannot be the target
+	
+	var target_unit: Unit = GlobalGrid.in_cell(target_cell)
+	
+	if not target_unit:
+		return
+		
+	if target_unit == active_unit:
+		return
+	
+	if is_on_attack:
+		resolving_action.add_effect(on_attack, active_unit, target_unit)
+	
+	# Roll to see if the attack connects
+	if not attack_roll(active_unit, target_unit):
+		resolving_action.add_damage(active_unit, target_unit, 0, 0)
+		return
+	
+	if is_on_hit:
+		resolving_action.add_effect(on_hit, active_unit, target_unit)
+	
+	# Apply all damages
+	for damage_resource in damage:
+		var damage_dealt = damage_resource.roll_damage()
+		resolving_action.add_damage(active_unit, target_unit, damage_dealt, damage_resource.type)
+	
+	return
 
 
 # Perform an attack roll against a character

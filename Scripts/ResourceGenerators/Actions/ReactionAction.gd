@@ -7,5 +7,5 @@ class_name ReactionAction
 @export var trigger: TriggerResource
 
 
-func get_possible_reactions(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
-	return trigger.get_triggered_actions(action, reacting_unit, acting_unit) 
+func get_possible_reactions(resolved_action: ResolvedAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
+	return trigger.get_triggered_actions(resolved_action, reacting_unit, acting_unit) 

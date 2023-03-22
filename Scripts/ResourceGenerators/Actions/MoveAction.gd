@@ -50,6 +50,17 @@ func can_act(active_unit: Unit, target_cell: Vector2) -> bool:
 	return true
 
 
+func process(active_unit: Unit, target_cell: Vector2) -> ResolvedAction:
+	var path = get_cells_in_range(active_unit, target_cell)[CONSTANTS.UOVERLAY_CELLS.ARROW]
+	var out : ResolvedAction = resolved_action.new(self, active_unit, target_cell)
+	
+	if path[-1] == active_unit.cell:
+		return out
+		
+	out.add_movement(active_unit, path)
+	return out
+
+
 func get_moving_range(unit: Unit) -> int:
 	var n_cells: int
 	match move_range_type:

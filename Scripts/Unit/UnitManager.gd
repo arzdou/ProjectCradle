@@ -88,7 +88,7 @@ func finish_turn() -> void:
 	deselect_unit()
 
 
-func process_reactions(action):
+func process_reactions(resolved_action: ResolvedAction):
 	for reacting_unit in unit_list:
 		if reacting_unit.reaction_charges <= 0:
 			continue
@@ -96,8 +96,8 @@ func process_reactions(action):
 			
 			if not reacting_unit._stats.is_reaction_active[reaction]:
 				continue
-				
-			var possible_actions = reaction.get_possible_reactions(action, reacting_unit, active_unit)
+			
+			var possible_actions = reaction.get_possible_reactions(resolved_action, reacting_unit, active_unit)
 			if possible_actions.is_empty():
 				continue
 				
@@ -108,7 +108,8 @@ func process_reactions(action):
 			if not selected_action:
 				continue
 			
-			selected_action.try_to_act(reacting_unit, active_unit.cell)
+			var new_resolved_action = selected_action.process(reacting_unit, active_unit.cell)
+			await new_resolved_action.do()
 			prompt_menu.queue_free()
 	
 	emit_signal("reactions_processed")

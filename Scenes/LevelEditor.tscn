@@ -94,7 +94,6 @@ offset_bottom = 343.0
 rotation = -1.5708
 text = "hide"
 
-[connection signal="id_pressed" from="CanvasLayer/SideBar" to="." method="_on_SideBar_id_pressed"]
 [connection signal="pressed" from="CanvasLayer/SideBar/VBoxContainer/Button" to="CanvasLayer/SideBar" method="_on_LoadButton_pressed"]
 [connection signal="file_selected" from="CanvasLayer/SideBar/VBoxContainer/Button/FileDialog" to="." method="_on_FileDialog_file_selected"]
 [connection signal="value_changed" from="CanvasLayer/SideBar/VBoxContainer/HScrollBar" to="." method="_on_HScrollBar_value_changed"]

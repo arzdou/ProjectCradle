@@ -32,6 +32,9 @@ class_name BaseAction
 @export var ignore_used: bool
 @export var heat_cost: bool
 
+
+const resolved_action = preload("res://Scripts/ResolvedAction.gd")
+
 # Returns an array with the ordered elements of the name: strings and icons
 func get_display_name() -> Array:
 	return [name]
@@ -56,3 +59,7 @@ func try_to_act(_active_unit: Unit, _target_cell: Vector2) -> bool:
 
 func can_act(_active_unit: Unit, _target_cell: Vector2) -> bool:
 	return false
+
+
+func process(_active_unit: Unit, _target_cell: Vector2) -> ResolvedAction:
+	return null

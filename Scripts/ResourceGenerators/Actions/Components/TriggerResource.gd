@@ -9,21 +9,25 @@ enum TRIGGERS {OVERWATCH, BRACE}
 
 const brace_action: MiscAction = preload("res://Resources/Actions/brace/brace.tres")
 
-func get_triggered_actions(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
+func get_triggered_actions(action_to_react: ResolvedAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
 	match trigger_type:
 		TRIGGERS.OVERWATCH:
-			return overwatch(action, reacting_unit, acting_unit)
+			return overwatch(action_to_react, reacting_unit, acting_unit)
 		TRIGGERS.BRACE:
-			return brace(action, reacting_unit, acting_unit)
+			return brace(action_to_react, reacting_unit, acting_unit)
 		_:
 			return []
 
 
 # Activated when action is a MoveAction and target unit moves in threat unit from active unit
-func overwatch(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
+func overwatch(action_to_react: ResolvedAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
 	var active_threat_weapons: Array[BaseAction] = []
+	# Only trigger if:
+	# 1. There is a movement order in the resolved action
+	# 2. The reacting unit is different than the acting unit
 	
-	if not action is MoveAction:
+	
+	if action_to_react.movement.is_empty():
 		return active_threat_weapons
 	
 	if reacting_unit == acting_unit:
@@ -41,16 +45,20 @@ func overwatch(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Ar
 	return active_threat_weapons
 
 
-func brace(action: BaseAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
+func brace(action_to_react: ResolvedAction, reacting_unit: Unit, acting_unit: Unit) -> Array[BaseAction]:
 	var out: Array[BaseAction] = []
+	# Only trigger if:
+	# 1. There is a damage order in the resolved action
+	# 2. The reacting unit is different than the acting unit
+	# 3. The reacting_unit is the same as the target_unit from the resolved_acton
 	
-	if not action is WeaponAction:
+	if action_to_react.damages.is_empty():
 		return out
 	
 	if reacting_unit == acting_unit:
 		return out
 	
-	if not action.is_in_range(acting_unit.cell, reacting_unit.cell):
+	if not reacting_unit == action_to_react.damages[0].target_unit:
 		return out
 	
 	# This will fail since this method has no way of knowing which target has the action
